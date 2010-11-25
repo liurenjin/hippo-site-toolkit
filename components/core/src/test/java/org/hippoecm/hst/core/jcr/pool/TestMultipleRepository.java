@@ -1,0 +1,174 @@
+/*
+ *  Copyright 2008 Hippo.
+ * 
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ * 
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ */
+package org.hippoecm.hst.core.jcr.pool;
+
+import static org.junit.Assert.assertTrue;
+
+import java.util.LinkedList;
+import java.util.Map;
+import java.util.NoSuchElementException;
+
+import javax.jcr.Credentials;
+import javax.jcr.LoginException;
+import javax.jcr.Repository;
+import javax.jcr.RepositoryException;
+import javax.jcr.Session;
+
+import org.hippoecm.hst.core.ResourceLifecycleManagement;
+import org.hippoecm.hst.test.AbstractSpringTestCase;
+import org.junit.Before;
+import org.junit.Ignore;
+import org.junit.Test;
+
+public class TestMultipleRepository extends AbstractSpringTestCase {
+    
+    protected MultipleRepository multipleRepository;
+    protected Repository repository;
+    protected Credentials defaultCredentials;
+    protected Credentials writableCredentials;
+
+    @Before
+    public void setUp() throws Exception {
+        super.setUp();
+        
+        this.multipleRepository = (MultipleRepository) getComponent(Repository.class.getName());
+        this.repository = this.multipleRepository;
+        this.defaultCredentials = (Credentials) getComponent(Credentials.class.getName() + ".default");
+        this.writableCredentials = (Credentials) getComponent(Credentials.class.getName() + ".writable");
+    }
+
+    @Test
+    public void testMultipleRepository() throws LoginException, RepositoryException {
+        Repository defaultRepository = this.multipleRepository.getRepositoryByCredentials(this.defaultCredentials);
+        Repository writableRepository = this.multipleRepository.getRepositoryByCredentials(this.writableCredentials);
+        
+        Map<Credentials, Repository> repoMap = this.multipleRepository.getRepositoryMap();
+        
+        Session sessionFromDefaultRepository = this.repository.login(this.defaultCredentials);
+        assertTrue("Current session's repository is not the expected repository", 
+                defaultRepository == ((MultipleRepositoryImpl) this.multipleRepository).getCurrentThreadRepository());
+        sessionFromDefaultRepository.logout();
+        
+        Session sessionFromWritableRepository = this.repository.login(this.writableCredentials);
+        assertTrue("Current session's repository is not the expected repository", 
+                writableRepository == ((MultipleRepositoryImpl) this.multipleRepository).getCurrentThreadRepository());
+        sessionFromWritableRepository.logout();
+    }
+    
+    @Test
+    public void testSessionLifeCycleManagementPerThread() throws Exception {
+
+        final Repository repository = multipleRepository;
+        BasicPoolingRepository defaultRepository = (BasicPoolingRepository) this.multipleRepository.getRepositoryByCredentials(this.defaultCredentials);
+        BasicPoolingRepository writableRepository = (BasicPoolingRepository) this.multipleRepository.getRepositoryByCredentials(this.writableCredentials);
+        
+        int maxActive = Math.max(defaultRepository.getMaxActive(), writableRepository.getMaxActive());
+        
+        LinkedList<Runnable> jobQueue = new LinkedList<Runnable>();
+        
+        for (int i = 0; i < 1000 * maxActive; i++) {
+            jobQueue.add(new UncautiousJob(repository, (i % 2 == 0 ? this.defaultCredentials : this.writableCredentials)));
+        }
+        
+        assertTrue("Active session count is not zero.", 0 == defaultRepository.getNumActive());
+        assertTrue("Active session count is not zero.", 0 == writableRepository.getNumActive());
+
+        Thread[] workers = new Thread[maxActive * 2];
+
+        for (int i = 0; i < maxActive; i++) {
+            workers[i] = new Worker(jobQueue);
+        }
+
+        for (int i = 0; i < maxActive; i++) {
+            workers[i].start();
+            workers[i].join();
+        }
+        
+        assertTrue("The job queue is not empty.", jobQueue.isEmpty());
+        assertTrue("Active session count is not zero.", 0 == defaultRepository.getNumActive());
+        assertTrue("Active session count is not zero.", 0 == writableRepository.getNumActive());
+    }
+    
+    @Ignore
+    private class Worker extends Thread {
+        
+        private LinkedList<Runnable> jobQueue;
+        
+        public Worker(LinkedList<Runnable> jobQueue) {
+            this.jobQueue = jobQueue;
+        }
+        
+        public void run() {
+            // Container will invoke this (InitializationValve) initial step:
+            ResourceLifecycleManagement [] rlms = multipleRepository.getResourceLifecycleManagements();
+            for (ResourceLifecycleManagement rlm : rlms) {
+                rlm.setActive(true);
+            }
+
+            while (true) {
+                Runnable job = null;
+                
+                synchronized (this.jobQueue) {
+                    try {
+                        job = this.jobQueue.removeFirst();
+                    } catch (NoSuchElementException e) {
+                        // job queue is empty, so stop here.
+                        break;
+                    }
+                }
+                    
+                try {
+                    job.run();
+                } finally {
+                    // Container will invoke this (CleanUpValve) clean up step:
+                    for (ResourceLifecycleManagement rlm : rlms) {
+                        try {
+                            rlm.disposeAllResources();
+                        } catch (Exception e) {
+                            log.error("Failed to disposeAll: " + Thread.currentThread() + ", " + rlm + ", " + rlms, e);
+                        }
+                    }
+                }
+            }
+        }        
+    }
+
+    @Ignore
+    private class UncautiousJob implements Runnable {
+
+        private Repository repository;
+        private Credentials credentials;
+
+        public UncautiousJob(Repository repository, Credentials credentials) {
+            this.repository = repository;
+            this.credentials = credentials;
+        }
+
+        public void run() {
+            try {
+                Session session = this.repository.login(this.credentials);
+                // forgot to invoke logout() to return the session to the pool by invoking the following:
+                //session.logout();
+            } catch (NoAvailableSessionException e) {
+                long end = System.currentTimeMillis();
+                log.warn("NoAvailableSessionException occurred.");
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
+}
