@@ -1,0 +1,279 @@
+* text=auto !eol
+addon/pom.xml svneol=native#text/plain
+addon/repository/pom.xml svneol=native#text/plain
+addon/repository/src/main/resources/hippoecm-extension.xml svneol=native#text/plain
+addon/repository/src/main/resources/hst-configuration.xml svneol=native#text/plain
+addon/repository/src/main/resources/hst-content-live.xml svneol=native#text/plain
+addon/repository/src/main/resources/hst-content-preview.xml svneol=native#text/plain
+addon/repository/src/main/resources/hst-content.xml -text
+addon/repository/src/main/resources/hst-types.cnd -text
+archetype-start/src/main/resources/archetype-resources/content/src/main/resources/content/intro.xml svneol=native#text/plain
+archetype-start/src/main/resources/archetype-resources/content/src/main/resources/content/pagecontent.xml svneol=native#text/plain
+archetype-start/src/main/resources/archetype-resources/content/src/main/resources/modules/breadcrumb.xml svneol=native#text/plain
+archetype-start/src/main/resources/archetype-resources/content/src/main/resources/modules/detail.xml svneol=native#text/plain
+archetype-start/src/main/resources/archetype-resources/content/src/main/resources/modules/mainnav.xml svneol=native#text/plain
+archetype-start/src/main/resources/archetype-resources/content/src/main/resources/modules/news.xml svneol=native#text/plain
+archetype-start/src/main/resources/archetype-resources/content/src/main/resources/modules/sitemap.xml svneol=native#text/plain
+archetype-start/src/main/resources/archetype-resources/content/src/main/resources/sitemap/default.xml svneol=native#text/plain
+archetype/src/main/resources/META-INF/maven/archetype-metadata.xml svneol=native#text/plain
+archetype/src/main/resources/META-INF/maven/archetype.xml svneol=native#text/plain
+archetype/src/main/resources/archetype-resources/cms/pom.xml -text svneol=unset#text/plain
+archetype/src/main/resources/archetype-resources/cms/src/main/resources/log4j.dtd -text svneol=unset#text/plain
+archetype/src/main/resources/archetype-resources/cms/src/main/resources/log4j.xml -text svneol=unset#text/plain
+archetype/src/main/resources/archetype-resources/content/pom.xml -text
+archetype/src/main/resources/archetype-resources/pom.xml -text
+archetype/src/main/resources/archetype-resources/site/pom.xml -text
+components/pom.xml -text svneol=unset#text/plain
+components/src/main/java/org/hippoecm/hst/components/modules/breadcrumb/RepositoryBasedBreadcrumbModule.java -text svneol=unset#text/plain
+components/src/main/java/org/hippoecm/hst/components/modules/breadcrumb/UrlBasedBreadcrumbModule.java -text svneol=unset#text/plain
+components/src/main/java/org/hippoecm/hst/components/modules/content/ContentModule.java -text svneol=unset#text/plain
+components/src/main/java/org/hippoecm/hst/components/modules/content/ContentModuleNode.java -text svneol=unset#text/plain
+components/src/main/java/org/hippoecm/hst/components/modules/navigation/NavigationItem.java -text svneol=unset#text/plain
+components/src/main/java/org/hippoecm/hst/components/modules/navigation/RepositoryBasedNavigationModule.java -text svneol=unset#text/plain
+components/src/main/java/org/hippoecm/hst/components/modules/query/DocumentsOfTypeModule.java -text svneol=unset#text/plain
+components/src/main/java/org/hippoecm/hst/components/modules/rss/RssFeed.java -text svneol=unset#text/plain
+components/src/main/java/org/hippoecm/hst/components/modules/rss/RssItem.java -text svneol=unset#text/plain
+components/src/main/java/org/hippoecm/hst/components/modules/rss/impl/RssModule.java -text svneol=unset#text/plain
+components/src/main/java/org/hippoecm/hst/components/modules/rss/impl/SimpleRssFeed.java -text svneol=unset#text/plain
+components/src/main/java/org/hippoecm/hst/components/modules/rss/impl/SimpleRssItem.java -text svneol=unset#text/plain
+components/src/main/java/org/hippoecm/hst/components/modules/rss/impl/SimpleRssReader.java -text svneol=unset#text/plain
+components/src/main/java/org/hippoecm/hst/components/modules/types/DocumentTypesListModule.java -text svneol=unset#text/plain
+core/pom.xml svneol=native#text/plain
+core/src/main/java/org/hippoecm/hst/caching/Cache.java svneol=native#text/plain
+core/src/main/java/org/hippoecm/hst/caching/CacheKey.java svneol=native#text/plain
+core/src/main/java/org/hippoecm/hst/caching/CacheManagerImpl.java svneol=native#text/plain
+core/src/main/java/org/hippoecm/hst/caching/CacheTag.java svneol=native#text/plain
+core/src/main/java/org/hippoecm/hst/caching/CachedResponse.java svneol=native#text/plain
+core/src/main/java/org/hippoecm/hst/caching/CachedResponseImpl.java svneol=native#text/plain
+core/src/main/java/org/hippoecm/hst/caching/Event.java svneol=native#text/plain
+core/src/main/java/org/hippoecm/hst/caching/EventCache.java svneol=native#text/plain
+core/src/main/java/org/hippoecm/hst/caching/EventCacheImpl.java svneol=native#text/plain
+core/src/main/java/org/hippoecm/hst/caching/LRUMemoryCacheImpl.java svneol=native#text/plain
+core/src/main/java/org/hippoecm/hst/caching/NamedEvent.java svneol=native#text/plain
+core/src/main/java/org/hippoecm/hst/caching/api/CacheManager.java svneol=native#text/plain
+core/src/main/java/org/hippoecm/hst/caching/observation/EventListenerImpl.java svneol=native#text/plain
+core/src/main/java/org/hippoecm/hst/caching/validity/AggregatedValidity.java svneol=native#text/plain
+core/src/main/java/org/hippoecm/hst/caching/validity/EventValidity.java svneol=native#text/plain
+core/src/main/java/org/hippoecm/hst/caching/validity/ExpiresValidity.java svneol=native#text/plain
+core/src/main/java/org/hippoecm/hst/caching/validity/NOPValidity.java svneol=native#text/plain
+core/src/main/java/org/hippoecm/hst/caching/validity/SourceValidity.java svneol=native#text/plain
+core/src/main/java/org/hippoecm/hst/core/HSTConfiguration.java svneol=native#text/plain
+core/src/main/java/org/hippoecm/hst/core/HSTHttpAttributes.java -text
+core/src/main/java/org/hippoecm/hst/core/Stats.java svneol=native#text/plain
+core/src/main/java/org/hippoecm/hst/core/context/ContextBase.java -text svneol=unset#text/plain
+core/src/main/java/org/hippoecm/hst/core/exception/ContextBaseException.java svneol=native#text/plain
+core/src/main/java/org/hippoecm/hst/core/exception/TemplateException.java -text svneol=unset#text/plain
+core/src/main/java/org/hippoecm/hst/core/filters/URLMappingTemplateContextFilter.java -text svneol=unset#text/plain
+core/src/main/java/org/hippoecm/hst/core/filters/base/HstBaseFilter.java svneol=native#text/plain
+core/src/main/java/org/hippoecm/hst/core/filters/base/HstRequestContext.java svneol=native#text/plain
+core/src/main/java/org/hippoecm/hst/core/filters/base/HstStartRequestFilter.java svneol=native#text/plain
+core/src/main/java/org/hippoecm/hst/core/filters/base/IgnorableRequest.java svneol=native#text/plain
+core/src/main/java/org/hippoecm/hst/core/filters/caching/CacheManagerFilter.java svneol=native#text/plain
+core/src/main/java/org/hippoecm/hst/core/filters/domain/BinariesRequestWrapper.java svneol=native#text/plain
+core/src/main/java/org/hippoecm/hst/core/filters/domain/Domain.java svneol=native#text/plain
+core/src/main/java/org/hippoecm/hst/core/filters/domain/DomainException.java svneol=native#text/plain
+core/src/main/java/org/hippoecm/hst/core/filters/domain/DomainImpl.java svneol=native#text/plain
+core/src/main/java/org/hippoecm/hst/core/filters/domain/DomainMapping.java svneol=native#text/plain
+core/src/main/java/org/hippoecm/hst/core/filters/domain/DomainMappingException.java svneol=native#text/plain
+core/src/main/java/org/hippoecm/hst/core/filters/domain/DomainMappingFilter.java svneol=native#text/plain
+core/src/main/java/org/hippoecm/hst/core/filters/domain/DomainMappingImpl.java svneol=native#text/plain
+core/src/main/java/org/hippoecm/hst/core/filters/domain/DomainMappingRequestWrapper.java svneol=native#text/plain
+core/src/main/java/org/hippoecm/hst/core/filters/domain/RepositoryMapping.java svneol=native#text/plain
+core/src/main/java/org/hippoecm/hst/core/filters/domain/RepositoryMappingException.java svneol=native#text/plain
+core/src/main/java/org/hippoecm/hst/core/filters/domain/RepositoryMappingImpl.java svneol=native#text/plain
+core/src/main/java/org/hippoecm/hst/core/filters/jcrsession/JcrSessionFilter.java svneol=native#text/plain
+core/src/main/java/org/hippoecm/hst/core/filters/observation/RepositoryObservationFilter.java svneol=native#text/plain
+core/src/main/java/org/hippoecm/hst/core/filters/urlmapping/URLMappingFilter.java svneol=native#text/plain
+core/src/main/java/org/hippoecm/hst/core/mapping/Link.java svneol=native#text/plain
+core/src/main/java/org/hippoecm/hst/core/mapping/LinkImpl.java svneol=native#text/plain
+core/src/main/java/org/hippoecm/hst/core/mapping/LinkRewriter.java svneol=native#text/plain
+core/src/main/java/org/hippoecm/hst/core/mapping/RelativeURLMappingImpl.java svneol=native#text/plain
+core/src/main/java/org/hippoecm/hst/core/mapping/Score.java svneol=native#text/plain
+core/src/main/java/org/hippoecm/hst/core/mapping/URLMapping.java svneol=native#text/plain
+core/src/main/java/org/hippoecm/hst/core/mapping/URLMappingException.java svneol=native#text/plain
+core/src/main/java/org/hippoecm/hst/core/mapping/URLMappingImpl.java svneol=native#text/plain
+core/src/main/java/org/hippoecm/hst/core/mapping/URLMappingManager.java svneol=native#text/plain
+core/src/main/java/org/hippoecm/hst/core/mapping/URLMappingManagerImpl.java svneol=native#text/plain
+core/src/main/java/org/hippoecm/hst/core/mapping/UrlUtilities.java svneol=native#text/plain
+core/src/main/java/org/hippoecm/hst/core/servlets/BinariesServlet.java svneol=native#text/plain
+core/src/main/java/org/hippoecm/hst/core/servlets/StatusServlet.java svneol=native#text/plain
+core/src/main/java/org/hippoecm/hst/core/template/module/Module.java svneol=native#text/plain
+core/src/main/java/org/hippoecm/hst/core/template/module/ModuleBase.java svneol=native#text/plain
+core/src/main/java/org/hippoecm/hst/core/template/module/execution/ExecutionResult.java -text svneol=unset#text/plain
+core/src/main/java/org/hippoecm/hst/core/template/module/execution/NOOPExecutionResultImpl.java -text svneol=unset#text/plain
+core/src/main/java/org/hippoecm/hst/core/template/module/query/ContextWhereClause.java svneol=native#text/plain
+core/src/main/java/org/hippoecm/hst/core/template/module/query/Search.java svneol=native#text/plain
+core/src/main/java/org/hippoecm/hst/core/template/module/query/SearchHit.java svneol=native#text/plain
+core/src/main/java/org/hippoecm/hst/core/template/module/query/SearchModule.java svneol=native#text/plain
+core/src/main/java/org/hippoecm/hst/core/template/module/query/SearchParameters.java svneol=native#text/plain
+core/src/main/java/org/hippoecm/hst/core/template/module/query/SearchResult.java svneol=native#text/plain
+core/src/main/java/org/hippoecm/hst/core/template/node/LayoutAttributeNode.java svneol=native#text/plain
+core/src/main/java/org/hippoecm/hst/core/template/node/LayoutNode.java svneol=native#text/plain
+core/src/main/java/org/hippoecm/hst/core/template/node/ModuleNode.java svneol=native#text/plain
+core/src/main/java/org/hippoecm/hst/core/template/node/NavigationItemNode.java svneol=native#text/plain
+core/src/main/java/org/hippoecm/hst/core/template/node/NavigationNode.java svneol=native#text/plain
+core/src/main/java/org/hippoecm/hst/core/template/node/NodeList.java svneol=native#text/plain
+core/src/main/java/org/hippoecm/hst/core/template/node/PageContainerModuleNode.java svneol=native#text/plain
+core/src/main/java/org/hippoecm/hst/core/template/node/PageContainerNode.java svneol=native#text/plain
+core/src/main/java/org/hippoecm/hst/core/template/node/PageNode.java svneol=native#text/plain
+core/src/main/java/org/hippoecm/hst/core/template/node/TemplateNode.java svneol=native#text/plain
+core/src/main/java/org/hippoecm/hst/core/template/node/TemplatePartNode.java svneol=native#text/plain
+core/src/main/java/org/hippoecm/hst/core/template/node/content/ContentRewriter.java svneol=native#text/plain
+core/src/main/java/org/hippoecm/hst/core/template/node/content/NOOPPathTranslatorImpl.java svneol=native#text/plain
+core/src/main/java/org/hippoecm/hst/core/template/node/content/PathToHrefTranslator.java svneol=native#text/plain
+core/src/main/java/org/hippoecm/hst/core/template/node/content/PathToHrefTranslatorImpl.java svneol=native#text/plain
+core/src/main/java/org/hippoecm/hst/core/template/node/content/PathToSrcTranslator.java svneol=native#text/plain
+core/src/main/java/org/hippoecm/hst/core/template/node/content/PathToSrcTranslatorImpl.java svneol=native#text/plain
+core/src/main/java/org/hippoecm/hst/core/template/node/content/PathTranslator.java svneol=native#text/plain
+core/src/main/java/org/hippoecm/hst/core/template/node/content/PathTranslatorImpl.java svneol=native#text/plain
+core/src/main/java/org/hippoecm/hst/core/template/node/content/SimpleContentRewriterImpl.java svneol=native#text/plain
+core/src/main/java/org/hippoecm/hst/core/template/node/content/Translator.java svneol=native#text/plain
+core/src/main/java/org/hippoecm/hst/core/template/node/el/AbstractELNode.java svneol=native#text/plain
+core/src/main/java/org/hippoecm/hst/core/template/node/el/ContentELNode.java svneol=native#text/plain
+core/src/main/java/org/hippoecm/hst/core/template/node/el/ContentELNodeImpl.java svneol=native#text/plain
+core/src/main/java/org/hippoecm/hst/core/template/node/el/ELNode.java svneol=native#text/plain
+core/src/main/java/org/hippoecm/hst/core/template/node/el/ELPseudoMap.java svneol=native#text/plain
+core/src/main/java/org/hippoecm/hst/core/template/tag/ExposeNodeTag.java svneol=native#text/plain
+core/src/main/java/org/hippoecm/hst/core/template/tag/ExternalizerTag.java svneol=native#text/plain
+core/src/main/java/org/hippoecm/hst/core/template/tag/GalleryImageLinkTag.java -text svneol=unset#text/plain
+core/src/main/java/org/hippoecm/hst/core/template/tag/LayoutAttributeTag.java svneol=native#text/plain
+core/src/main/java/org/hippoecm/hst/core/template/tag/LayoutModulesTag.java svneol=native#text/plain
+core/src/main/java/org/hippoecm/hst/core/template/tag/LinkTag.java svneol=native#text/plain
+core/src/main/java/org/hippoecm/hst/core/template/tag/ModuleAttributeTag.java -text
+core/src/main/java/org/hippoecm/hst/core/template/tag/ModuleParameterTag.java -text
+core/src/main/java/org/hippoecm/hst/core/template/tag/ModuleTag.java svneol=native#text/plain
+core/src/main/java/org/hippoecm/hst/core/template/tag/ModuleTagBase.java -text
+core/src/main/java/org/hippoecm/hst/jcr/JcrConnectionException.java -text
+core/src/main/java/org/hippoecm/hst/jcr/JcrSessionFactory.java svneol=native#text/plain
+core/src/main/java/org/hippoecm/hst/jcr/JcrSessionPool.java svneol=native#text/plain
+core/src/main/java/org/hippoecm/hst/jcr/JcrSessionPoolManager.java svneol=native#text/plain
+core/src/main/java/org/hippoecm/hst/jcr/ReadOnlyPooledSession.java svneol=native#text/plain
+gettingstarted/content/pom.xml -text
+gettingstarted/content/src/main/resources/content/intro.xml -text
+gettingstarted/content/src/main/resources/content/pagecontent.xml -text
+gettingstarted/content/src/main/resources/gettingstarted-namespace.xml -text
+gettingstarted/content/src/main/resources/gettingstarted-types.cnd svneol=native#text/plain
+gettingstarted/content/src/main/resources/hippoecm-extension.xml -text
+gettingstarted/content/src/main/resources/layouts/default.xml -text
+gettingstarted/content/src/main/resources/layouts/homepage.xml -text
+gettingstarted/content/src/main/resources/modules/breadcrumb.xml -text
+gettingstarted/content/src/main/resources/modules/detail.xml -text
+gettingstarted/content/src/main/resources/modules/intro.xml -text
+gettingstarted/content/src/main/resources/modules/mainnav.xml -text
+gettingstarted/content/src/main/resources/modules/news.xml -text
+gettingstarted/content/src/main/resources/modules/sitemap.xml -text
+gettingstarted/content/src/main/resources/sitemap/default.xml -text
+gettingstarted/content/src/main/resources/sitemap/homepage.xml -text
+gettingstarted/ecm/pom.xml -text
+gettingstarted/ecm/src/main/resources/log4j.dtd -text
+gettingstarted/ecm/src/main/resources/log4j.xml -text
+gettingstarted/pom.xml -text
+gettingstarted/site/pom.xml -text
+gettingstarted/site/src/main/webapp/WEB-INF/hst.properties -text
+gettingstarted/site/src/main/webapp/WEB-INF/web.xml -text
+gettingstarted/site/src/main/webapp/jsp/includes/head.jsp -text
+gettingstarted/site/src/main/webapp/jsp/index.jsp -text
+gettingstarted/site/src/main/webapp/jsp/modules/breadcrumb.jsp -text
+gettingstarted/site/src/main/webapp/jsp/modules/detail.jsp -text
+gettingstarted/site/src/main/webapp/jsp/modules/intro.jsp -text
+gettingstarted/site/src/main/webapp/jsp/modules/mainnav.jsp -text
+gettingstarted/site/src/main/webapp/resources/css/screen.css -text
+/pom.xml -text
+src/site/TODO_hst_Docathon_Oct_2008.odt -text
+src/site/content.xml -text
+src/site/docerrors.xml -text
+src/site/errorgraad.txt -text
+src/site/folder.xml -text
+src/site/folders.xml -text
+src/site/hippo_xdoc_template.xml -text
+src/site/resources/folder.html -text
+src/site/resources/folders.html -text
+src/site/resources/images/admin_icon.png -text
+src/site/resources/images/cli_icon.png -text
+src/site/resources/images/download_icon.png -text
+src/site/resources/images/howto.png -text svneol=unset#image/png
+src/site/resources/images/multiuser_icon.png -text
+src/site/resources/images/quickstart.png -text svneol=unset#image/png
+src/site/resources/images/quit_icon.png -text
+src/site/resources/images/reference.png -text svneol=unset#image/png
+src/site/resources/images/reference/concepts/3-column-layout.png -text
+src/site/resources/images/reference/concepts/sitemap.png -text
+src/site/resources/images/reference/configuration/hst_configuration.png -text
+src/site/resources/images/reference/configuration/hst_layouts.png -text
+src/site/resources/images/reference/configuration/hst_modules.png -text
+src/site/resources/images/reference/configuration/hst_sitemap.png -text
+src/site/resources/images/search_icon.png -text
+src/site/resources/images/structure_icon.png -text
+src/site/resources/images/tutorials/facebook-create-type-thumbnail.jpg -text svneol=unset#image/jpeg
+src/site/resources/images/tutorials/facebook-create-type.png -text svneol=unset#image/png
+src/site/resources/images/tutorials/facebook-edit-person-thumbnail.jpg -text svneol=unset#image/jpeg
+src/site/resources/images/tutorials/facebook-edit-person.png -text svneol=unset#image/png
+src/site/resources/images/tutorials/facebook-new-person-thumbnail.jpg -text svneol=unset#image/jpeg
+src/site/resources/images/tutorials/facebook-new-person.png -text svneol=unset#image/png
+src/site/resources/images/tutorials/facebook-people-module-thumbnail.jpg -text svneol=unset#image/jpeg
+src/site/resources/images/tutorials/facebook-people-module.png -text svneol=unset#image/png
+src/site/resources/images/tutorials/facebook-people-sitemapitem-thumbnail.jpg -text svneol=unset#image/jpeg
+src/site/resources/images/tutorials/facebook-people-sitemapitem.png -text svneol=unset#image/png
+src/site/resources/images/tutorials/facebook-person-module-thumbnail.jpg -text svneol=unset#image/jpeg
+src/site/resources/images/tutorials/facebook-person-module.png -text svneol=unset#image/png
+src/site/resources/images/tutorials/facebook-person-sitemapitem-thumbnail.jpg -text svneol=unset#image/jpeg
+src/site/resources/images/tutorials/facebook-person-sitemapitem.png -text svneol=unset#image/png
+src/site/resources/images/tutorials/facebook-site-people-thumbnail.jpg -text svneol=unset#image/jpeg
+src/site/resources/images/tutorials/facebook-site-people.png -text svneol=unset#image/png
+src/site/resources/images/tutorials/facebook-site-person-thumbnail.jpg -text svneol=unset#image/jpeg
+src/site/resources/images/tutorials/facebook-site-person.png -text svneol=unset#image/png
+src/site/resources/images/tutorials/facebook-type-editor-2-thumbnail.jpg -text svneol=unset#image/jpeg
+src/site/resources/images/tutorials/facebook-type-editor-2.png -text svneol=unset#image/png
+src/site/resources/images/tutorials/facebook-type-editor-thumbnail.jpg -text svneol=unset#image/jpeg
+src/site/resources/images/tutorials/facebook-type-editor.png -text svneol=unset#image/png
+src/site/resources/images/tutorials/getting-started-cms-signin-thumbnail.jpg -text svneol=unset#image/jpeg
+src/site/resources/images/tutorials/getting-started-cms-signin.png -text svneol=unset#image/png
+src/site/resources/images/tutorials/getting-started-site-thumbnail.jpg -text svneol=unset#image/jpeg
+src/site/resources/images/tutorials/getting-started-site.png -text svneol=unset#image/png
+src/site/resources/images/tutorials/hello-world-document-editor-thumbnail.jpg -text svneol=unset#image/jpeg
+src/site/resources/images/tutorials/hello-world-document-editor.png -text svneol=unset#image/png
+src/site/resources/images/tutorials/hello-world-new-document-thumbnail.jpg -text svneol=unset#image/jpeg
+src/site/resources/images/tutorials/hello-world-new-document.png -text svneol=unset#image/png
+src/site/resources/images/tutorials/hello-world-site-thumbnail.jpg -text svneol=unset#image/jpeg
+src/site/resources/images/tutorials/hello-world-site.png -text svneol=unset#image/png
+src/site/resources/images/tutorials/mymodule1.png -text
+src/site/resources/images/tutorials/mymodule2.png -text
+src/site/resources/images/unzip_icon.png -text
+src/site/resources/images/user_icon.png -text
+src/site/resources/images/version_icon.png -text
+src/site/resources/images/web_icon.png -text
+src/site/resources/linkreport/about.html -text
+src/site/resources/linkreport/badlinks.html -text
+src/site/resources/linkreport/external.html -text
+src/site/resources/linkreport/fancytooltips.js -text
+src/site/resources/linkreport/favicon.ico -text
+src/site/resources/linkreport/images.html -text
+src/site/resources/linkreport/index.html -text
+src/site/resources/linkreport/new.html -text
+src/site/resources/linkreport/notchkd.html -text
+src/site/resources/linkreport/notitles.html -text
+src/site/resources/linkreport/old.html -text
+src/site/resources/linkreport/org_problems.html -text
+src/site/resources/linkreport/problems.html -text
+src/site/resources/linkreport/size.html -text
+src/site/resources/linkreport/urllist.html -text
+src/site/resources/linkreport/webcheck.css -text
+src/site/resources/linkreport/webcheck.dat -text
+src/site/site.xml svneol=native#text/plain
+src/site/xdoc/about/architecture.xml -text
+src/site/xdoc/about/features.xml -text
+src/site/xdoc/about/term_index.xml -text
+src/site/xdoc/about/use_cases.xml -text
+src/site/xdoc/delve_into/how_does_hst2_work.xml svneol=native#text/plain
+src/site/xdoc/delve_into/howto/form.xml -text svneol=unset#text/plain
+src/site/xdoc/delve_into/howto/free_meta_search.xml -text
+src/site/xdoc/delve_into/howto/free_text_search.xml svneol=native#text/plain
+src/site/xdoc/delve_into/reference/components/modules.xml svneol=native#text/plain
+src/site/xdoc/delve_into/reference/configuration/index.xml -text svneol=unset#text/plain
+src/site/xdoc/delve_into/reference/configuration/website.xml -text svneol=unset#text/plain
+src/site/xdoc/delve_into/reference/index.xml svneol=native#text/plain
+src/site/xdoc/delve_into/reference/synonyms.xml -text
+src/site/xdoc/errorlist.xml -text
+src/site/xdoc/index.xml svneol=native#text/plain
+src/site/xdoc/support/community.xml.vm -text
+src/site/xdoc/support/contributing.xml.vm -text

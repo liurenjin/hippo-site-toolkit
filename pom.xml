@@ -1,0 +1,260 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <name>Hippo Site Toolkit</name>
+  <description>The Hippo Site Toolkit (HST) is an engine that serves content from the Hippo repository (2) on webpages, dynamically.
+    The HST produces a complete, dynamic website for an organization, or several complete, dynamic websites for several suborganizations 
+    that have all their content managed in one Hippo repository.        
+    The functionality, views and markup of the website(s) are to be defined by the web developers with Java classes, JSP and CSS, respectively.
+    The HST provides a framework of predefined Java classes, abstract Java classes and interfaces and JSP tags 
+    for the web developers to work with and build on.
+  </description>
+  <url>http://docs.onehippo.org/site-toolkit/</url>
+
+  <groupId>org.onehippo.ecm.hst</groupId>
+  <artifactId>site-toolkit</artifactId>
+  <version>2.02.03</version>
+  <packaging>pom</packaging>
+  <inceptionYear>2008</inceptionYear>
+  <issueManagement>
+    <system>Jira</system>
+    <url>http://issues.hippo.nl/browse/HSTTWO</url>
+  </issueManagement>
+
+  <properties>
+    <!-- Documentation properties (variables).
+         May not contain dots as they are processed by Apache velocity.
+         Can be used in xdoc files with the extension .xml.vm
+    -->
+    <public_project_wiki>to_be_defined</public_project_wiki>
+    <product_name>Hippo HST</product_name>
+    <product_abr>HST</product_abr>
+    
+    <!--
+    -->
+    <wagon.ftp.version>1.0-alpha-6</wagon.ftp.version>
+    <hippoecm.version>2.02.01</hippoecm.version>
+  </properties>
+
+  <!-- 
+     Software configuration management (scm): where to find and how to get acces to the source repository 
+     This is used by normal plugins, but also to autogenerate documentation in .../target/site/source-repository.html 
+  -->
+  <scm>
+    <connection>scm:svn:https://svn.hippocms.org/repos/hippo/ecm/site-toolkit/tags/Release-HSTTWO-v2_02_03</connection>
+    <developerConnection>scm:svn:https://svn.hippocms.org/repos/hippo/ecm/site-toolkit/tags/Release-HSTTWO-v2_02_03</developerConnection>
+    <url>https://svn.hippocms.org/repos/hippo/ecm/site-toolkit/tags/Release-HSTTWO-v2_02_03</url>
+  </scm>
+
+  <distributionManagement>
+    <repository>
+      <id>repository.hippocms.org</id>
+      <url>ftp://repository.hippocms.org/maven2</url>
+    </repository>
+    <snapshotRepository>
+      <id>repository.hippocms.org</id>
+      <url>ftp://repository.hippocms.org/maven2</url>
+    </snapshotRepository>
+  </distributionManagement>
+
+  <modules>
+    <module>core</module>
+    <module>addon</module>
+    <module>components</module>
+    <module>archetype</module>
+    <module>gettingstarted</module>
+  </modules>
+
+
+  <developers>
+    <developer>
+      <name>Ard Schrijvers</name>
+      <id>aschrijvers</id>
+      <email>a.schrijvers@onehippo.com</email>
+      <organization>Hippo</organization>
+      <roles>
+        <role>Java Developer</role>
+      </roles>
+      <timezone>+1</timezone>
+    </developer>
+    <developer>
+      <name>Bart van der Schans</name>
+      <id>bvdschans</id>
+      <email>schans@onehippo.com</email>
+      <organization>Hippo</organization>
+      <roles>
+        <role>Project Lead</role>
+        <role>Java Developer</role>
+      </roles>
+      <timezone>+1</timezone>
+    </developer>
+    <developer>
+      <name>Niels van Kampenhout</name>
+      <id>nvankampenhout</id>
+      <email>n.vankampenhout@onehippo.com</email>
+      <organization>Hippo</organization>
+      <roles>
+        <role>Doctator</role>
+      </roles>
+      <timezone>-8</timezone>
+    </developer>
+    <developer>
+      <name>Auke van Scheltinga</name>
+      <id>avanscheltinga</id>
+      <email>a.vanscheltinga@onehippo.com</email>
+      <organization>Hippo</organization>
+      <roles>
+        <role>Designer</role>
+      </roles>
+      <timezone>+1</timezone>
+    </developer>
+    <developer>
+      <name>Rita Bijlsma</name>
+      <id>rbijlsma</id>
+      <email>r.bijlsma@onehippo.com</email>
+      <organization>Hippo</organization>
+      <roles>
+        <role>Doctator</role>
+      </roles>
+      <timezone>+1</timezone>
+    </developer>
+  </developers>
+
+  <mailingLists>
+    <mailingList>
+      <name>Hippo Site Dev List</name>
+      <subscribe>hippo-hst-dev-subscribe@lists.hippocms.org</subscribe>
+      <unsubscribe>hippo-hst-dev-unsubscribe@lists.hippocms.org</unsubscribe>
+      <post>hippo-hst-dev@lists.onehippo.com</post>
+      <archive>http://lists.hippoforge.org/mailman/listinfo/hippo-hst-dev/</archive>
+    </mailingList>
+  </mailingLists>
+
+  <repositories>
+    <repository>
+      <id>hippoecm</id>
+      <name>Hippo ECM maven 2 repository.</name>
+      <url>http://repository.hippocms.org/maven2</url>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+      <releases>
+        <updatePolicy>never</updatePolicy>
+      </releases>
+      <layout>default</layout>
+    </repository>
+    <repository>
+      <id>hippoecm.legacy</id>
+      <name>Hippo ECM Maven 1 repository.</name>
+      <url>http://repository.hippocms.org/maven</url>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+      <releases>
+        <updatePolicy>never</updatePolicy>
+      </releases>
+      <layout>legacy</layout>
+    </repository>
+    <repository>
+      <id>codehaus</id>
+      <url>http://repository.codehaus.org/org/codehaus/mojo/</url>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+      <releases>
+        <updatePolicy>never</updatePolicy>
+      </releases>
+    </repository>
+  </repositories>
+
+  <pluginRepositories>
+    <pluginRepository>
+      <id>codehaus</id>
+      <url>http://repository.codehaus.org/org/codehaus/mojo/</url>
+      <layout>default</layout>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+      <releases>
+        <updatePolicy>never</updatePolicy>
+      </releases>
+    </pluginRepository>
+  </pluginRepositories>
+  <organization>
+    <name>Hippo</name>
+    <url>http://www.onehippo.com</url>
+  </organization>
+
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>org.hippoecm</groupId>
+        <artifactId>hippo-ecm-package-war</artifactId>
+        <version>${hippoecm.version}</version>
+        <type>war</type>
+      </dependency>
+      <dependency>
+        <groupId>org.hippoecm</groupId>
+        <artifactId>hippo-ecm-repository-connector</artifactId>
+        <version>${hippoecm.version}</version>
+        <type>jar</type>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
+  <build>
+    <defaultGoal>package</defaultGoal>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-jar-plugin</artifactId>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+    <extensions>
+      <extension>
+        <groupId>org.apache.maven.wagon</groupId>
+        <artifactId>wagon-ftp</artifactId>
+        <version>${wagon.ftp.version}</version>
+      </extension>
+    </extensions>
+    <plugins>
+      <plugin>
+        <inherited>true</inherited>
+        <artifactId>maven-deploy-plugin</artifactId>
+      </plugin>
+      <plugin>
+        <inherited>true</inherited>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <source>1.5</source>
+          <target>1.5</target>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-release-plugin</artifactId>
+        <version>2.0-beta-7</version>
+        <configuration>
+          <tagBase>https://svn.hippocms.org/repos/hippo/ecm/site-toolkit/tags</tagBase>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
+
+  <reporting>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <configuration>
+          <aggregate>true</aggregate>
+        </configuration>
+      </plugin>
+    </plugins>
+  </reporting>
+
+</project>
