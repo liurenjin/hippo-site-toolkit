@@ -1,0 +1,931 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Copyright 2008 Hippo
+
+  Licensed under the Apache License, Version 2.0 (the  "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS"
+  BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License. -->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <name>Hippo Site Toolkit</name>
+  <description>The Hippo Site Toolkit (HST) is an engine that serves content from the Hippo repository (2) on webpages, dynamically.
+    The HST produces a complete, dynamic website for an organization, or several complete, dynamic websites for several suborganizations 
+    that have all their content managed in one Hippo repository.
+    The functionality, views and markup of the website(s) are to be defined by the web developers with Java classes, JSP and CSS, respectively.
+    The HST provides a framework of predefined Java classes, abstract Java classes and interfaces and JSP tags 
+    for the web developers to work with and build on.
+  </description>
+  <url>http://www.onehippo.org/site-toolkit/</url>
+
+  <groupId>org.onehippo.ecm</groupId>
+  <artifactId>hst</artifactId>
+  <version>2.04.07</version>
+  <packaging>pom</packaging>
+  <inceptionYear>2008</inceptionYear>
+  <issueManagement>
+    <system>Jira</system>
+    <url>http://issues.hippo.nl/browse/HSTTWO</url>
+  </issueManagement>
+
+  <properties>
+
+    <!-- Documentation properties (variables).
+         May not contain dots as they are processed by Apache velocity.
+         Can be used in xdoc files with the extension .xml.vm
+    -->
+
+    <public_project_wiki>http://www.onehippo.org/site-toolkit/support/forums.html</public_project_wiki>
+    <product_name>Hippo HST</product_name>
+    <product_abr>HST</product_abr>
+
+    <wagon.ftp.version>1.0-alpha-6</wagon.ftp.version>
+
+    <servlet-api.version>2.4</servlet-api.version>
+    <jsp-api.version>2.0</jsp-api.version>
+    <jstl.version>1.1.2</jstl.version>
+    <taglibs.version>1.1.2</taglibs.version>
+    <portlet-api.version>2.0</portlet-api.version>
+    <javax.jcr.version>1.0</javax.jcr.version>
+    <javax.mail.version>1.4.1</javax.mail.version>
+    <jta.version>1.1</jta.version>
+
+    <slf4j.version>1.5.6</slf4j.version>
+    <log4j.version>1.2.14</log4j.version>
+
+    <junit.version>4.5</junit.version>
+    <easymock.version>2.4</easymock.version>
+
+    <xml-apis.version>2.0.2</xml-apis.version>
+    <xerces.version>2.4.0</xerces.version>
+    <xercesImpl.version>2.9.1</xercesImpl.version>
+    <xalan.version>2.4.1</xalan.version>
+
+    <commons-lang.version>2.4</commons-lang.version>
+    <commons-collections.version>3.2.1</commons-collections.version>
+    <commons-codec.version>1.3</commons-codec.version>
+    <commons-pool.version>1.5.4</commons-pool.version>
+    <commons-beanutils.version>1.8.0</commons-beanutils.version>
+    <commons-fileupload.version>1.2.1</commons-fileupload.version>
+    <commons-io.version>1.4</commons-io.version>
+    <commons-jexl.version>1.1</commons-jexl.version>
+    <commons-configuration.version>1.6</commons-configuration.version>
+    <commons-proxy.version>1.0</commons-proxy.version>
+    <commons-digester.version>1.8.1</commons-digester.version>
+    <ehcache.version>1.2.3</ehcache.version>
+
+    <spring.version>2.5.6.SEC02</spring.version>
+    <aspectj.version>1.6.2</aspectj.version>
+
+    <jackrabbit.version>1.5.0</jackrabbit.version>
+
+    <hippoecm.version>2.12.16</hippoecm.version>
+    <hst-configuration-editor.version>1.03.02</hst-configuration-editor.version>
+    
+    <jdo.version>2.0</jdo.version>
+    <htmlcleaner.version>2.1</htmlcleaner.version>
+    
+    <yui.sources.version>1.01.07</yui.sources.version>
+    <spring.js.version>2.0.5.RELEASE</spring.js.version>
+
+    <cxf.version>2.2.5</cxf.version>
+    <jackson.version>1.3.2</jackson.version>
+    <mime4j.version>0.6</mime4j.version>
+
+    <!-- use UTF-8 encoding for filtered file copy -->
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
+
+  <!--
+     Software configuration management (scm): where to find and how to get acces to the source repository 
+     This is used by normal plugins, but also to autogenerate documentation in .../target/site/source-repository.html 
+  -->
+  <scm>
+    <connection>scm:svn:http://svn.hippocms.org/repos/hippo/ecm/site-toolkit/trunk</connection>
+    <developerConnection>scm:svn:https://svn.hippocms.org/repos/hippo/ecm/site-toolkit/trunk</developerConnection>
+    <url>http://svn.hippocms.org/repos/hippo/ecm/site-toolkit/trunk</url>
+  </scm>
+
+  <distributionManagement>
+    <repository>
+      <id>repository.hippocms.org</id>
+      <url>ftp://repository.hippocms.org/maven2</url>
+    </repository>
+    <snapshotRepository>
+      <id>repository.hippocms.org</id>
+      <url>ftp://repository.hippocms.org/maven2</url>
+    </snapshotRepository>
+  </distributionManagement>
+
+  <developers>
+    <developer>
+      <name>Woonsan Ko</name>
+      <id>wko</id>
+      <email>w.ko @ onehippo . com</email>
+      <organization>Hippo</organization>
+      <roles>
+        <role>Java Developer</role>
+      </roles>
+      <timezone>+1</timezone>
+    </developer>
+    <developer>
+      <name>Ard Schrijvers</name>
+      <id>aschrijvers</id>
+      <email>a.schrijvers @ onehippo . com</email>
+      <organization>Hippo</organization>
+      <roles>
+        <role>Java Developer</role>
+      </roles>
+      <timezone>+1</timezone>
+    </developer>
+    <developer>
+      <name>Bart van der Schans</name>
+      <id>bvdschans</id>
+      <email>schans @ onehippo . com</email>
+      <organization>Hippo</organization>
+      <roles>
+        <role>Project Lead</role>
+        <role>Java Developer</role>
+      </roles>
+      <timezone>+1</timezone>
+    </developer>
+    <developer>
+      <name>Niels van Kampenhout</name>
+      <id>nvankampenhout</id>
+      <email>n.vankampenhout @ onehippo . com</email>
+      <organization>Hippo</organization>
+      <roles>
+        <role>Doctator</role>
+      </roles>
+      <timezone>-8</timezone>
+    </developer>
+    <developer>
+      <name>Auke van Scheltinga</name>
+      <id>avanscheltinga</id>
+      <email>a.vanscheltinga @ onehippo . com</email>
+      <organization>Hippo</organization>
+      <roles>
+        <role>Designer</role>
+      </roles>
+      <timezone>+1</timezone>
+    </developer>
+    <developer>
+      <name>Rita Bijlsma</name>
+      <id>rbijlsma</id>
+      <email>r.bijlsma @ onehippo . com</email>
+      <organization>Hippo</organization>
+      <roles>
+        <role>Doctator</role>
+      </roles>
+      <timezone>+1</timezone>
+    </developer>
+    <developer>
+      <name>Jeroen Reijn</name>
+      <id>jreijn</id>
+      <email>j.reijn @ onehippo . com</email>
+      <organization>Hippo</organization>
+      <roles>
+        <role>Java Developer</role>
+      </roles>
+      <timezone>+1</timezone>
+    </developer>
+  </developers>
+
+  <mailingLists>
+    <mailingList>
+      <name>Hippo Site Toolkit Forums</name>
+      <subscribe>hippo-hst-dev-subscribe@lists.onehippo.org</subscribe>
+      <unsubscribe>hippo-hst-dev-unsubscribe@lists.onehippo.org</unsubscribe>
+      <archive>http://lists.onehippo.org/pipermail/hippo-hst-dev/</archive>
+    </mailingList>
+  </mailingLists>
+
+  <repositories>
+    <repository>
+      <id>hippoecm</id>
+      <name>Hippo ECM maven 2 repository.</name>
+      <url>http://repository.hippocms.org/maven2</url>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+      <releases>
+        <updatePolicy>never</updatePolicy>
+      </releases>
+      <layout>default</layout>
+    </repository>
+    <repository>
+      <id>hippoecm.legacy</id>
+      <name>Hippo ECM Maven 1 repository.</name>
+      <url>http://repository.hippocms.org/maven</url>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+      <releases>
+        <updatePolicy>never</updatePolicy>
+      </releases>
+      <layout>legacy</layout>
+    </repository>
+    <repository>
+      <id>codehaus</id>
+      <url>http://repository.codehaus.org/org/codehaus/mojo/</url>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+      <releases>
+        <updatePolicy>never</updatePolicy>
+      </releases>
+    </repository>
+  </repositories>
+
+  <pluginRepositories>
+    <pluginRepository>
+      <id>hippo</id>
+      <name>Hippo Maven 2 Repository</name>
+      <url>http://repository.hippocms.org/maven2</url>
+    </pluginRepository>
+    <pluginRepository>
+      <id>codehaus</id>
+      <url>http://repository.codehaus.org/</url>
+      <layout>default</layout>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+      <releases>
+        <updatePolicy>never</updatePolicy>
+      </releases>
+    </pluginRepository>
+  </pluginRepositories>
+  
+  <organization>
+    <name>Hippo</name>
+    <url>http://www.onehippo.com</url>
+  </organization>
+
+  <dependencyManagement>
+  
+    <dependencies>
+
+      <!-- Servlet API dependencies -->
+      
+      <dependency>
+        <groupId>javax.servlet</groupId>
+        <artifactId>servlet-api</artifactId>
+        <version>${servlet-api.version}</version>
+        <scope>provided</scope>
+      </dependency>
+      
+      <!-- JTA Spec -->
+          
+      <dependency>
+        <groupId>org.apache.geronimo.specs</groupId>
+        <artifactId>geronimo-jta_1.1_spec</artifactId>
+        <version>${jta.version}</version>
+        <scope>provided</scope>
+      </dependency>
+
+      <!-- JCR API and Hippo ECM API dependency -->
+      
+      <dependency>
+        <groupId>javax.jcr</groupId>
+        <artifactId>jcr</artifactId>
+        <version>${javax.jcr.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.hippoecm</groupId>
+        <artifactId>hippo-ecm-api</artifactId>
+        <version>${hippoecm.version}</version>
+      </dependency>
+
+      <!-- Java Mail dependencies for site example -->
+      
+      <dependency>
+        <groupId>javax.mail</groupId>
+        <artifactId>mail</artifactId>
+        <version>${javax.mail.version}</version>
+      </dependency>
+      
+      <!-- JSP-related API dependencies -->
+      
+      <dependency>
+        <groupId>javax.servlet.jsp</groupId>
+        <artifactId>jsp-api</artifactId>
+        <version>${jsp-api.version}</version>
+        <scope>provided</scope>
+      </dependency>
+      
+      <dependency>
+        <groupId>javax.portlet</groupId>
+        <artifactId>portlet-api</artifactId>
+        <version>${portlet-api.version}</version>
+        <scope>provided</scope>
+      </dependency>
+
+      <dependency>
+        <groupId>javax.servlet</groupId>
+        <artifactId>jstl</artifactId>
+        <version>${jstl.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>taglibs</groupId>
+        <artifactId>standard</artifactId>
+        <version>${taglibs.version}</version>
+      </dependency>
+      
+      <!-- XML Parser and XSLT Processor. JSTL XML Tag requires all the followings. -->
+      
+      <dependency>
+        <groupId>xml-apis</groupId>
+        <artifactId>xml-apis</artifactId>
+        <version>${xml-apis.version}</version>
+        <scope>runtime</scope>
+      </dependency>
+      
+      <dependency>
+        <groupId>xerces</groupId>
+        <artifactId>xercesImpl</artifactId>
+        <version>${xercesImpl.version}</version>
+        <scope>runtime</scope>
+      </dependency>
+
+      <dependency>
+        <groupId>xerces</groupId>
+        <artifactId>xerces</artifactId>
+        <version>${xerces.version}</version>
+        <scope>runtime</scope>
+      </dependency>
+      
+      <dependency>
+        <groupId>xalan</groupId>
+        <artifactId>xalan</artifactId>
+        <version>${xalan.version}</version>
+        <scope>runtime</scope>
+      </dependency>
+      
+      <!-- Apache Commons -->
+      
+      <dependency>
+        <groupId>commons-lang</groupId>
+        <artifactId>commons-lang</artifactId>
+        <version>${commons-lang.version}</version>
+      </dependency>
+      
+      <dependency>
+        <groupId>commons-collections</groupId>
+        <artifactId>commons-collections</artifactId>
+        <version>${commons-collections.version}</version>
+      </dependency>
+    
+      <dependency>
+        <groupId>commons-pool</groupId>
+        <artifactId>commons-pool</artifactId>
+        <version>${commons-pool.version}</version>
+      </dependency>
+      
+      <dependency>
+        <groupId>commons-beanutils</groupId>
+        <artifactId>commons-beanutils</artifactId>
+        <version>${commons-beanutils.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+
+      <dependency>
+        <groupId>commons-codec</groupId>
+        <artifactId>commons-codec</artifactId>
+        <version>${commons-codec.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>commons-fileupload</groupId>
+        <artifactId>commons-fileupload</artifactId>
+        <version>${commons-fileupload.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>commons-io</groupId>
+        <artifactId>commons-io</artifactId>
+        <version>${commons-io.version}</version>
+      </dependency>
+      
+      <dependency>
+        <groupId>commons-jexl</groupId>
+        <artifactId>commons-jexl</artifactId>
+        <version>${commons-jexl.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      
+      <dependency>
+        <groupId>commons-configuration</groupId>
+        <artifactId>commons-configuration</artifactId>
+        <version>${commons-configuration.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      
+      <dependency>
+        <groupId>org.apache.commons</groupId>
+        <artifactId>commons-proxy</artifactId>
+        <version>${commons-proxy.version}</version>
+      </dependency>
+      
+      <dependency>
+        <groupId>commons-digester</groupId>
+        <artifactId>commons-digester</artifactId>
+        <version>${commons-digester.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      
+      <dependency>
+        <groupId>ehcache</groupId>
+        <artifactId>ehcache</artifactId>
+        <version>${ehcache.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      
+      <!-- Logging -->
+      
+      <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-api</artifactId>
+        <version>${slf4j.version}</version>
+      </dependency>
+      
+      <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-ext</artifactId>
+        <version>${slf4j.version}</version>
+      </dependency>
+      
+      <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-log4j12</artifactId>
+        <version>${slf4j.version}</version>
+      </dependency>
+    
+      <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>jcl-over-slf4j</artifactId>
+        <version>${slf4j.version}</version>
+      </dependency>
+
+<!--
+      <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-parent</artifactId>
+        <version>${slf4j.version}</version>
+      </dependency>
+-->
+
+      <dependency>
+        <groupId>log4j</groupId>
+        <artifactId>log4j</artifactId>
+        <version>${log4j.version}</version>
+      </dependency>
+      
+      <!-- AspectJ -->
+      
+      <dependency>
+        <groupId>org.aspectj</groupId>
+        <artifactId>aspectjweaver</artifactId>
+        <version>${aspectj.version}</version>
+      </dependency>
+      
+      <!-- Spring Framework -->
+      
+      <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-core</artifactId>
+        <version>${spring.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+    
+      <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-beans</artifactId>
+        <version>${spring.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+    
+      <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-context</artifactId>
+        <version>${spring.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+    
+      <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-web</artifactId>
+        <version>${spring.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+
+      <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-webmvc</artifactId>
+        <version>${spring.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      
+      <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-aop</artifactId>
+        <version>${spring.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      
+      <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-test</artifactId>
+        <version>${spring.version}</version>
+        <scope>test</scope>
+        <exclusions>
+          <exclusion>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      
+      <!-- Hippo ECM Depedencies -->
+    
+      <dependency>
+        <groupId>org.hippoecm</groupId>
+        <artifactId>hippo-ecm-repository-connector</artifactId>
+        <version>${hippoecm.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>org.slf4j</groupId>
+            <artifactId>jcl104-over-slf4j</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      
+      <dependency>
+        <groupId>org.hippoecm</groupId>
+        <artifactId>hippo-ecm-addon-builtin-common</artifactId>
+        <version>${hippoecm.version}</version>
+      </dependency>
+      
+      <dependency>
+        <groupId>org.hippoecm</groupId>
+        <artifactId>hippo-ecm-addon-reviewed-action-common</artifactId>
+        <version>${hippoecm.version}</version>
+      </dependency>
+      
+      <dependency>
+        <groupId>org.hippoecm</groupId>
+        <artifactId>hippo-ecm-package-war</artifactId>
+        <version>${hippoecm.version}</version>
+        <type>war</type>
+      </dependency>
+      
+      <!-- JDO for Hippo Repository Workflow APIs -->
+      <dependency>
+        <groupId>javax.jdo</groupId>
+        <artifactId>jdo2-api</artifactId>
+        <version>${jdo.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>geronimo-spec</groupId>
+            <artifactId>geronimo-spec-jta</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+
+      <!-- Jackrabbit -->
+            
+      <dependency>
+        <groupId>org.apache.jackrabbit</groupId>
+        <artifactId>jackrabbit-jcr-commons</artifactId>
+        <version>${jackrabbit.version}</version>
+      </dependency>
+      
+      <dependency>
+        <groupId>org.apache.jackrabbit</groupId>
+        <artifactId>jackrabbit-ocm</artifactId>
+        <version>${jackrabbit.version}</version>
+      </dependency>
+      
+      <!-- HTML Cleaner -->
+      
+      <dependency>
+        <groupId>net.sourceforge.htmlcleaner</groupId>
+        <artifactId>htmlcleaner</artifactId>
+        <version>${htmlcleaner.version}</version>
+      </dependency>
+      
+      <!-- SpringFramework WebFlow SpringFramework JS -->
+      <dependency>
+        <groupId>org.springframework.webflow</groupId>
+        <artifactId>org.springframework.js</artifactId>
+        <version>${spring.js.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      
+      <!-- YUI -->
+      <dependency>
+        <groupId>org.onehippo.yui</groupId>
+        <artifactId>yui-2.xx-sources</artifactId>
+        <version>${yui.sources.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      
+      <dependency>
+        <groupId>org.apache.cxf</groupId>
+        <artifactId>cxf-rt-frontend-jaxrs</artifactId>
+        <version>${cxf.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-core</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-beans</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-web</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      
+      <!-- Jackson JSON -->
+      <dependency>
+        <groupId>org.codehaus.jackson</groupId>
+        <artifactId>jackson-jaxrs</artifactId>
+        <version>${jackson.version}</version>
+        <scope>runtime</scope>
+      </dependency>
+      
+      <dependency>
+        <groupId>org.codehaus.jackson</groupId>
+        <artifactId>jackson-xc</artifactId>
+        <version>${jackson.version}</version>
+        <scope>runtime</scope>
+      </dependency>
+      
+      <dependency>
+        <groupId>org.apache.james</groupId>
+        <artifactId>apache-mime4j</artifactId>
+        <version>${mime4j.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      
+      <!-- Test dependencies -->
+    
+      <dependency>
+        <groupId>junit</groupId>
+        <artifactId>junit</artifactId>
+        <version>${junit.version}</version>
+        <scope>test</scope>
+      </dependency>
+      
+      <dependency>
+        <groupId>org.easymock</groupId>
+        <artifactId>easymock</artifactId>
+        <version>${easymock.version}</version>
+        <scope>test</scope>
+      </dependency>
+      
+      <!--
+      <dependency>
+        <groupId>org.hippoecm</groupId>
+        <artifactId>hippo-ecm-repository-engine</artifactId>
+        <version>${hippoecm.version}</version>
+        <scope>test</scope>
+      </dependency>
+      -->
+      
+    </dependencies>
+    
+  </dependencyManagement>
+
+  <build>
+    <defaultGoal>package</defaultGoal>
+	<pluginManagement>
+	  <plugins>
+	    <plugin>
+	      <groupId>org.apache.maven.plugins</groupId>
+	      <artifactId>maven-jar-plugin</artifactId>
+	    </plugin>
+	  </plugins>
+	</pluginManagement>
+	<extensions>
+	  <extension>
+	    <groupId>org.apache.maven.wagon</groupId>
+	    <artifactId>wagon-ftp</artifactId>
+	    <version>${wagon.ftp.version}</version>
+	  </extension>
+	</extensions>
+    <plugins>
+      <plugin>
+        <inherited>true</inherited>
+        <artifactId>maven-deploy-plugin</artifactId>
+      </plugin>
+      <plugin>
+        <inherited>true</inherited>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <source>1.5</source>
+          <target>1.5</target>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-eclipse-plugin</artifactId>
+        <version>2.8</version>
+        <configuration>
+          <downloadSources>false</downloadSources>
+          <downloadJavadocs>true</downloadJavadocs>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-release-plugin</artifactId>
+        <version>2.0-beta-7</version>
+        <configuration>
+          <tagBase>https://svn.hippocms.org/repos/hippo/ecm/site-toolkit/tags</tagBase>
+        </configuration>
+      </plugin>
+      <plugin>
+        <inherited>true</inherited>
+        <artifactId>maven-source-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>attach-sources</id>
+            <goals>
+              <goal>jar</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+
+  <reporting>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <configuration>
+          <aggregate>true</aggregate>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>net.sourceforge.maven-taglib</groupId>
+        <artifactId>maven-taglib-plugin</artifactId>
+        <configuration>
+          <taglib.src.dir>client/src/main/resources/META-INF</taglib.src.dir>
+          <title>HST ${version} JSP tag</title>
+        </configuration>
+       <!--
+         <taglib.xslt>src/site/scripts/tlddoc</taglib.xslt>
+
+        You seem to have to run this using full names:
+
+        mvn -N net.sourceforge.maven-taglib:maven-taglib-plugin:2.3.1:taglibdoc
+
+        You need -N, otherwise it will run on each module and expect it to have
+        the tablib.src.dir and fail.
+
+        Only the client module has a jsp tag library and demosuite has a copy of it, needed for freemarker.
+
+        Furthermore, there is a bug that causes newlines to be removed from examples, so that they are
+        unreadable. The workaround is using a custom XSLT without the bug. I made one:
+          src/site/scripts/tlddoc/tld2_1-tld2_1.xsl
+        It does not perform normalize-space on the content of example elements.
+
+        Running directly, using the workaround XSLT (locally):
+
+        java -jar /home/rita/.m2/repository/taglibrarydoc/tlddoc/1.3/tlddoc-1.3.jar \
+            -d target/site/tlddoc \
+            -xslt src/site/scripts/tlddoc \
+            -doctitle 'JSP tag library documentation of HST' \
+            -windowtitle 'HST jsp tags' \
+          client/src/main/resources/META-INF/hst-core.tld
+
+        (First, get the jar in your .m2 by running above mvn command.)
+        -->
+      </plugin>
+    </plugins>
+  </reporting>
+
+  <profiles>
+
+    <profile>
+      <id>all</id>
+      <activation>
+        <activeByDefault>true</activeByDefault>
+      </activation>
+      <modules>
+        <module>api</module>
+        <module>commons</module>
+        <module>test</module>
+        <module>content-beans</module>
+        <module>toolkit-resources</module>
+        <module>components</module>
+        <module>client</module>
+        <module>dependencies</module>
+        <module>testsuite</module>
+        <module>demosuite</module>
+      </modules>
+    </profile>
+    
+    <profile>
+      <id>website</id>
+      <!-- For building website documentation, there's no need to include modules. -->
+      <modules />
+    </profile>
+    
+  </profiles>
+
+</project>
