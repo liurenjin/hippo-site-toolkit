@@ -1,0 +1,130 @@
+/*
+ *  Copyright 2008 Hippo.
+ * 
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ * 
+ *       http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ */
+package org.hippoecm.hst.core.container;
+
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.hippoecm.hst.core.component.HstComponent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+/**
+ * HstComponentRegistryImpl
+ * 
+ * @version $Id$
+ */
+public class HstComponentRegistryImpl implements HstComponentRegistry {
+    
+    static Logger log = LoggerFactory.getLogger(HstComponentRegistryImpl.class);
+    
+    protected Map<HstContainerConfig, Map<String, HstComponentHolder>> servletConfigComponentsMap = 
+        Collections.synchronizedMap(new HashMap<HstContainerConfig, Map<String, HstComponentHolder>>());
+    
+    public HstComponent getComponent(HstContainerConfig requestContainerConfig, String componentId) {
+        HstComponentHolder holder = getServletConfigComponentsMap(requestContainerConfig, true).get(componentId);
+        
+        if (holder != null) {
+            return holder.getComponent();
+        }
+        return null;
+    }
+
+    public void registerComponent(HstContainerConfig requestContainerConfig, String componentId, HstComponent component) {
+        getServletConfigComponentsMap(requestContainerConfig, true).put(componentId, new HstComponentHolder(component));
+    }
+
+    public void unregisterComponent(HstContainerConfig requestContainerConfig, String componentId) {
+        HstComponentHolder holder = getServletConfigComponentsMap(requestContainerConfig, true).remove(componentId);
+        
+        if (holder != null) {
+            try {
+                holder.getComponent().destroy();
+            } catch (Exception e) {
+                if (log.isDebugEnabled()) {
+                    log.warn("Exception occurred during destroying component: {}", e.toString(), e);
+                } else if (log.isWarnEnabled()) {
+                    log.warn("Exception occurred during destroying component: {}", e.toString());
+                }
+            }
+        }
+    }
+    
+    public void unregisterAllComponents() {
+        if (this.servletConfigComponentsMap.isEmpty()) {
+            return;
+        }
+        
+        Map<HstContainerConfig, Map<String, HstComponentHolder>> copiedMap = Collections.synchronizedMap(new HashMap<HstContainerConfig, Map<String, HstComponentHolder>>());
+        
+        synchronized (this.servletConfigComponentsMap) {
+            for (HstContainerConfig requestContainerConfig : this.servletConfigComponentsMap.keySet()) {
+                copiedMap.put(requestContainerConfig, new HashMap<String, HstComponentHolder>());
+            }
+        }
+        
+        for (HstContainerConfig requestContainerConfig : copiedMap.keySet()) {
+            Map<String, HstComponentHolder> compMap = getServletConfigComponentsMap(requestContainerConfig, false);
+            
+            if (compMap != null) {
+                Map<String, HstComponentHolder> copiedCompMap = new HashMap<String, HstComponentHolder>();
+                
+                synchronized (compMap) {
+                    for (Map.Entry<String, HstComponentHolder> compEntry : compMap.entrySet()) {
+                        copiedCompMap.put(compEntry.getKey(), compEntry.getValue());
+                    }
+                }
+
+                copiedMap.put(requestContainerConfig, copiedCompMap);
+            }
+        }
+        
+        for (Map.Entry<HstContainerConfig, Map<String, HstComponentHolder>> entry : copiedMap.entrySet()) {
+            for (Map.Entry<String, HstComponentHolder> compEntry : entry.getValue().entrySet()) {
+                unregisterComponent(entry.getKey(), compEntry.getKey());
+            }
+        }
+        
+        this.servletConfigComponentsMap.clear();
+    }
+    
+    protected Map<String, HstComponentHolder> getServletConfigComponentsMap(HstContainerConfig requestContainerConfig, boolean create) {
+        Map<String, HstComponentHolder> componentsMap = this.servletConfigComponentsMap.get(requestContainerConfig);
+        
+        if (componentsMap == null && create) {
+            componentsMap = Collections.synchronizedMap(new HashMap<String, HstComponentHolder>());
+            this.servletConfigComponentsMap.put(requestContainerConfig, componentsMap);
+        }
+        
+        return this.servletConfigComponentsMap.get(requestContainerConfig);
+    }
+    
+    private static class HstComponentHolder {
+        
+        private HstComponent component;
+        
+        private HstComponentHolder(final HstComponent component) {
+            this.component = component;
+        }
+        
+        public HstComponent getComponent() {
+            return component;
+        }
+    
+    }
+    
+}
