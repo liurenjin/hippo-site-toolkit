@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Copyright 2008 Hippo
+
+  Licensed under the Apache License, Version 2.0 (the  "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS"
+  BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+
+  <!-- Valves -->
+  
+  <bean id="resourceLifecycleManagementList" class="org.springframework.beans.factory.config.ListFactoryBean">
+    <property name="sourceList">
+      <bean class="org.springframework.beans.factory.config.PropertyPathFactoryBean">
+        <property name="targetBeanName" value="javax.jcr.Repository" />
+        <property name="propertyPath" value="resourceLifecycleManagements" />
+      </bean>
+    </property>
+  </bean>
+
+  <bean id="abstractValve" abstract="true">
+    <property name="containerConfiguration" ref="containerConfiguration" />
+    <property name="sitesManagers">
+      <map>
+        <entry key="${preview.servlet.path}" value-ref="org.hippoecm.hst.configuration.HstSitesManager.preview" />
+        <entry key="${live.servlet.path}" value-ref="org.hippoecm.hst.configuration.HstSitesManager.live" />
+      </map>
+    </property>
+    <property name="virtualHostsManager" ref="org.hippoecm.hst.core.hosting.VirtualHostsManager" />
+    <property name="siteMapMatcher" ref="org.hippoecm.hst.core.request.HstSiteMapMatcher" />
+    <property name="requestContextComponent" ref="org.hippoecm.hst.core.request.HstRequestContextComponent" />
+    <property name="componentFactory" ref="org.hippoecm.hst.core.container.HstComponentFactory" />
+    <property name="componentWindowFactory" ref="org.hippoecm.hst.core.container.HstComponentWindowFactory" />
+    <property name="componentInvoker" ref="org.hippoecm.hst.core.container.HstComponentInvoker" />
+    <property name="urlFactory" ref="org.hippoecm.hst.core.component.HstURLFactory" />
+    <property name="linkCreator" ref="org.hippoecm.hst.core.linking.HstLinkCreator" />
+    <property name="siteMenusManager" ref="org.hippoecm.hst.core.sitemenu.HstSiteMenusManager" />
+    <property name="ctxWhereClauseComputer" ref="org.hippoecm.hst.core.search.HstCtxWhereClauseComputer" />
+  </bean>
+
+  <!-- Pre-processing valves -->
+  
+  <bean id="initializationValve" parent="abstractValve" class="org.hippoecm.hst.core.container.InitializationValve">
+    <property name="resourceLifecycleManagements" ref="resourceLifecycleManagementList" />
+  </bean>
+  
+  <!-- Main invocable valves for each request -->
+    
+  <bean id="urlValve" parent="abstractValve" class="org.hippoecm.hst.core.container.HstURLValve">
+  </bean>
+  
+  <bean id="contextResolvingValve" parent="abstractValve" class="org.hippoecm.hst.core.container.ContextResolvingValve">
+  </bean>
+  
+  <bean id="siteMenusResolvingValve" parent="abstractValve" class="org.hippoecm.hst.core.container.SiteMenusResolvingValve">
+  </bean>
+  
+  <bean id="actionValve" parent="abstractValve" class="org.hippoecm.hst.core.container.ActionValve">
+  </bean>
+  
+  <bean id="aggregationValve" parent="abstractValve" class="org.hippoecm.hst.core.container.AggregationValve">
+  </bean>
+  
+  <bean id="resourceServingValve" parent="abstractValve" class="org.hippoecm.hst.core.container.ResourceServingValve">
+  </bean>
+  
+  <!-- Post-processing valves -->
+  
+  <bean id="cleanupValve" parent="abstractValve" class="org.hippoecm.hst.core.container.CleanupValve">
+    <property name="resourceLifecycleManagements" ref="resourceLifecycleManagementList" />
+  </bean>
+  
+  <!-- Pipelines -->
+  
+  <bean id="org.hippoecm.hst.core.container.Pipelines" class="org.hippoecm.hst.core.container.HstSitePipelines">
+    <property name="defaultPipelineName" value="DefaultSitePipeline" />
+    <property name="pipelines">
+      <map>
+        <entry key="DefaultSitePipeline">
+          <bean class="org.hippoecm.hst.core.container.HstSitePipeline">
+            <property name="preInvokingValves">
+              <list>
+                <ref bean="initializationValve" />
+              </list>
+            </property>
+            <property name="invokingValves">
+              <list>
+                <ref bean="urlValve" />
+                <ref bean="contextResolvingValve" />
+                <ref bean="siteMenusResolvingValve" />
+                <ref bean="actionValve" />
+                <ref bean="resourceServingValve" />
+                <ref bean="aggregationValve" />
+              </list>
+            </property>
+            <property name="postInvokingValves">
+              <list>
+                <ref bean="cleanupValve" />
+              </list>
+            </property>
+          </bean>
+        </entry>
+      </map>
+    </property>
+  </bean>
+   
+</beans>
+
