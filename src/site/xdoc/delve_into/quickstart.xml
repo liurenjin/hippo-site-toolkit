@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE document PUBLIC
+  "-//Apache Software Foundation//DTD XDOC 1.0//EN"
+  "http://maven.apache.org/dtd/xdoc_1_0.dtd">
+<!--
+  Copyright 2007 Hippo
+
+  Licensed under the Apache License, Version 2.0 (the  "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS"
+  BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+<document>
+  <properties>
+    <title>Quickstart</title>
+  </properties>
+  <body>
+    <section name="Quickstart">
+      <span class='shortdesc'>Check it out yourself and install the quickstart demo site.</span>
+      <p> 
+        The HST2 Getting Started packages contain all the core components, and have been
+        pre-configured with a number of modules and settings, to give you a quick overview of the
+        HST2. 
+      </p>
+      
+      <subsection name="Download">
+        <p> 
+          Two WAR packages are available for download. You can deploy them in either Tomcat or
+          Jetty or any other servlet container that you prefer. Note: Hippo HST2 has not been
+          released. The following downloads are snapshots of the current build. 
+        </p>
+        <ul>
+          <li>
+            <span class='rewrite'>For CMS the quickstart package is called quickstart and this one gettingstarted, while `hst' is not part of the package name. 
+             I think all quickstart packages should have `quickstart' in their name and they also all should contain the project (product) name in their name.
+             Or maybe there is some other consistent and clear naming scheme.
+            </span>
+
+            <a
+              href="http://repository.hippocms.org/maven2/org/hippoecm/hst/gettingstarted-ecm/1.01.00-SNAPSHOT/gettingstarted-ecm-1.01.00-20080904.141142-1.war"
+              >Hippo ECM getting started package WAR</a>
+          </li>
+          <li>
+            <a
+              href="http://repository.hippocms.org/maven2/org/hippoecm/hst/gettingstarted-site/1.01.00-SNAPSHOT/gettingstarted-site-1.01.00-20080904.141142-1.war"
+              >Hippo HST2 getting started package WAR</a>
+          </li>
+        </ul>
+      </subsection>
+      
+      <subsection name="Deploying in Tomcat 6.0">
+      <blockquote>
+       <table>
+        <tr> 
+         <td>
+            Download 
+	 </td>
+         <td> 
+          <span class='download-48 icon-48'/>
+	 </td>
+         <td>
+            Tomcat 6.0 from the <a href="http://tomcat.apache.org/download-60.cgi">Apache
+            Tomcat</a> website.
+	 </td>
+	</tr>
+  <tr>
+   <td>Unzip</td>
+   <td>
+    <span class='unzip-48 icon-48'/>
+   </td>
+   <td>unpack the zip</td>
+  </tr>  
+        <tr> 
+         <td>
+            Download 
+	 </td>
+         <td> 
+          <span class='download-48 icon-48'/>
+	 </td>
+        <td> 
+         <a href="http://repo1.maven.org/maven/geronimo-spec/jars/geronimo-spec-jta-1.0-M1.jar">geronimo-spec-jta</a>
+            to <code>apache-tomcat-6.0.16/lib</code>.
+	</td>
+        </tr>
+          <tr>
+   <td>Copy</td>
+   <td>
+    <span class='commandline-48 icon-48'/>
+   </td>
+   <td>          
+            Copy the ECM Getting started WAR from the link above to <code>apache-tomcat-6.0.16/webapps/cms.war</code>.
+   </td>
+	  </tr>
+          <tr>
+   <td>Copy</td>
+   <td>
+    <span class='commandline-48 icon-48'/>
+   </td>
+   <td>          
+            Copy the HST2 Getting started WAR from the link above to <code>apache-tomcat-6.0.16/webapps/site.war</code>.
+   </td>
+   </tr>
+          <tr>
+   <td>Startup</td>
+   <td>
+    <span class='commandline-48 icon-48'/>
+   </td>
+   <td>          
+            Start Tomcat with one of the startup scripts in <code>apache-tomcat-6.0.16/bin</code>.
+   </td>
+   </tr>
+  <tr>
+   <td>Web Browser</td>
+   <td>
+    <span class='web-48 icon-48'/>
+   </td>
+  <td>
+            Open your browser and surf to <a href="http://localhost:8080/cms/">http://localhost:8080/cms/</a> for the CMS.
+  </td>
+  </tr>
+  <tr>
+   <td>Web Browser</td>
+   <td>
+    <span class='web-48 icon-48'/>
+   </td>
+  <td>
+            Open your browser and surf to <a href="http://localhost:8080/site/preview/index">http://localhost:8080/site/preview/index</a>
+            for the site.
+  </td>
+  </tr>
+  <tr>
+   <td>Tryout</td>
+   <td>
+    <span class='user-48 icon-48'/>
+   </td>
+   <td>
+            <span class='add'>This is probably the moment where things can be tried out. Please mention that
+              explicitely. Are there interesting points to try? Please list them here.</span> 
+   </td>
+  </tr>
+       </table>
+      </blockquote>
+
+        <p> 
+          <i>Note: The port number might be different if you configured you application or servlet container to run
+          on a different port. If you deploy the application on a machine other than your local
+          machine you need to change &quot;localhost&quot; to the correct machine name.</i> 
+        </p>
+      </subsection>
+
+    </section>
+  </body>
+</document>
