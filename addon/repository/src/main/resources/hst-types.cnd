@@ -1,0 +1,79 @@
+/*
+ * Copyright 2008 Hippo
+ *
+ * Licensed under the Apache License, Version 2.0 (the  "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+<hst='http://www.hippoecm.org/hst/nt/1.0'>
+<hippostd='http://www.hippoecm.org/hippostd/nt/1.1'>
+<hippo='http://www.hippoecm.org/nt/1.1'>
+
+// TYPES SHOULD EVOLVE DURING HST DEVELOPMENT
+
+
+[hst:module] > hippo:document
+- * (string)
+
+[hst:modules] > hippo:document
++ * (hst:module) = hst:module 
+
+[hst:sitemapmodule] > hippo:document
+- hst:module (string)
+- * (string)
+
+[hst:sitemaplayout]> hippo:document orderable
+- hst:layoutAttribute (string)
++ * (hst:sitemapmodule) = hst:sitemapmodule
+
+[hst:sitemapitem] > hippo:document
+- hst:urlmapping (string)
+- hst:pageLayout (string)
+- hst:prefixlinkrewrite (string)
+// hst:linkrewriteprefix  is preferred name, hst:prefixlinkrewrite is there for historical reason. They serve the 
+// exact same purpose 
+- hst:linkrewriteprefix (string)
+- hst:linkrewrite (string)
+- hst:nodetype (string) multiple
+- hst:nodepath (string) multiple
++ * (hst:sitemaplayout) = hst:sitemaplayout
+
+[hst:sitemap] > hippo:document orderable
+- hst:entrypointid (string)
++ * (hst:sitemapitem) = hst:sitemapitem
+
+
+[hst:navigation] > hippo:document
++ *
+- *
+
+[hst:layoutitem] > hippo:document
+
+[hst:layout] > hippo:document
+- hst:template (string)
++ * (hst:layoutitem) = hst:layoutitem
+
+[hst:layouts] >  hippo:document
++ * (hst:layout) = hst:layout
+
+[hst:configuration] > hippo:document, hippostd:publishable, hippostd:publishableSummary, hippostd:languageable
++ hst:modules (hst:modules) = hst:modules  
++ hst:sitemap (hst:sitemap) = hst:sitemap  
++ hst:navigation (hst:navigation) = hst:navigation  
++ hst:layouts (hst:layouts) = hst:layouts 
+
+
+[hst:reaction] mixin
+- hst:reactionto (String) mandatory
+- hst:reactiondate (date)
+
+
