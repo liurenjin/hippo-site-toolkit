@@ -1,0 +1,34 @@
+<'demosite'='http://www.hippoecm.org/hst/nt/demosite/1.0'>
+<'hippo'='http://www.onehippo.org/jcr/hippo/nt/2.0.2'>
+<'hippostd'='http://www.onehippo.org/jcr/hippostd/nt/2.0'>
+<'hippostdpubwf'='http://www.onehippo.org/jcr/hippostdpubwf/nt/1.0'>
+<'hippogallerypicker'='http://www.hippoecm.org/hippogallerypicker/nt/2.0'>
+
+[demosite:basedocument] > hippo:document, hippostd:publishableSummary, hippostdpubwf:document
+
+[demosite:commentlink] > hippo:facetselect
+
+
+[demosite:textdocument] > demosite:basedocument
+- demosite:title (string)
+- demosite:summary (string)
++ demosite:body (hippostd:html)
+
+[demosite:newsdocument] > demosite:textdocument
+- demosite:date (date)
++ demosite:image (hippogallerypicker:imagelink)
+
+[demosite:commentdocument] > demosite:textdocument
+- demosite:date (date)
++ demosite:commentlink (demosite:commentlink)
+
+[demosite:productdocument] > demosite:basedocument
+- demosite:constructiondate (date)
+- demosite:brand (string)
+- demosite:color (string)
+- demosite:created (date)
+- demosite:mileage (long)
+- demosite:price (double)
+- demosite:product (string)
++ demosite:body (hippostd:html)
++ demosite:image (hippogallerypicker:imagelink)

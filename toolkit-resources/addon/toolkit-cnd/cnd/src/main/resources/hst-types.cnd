@@ -1,0 +1,268 @@
+/*
+ * Copyright 2008 Hippo
+ *
+ * Licensed under the Apache License, Version 2.0 (the  "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+ 
+<nt='http://www.jcp.org/jcr/nt/1.0'>
+<mix='http://www.jcp.org/jcr/mix/1.0'>
+<hst='http://www.hippoecm.org/hst/nt/2.0'>
+<hippo='http://www.onehippo.org/jcr/hippo/nt/2.0.2'>
+
+[hst:descriptive] mixin
+- hst:description (string)
++ hst:icon (hippo:resource) = hippo:resource
+
+[hst:template] > nt:base, mix:referenceable, hst:descriptive
+- hst:renderpath (string)
+- hst:isnamedrenderer (boolean)
+- hst:containers (string) multiple
+
+[hst:templates] > nt:base, mix:referenceable orderable
+- hst:inheritsfrom (string) 
++ * (hst:template)
+
+[hst:abstractcomponent] > nt:base, mix:referenceable, hst:descriptive orderable 
+- hst:template (string)
+- hst:componentclassname (string)
+- hst:serveresourcepath (string) 
+- hst:isnamedresourceserver (boolean)
+- hst:referencename (string)
+- hst:page_errorhandlerclassname (string)
+- hst:parameternames (string) multiple
+- hst:parametervalues (string) multiple
+- hst:inheritsfrom (string)
+
+[hst:component] > hst:abstractcomponent orderable
+- hst:referencecomponent(string)
++ * (hst:abstractcomponent)
+
+[hst:containeritemcomponent] > hst:abstractcomponent orderable
+- hst:referencecomponent(string)
+- hst:xtype (string) mandatory
+- hst:dummycontent (string)
++ * (hst:abstractcomponent)
+
+[hst:containercomponent] > hst:abstractcomponent orderable
+- hst:xtype (string) mandatory
++ * (hst:containeritemcomponent)
+
+[hst:components] > nt:base, mix:referenceable orderable
+- hst:inheritsfrom (string)
++ * (hst:abstractcomponent)
+
+
+[hst:pages] > nt:base, mix:referenceable orderable
+- hst:inheritsfrom (string)
++ * (hst:abstractcomponent)
+
+[hst:sitemapitemhandler] > nt:base, mix:referenceable
+- hst:sitemapitemhandlerclassname (string) mandatory
+- * (string) 
+- * (string) multiple
+- * (boolean) 
+- * (boolean) multiple
+- * (long) 
+- * (long) multiple
+- * (double) 
+- * (double) multiple
+- * (date) 
+- * (date) multiple
+
+[hst:sitemapitemhandlers] >  nt:base, mix:referenceable orderable
+- hst:inheritsfrom (string)
++ * (hst:sitemapitemhandler)
+
+[hst:script] > nt:base, mix:referenceable
+- hst:template (string) mandatory
+- hst:language (string)
+- * (string)
+
+[hst:scripts] > nt:base, mix:referenceable orderable
+- hst:inheritsfrom (string)
++ * (hst:script)
+
+[hst:sitemapitem] > nt:base, mix:referenceable
+- hst:value
+- hst:relativecontentpath (string)
+- hst:componentconfigurationid (string)
+- hst:portletcomponentconfigurationid (string)
+- hst:sitemapitemhandlerids (string) multiple
+- hst:parameternames (string) multiple
+- hst:parametervalues (string) multiple
+- hst:namedpipeline (string)
+- hst:statuscode (long)
+- hst:errorcode (long)
+- hst:excludedforlinkrewriting (boolean)
+- hst:secured (boolean)
+- hst:roles (string) multiple
+// refId must be unique within a single sitemap item tree. The property is optional
+- hst:refId (string)
+- hst:users (string) multiple
+- hst:locale (string)
+- hst:inheritsfrom (string)
+- hst:scheme (string)
++ * (hst:sitemapitem)
+
+[hst:sitemap] > nt:base, mix:referenceable orderable
+- hst:inheritsfrom (string)
++ * (hst:sitemapitem)
+
+[hst:sitemenuitem] > nt:base, mix:referenceable orderable
+// sitemap item by path. This can be a path including wildcards
+- hst:referencesitemapitem (string)
+// sitemap item by refId. This cannot be a sitemap item including wildcards
+- hst:refidsitemapitem (string)
+- hst:externallink (string)
+- hst:foldersonly (boolean)
+- hst:repobased (boolean)
+- hst:depth (long)
+- hst:parameternames (string) multiple
+- hst:parametervalues (string) multiple
+- hst:inheritsfrom (string)
++ * (hst:sitemenuitem)
+
+[hst:sitemenu] > nt:base, mix:referenceable orderable
+- hst:inheritsfrom (string)
++ * (hst:sitemenuitem)
+
+[hst:sitemenus] > nt:base, mix:referenceable
+- hst:inheritsfrom (string)
++ * (hst:sitemenu)
+
+
+[hst:configuration] > nt:base, mix:referenceable, mix:versionable
+- hst:inheritsfrom (string)
++ hst:components (hst:components) = hst:components
++ hst:pages (hst:pages) = hst:pages
++ hst:sitemap (hst:sitemap) = hst:sitemap
++ hst:templates (hst:templates) = hst:templates
++ hst:sitemenus (hst:sitemenus) = hst:sitemenus
++ hst:sitemapitemhandlers (hst:sitemapitemhandlers) = hst:sitemapitemhandlers
++ hst:scripts (hst:scripts) = hst:scripts
+
+[hst:configurations] > nt:base, mix:referenceable, mix:versionable
++ * (hst:configuration) = hst:configuration version
+
+[hst:site] > nt:base, mix:referenceable, mix:versionable
++ hst:content (hippo:facetselect) mandatory
+- hst:configurationpath (string) mandatory
+- hst:portalconfigurationenabled (boolean)
+
+[hst:sites] > nt:base, mix:referenceable, mix:versionable
++ * (hst:site) = hst:site version
+
+[hst:primarydomain] mixin
+
+[hst:redirectdomain] mixin 
+- hst:redirect (string)
+
+
+[hst:mount] > nt:base, mix:referenceable
++ * (hst:mount)
+// the path to the (sub)site. for example /preview/myproject
+- hst:mountpoint (string)
+// whether this mount is associated with a hstSite
+- hst:ismapped (boolean)
+// if you do not want to mount to run with the default hst pipeline, you can configure the pipeline to be used here
+- hst:namedpipeline (string)
+- hst:showcontextpath (boolean)
+// when this mount is only applicable for certain contextpath, add this property for the contextpath that is allowed (must start with '/' and no further '/' is allowed)
+- hst:onlyforcontextpath (string)
+// for embedded delegation of sites a mountpath needs to point to the delegated mount. This is only relevant for portal environment
+- hst:embeddedmountpath
+- hst:scheme (string)
+// whether the port should be visible in the created urls
+- hst:showport (boolean)
+- hst:parameternames (string) multiple
+- hst:parametervalues (string) multiple
+- hst:homepage (string)
+- hst:pagenotfound (string)
+- hst:locale (string)
+- hst:versioninpreviewheader (boolean)
+// when true, links get a ./ appended automatically
+- hst:isSite (boolean)
+- hst:secured (boolean)
+- hst:roles (string) multiple
+- hst:users (string) multiple
+// the alias of this mount. If not present, the alias is the current name
+- hst:alias (string)
+// the primary type of this mount, for example 'preview'. Default when missing is 'live'
+- hst:type (string)
+// the types this mount also belongs to, for example 'composer'.
+- hst:types (string) multiple
+// whether jcr session should be used per subject
+- hst:subjectbasedsession (boolean)
+// whether subject based jcr session should be statefully managed
+- hst:sessionstateful (boolean)
+// form login page for this site mount, to which the request can be redirected for non-authenticated user.
+- hst:formloginpage (string)
+// to hold all the 'free defined properties'
+- * (string)
+
+[hst:portmount] > nt:base, mix:referenceable
++ hst:root (hst:mount)
+
+[hst:virtualhost] > nt:base, mix:referenceable
++ * (hst:virtualhost)
++ * (hst:portmount)
++ hst:root (hst:mount)
+- hst:showcontextpath (boolean)
+- hst:scheme (string)
+- hst:parameternames (string) multiple
+- hst:parametervalues (string) multiple
+- hst:homepage (string)
+- hst:pagenotfound (string)
+- hst:locale (string)
+- hst:versioninpreviewheader (boolean)
+
+[hst:virtualhostgroup] > nt:base, mix:referenceable
++ * (hst:virtualhost)
+
+[hst:virtualhosts] > nt:base, mix:referenceable, mix:versionable
+- hst:showcontextpath (boolean)
+- hst:prefixexclusions (string) multiple
+- hst:suffixexclusions (string) multiple
+- hst:scheme (string)
+- hst:defaulthostname (string)
+- hst:parameternames (string) multiple
+- hst:parametervalues (string) multiple
+- hst:homepage (string)
+- hst:pagenotfound (string)
+- hst:locale (string)
+- hst:versioninpreviewheader (boolean)
++ * (hst:virtualhostgroup)
+
+[hst:hst] > nt:base, mix:referenceable, mix:versionable
++ hst:configurations (hst:configurations) = hst:configurations version
++ hst:hosts (hst:virtualhosts) = hst:virtualhosts version
++ * (hst:sites) = hst:sites version
+
+// the hst nodetype for the contentmount's: this nodetype is for content sharing between subsites
+[hst:contentshare] > hippo:mirror
+
+[hst:formfieldvalue]
+- hst:formfieldname (string) mandatory
+- hst:formfielddata (string) multiple
+- hst:formfieldmessages (string) multiple
+
+[hst:formdata]
+- hst:creationtime (date) mandatory
++ hst:formfieldvalue (hst:formfieldvalue) multiple
+- hst:predecessor (string)
+- hst:sealed (boolean)
+
+
+[hst:formdatacontainer] 
++ * (hst:formdatacontainer)
++ * (hst:formdata)

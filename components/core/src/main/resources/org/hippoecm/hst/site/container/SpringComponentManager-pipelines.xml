@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Copyright 2008 Hippo
+
+  Licensed under the Apache License, Version 2.0 (the  "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS"
+  BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+<beans xmlns="http://www.springframework.org/schema/beans" 
+       xmlns:lang="http://www.springframework.org/schema/lang" 
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+                           http://www.springframework.org/schema/lang http://www.springframework.org/schema/beans/spring-lang-3.0.xsd
+                           http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.0.xsd
+                           http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.0.xsd">
+
+  <bean id="resourceLifecycleManagementList" class="org.springframework.beans.factory.config.ListFactoryBean">
+    <property name="sourceList">
+      <bean class="org.springframework.beans.factory.config.PropertyPathFactoryBean">
+        <property name="targetBeanName" value="javax.jcr.Repository" />
+        <property name="propertyPath" value="resourceLifecycleManagements" />
+      </bean>
+    </property>
+  </bean>
+  
+  <bean id="org.hippoecm.hst.core.container.PageErrorHandler" class="org.hippoecm.hst.core.container.DefaultPageErrorHandler">
+  </bean>
+  
+  <!-- Valves -->
+  
+  <bean id="abstractValve" abstract="true"
+        init-method="initialize" destroy-method="destroy">
+    <property name="containerConfiguration" ref="containerConfiguration" />
+    <property name="hstManager" ref="org.hippoecm.hst.configuration.model.HstManager" />
+    <property name="siteMapMatcher" ref="org.hippoecm.hst.core.request.HstSiteMapMatcher" />
+    <property name="requestContextComponent" ref="org.hippoecm.hst.core.internal.HstRequestContextComponent" />
+    <property name="componentFactory" ref="org.hippoecm.hst.core.container.HstComponentFactory" />
+    <property name="componentWindowFactory" ref="org.hippoecm.hst.core.container.HstComponentWindowFactory" />
+    <property name="componentInvoker" ref="org.hippoecm.hst.core.container.HstComponentInvoker" />
+    <property name="urlFactory" ref="org.hippoecm.hst.core.component.HstURLFactory" />
+    <property name="linkCreator" ref="org.hippoecm.hst.core.linking.HstLinkCreator" />
+    <property name="siteMenusManager" ref="org.hippoecm.hst.core.sitemenu.HstSiteMenusManager" />
+    <property name="hstQueryManagerFactory" ref="org.hippoecm.hst.core.search.HstQueryManagerFactory" />
+    <property name="defaultPageErrorHandler" ref="org.hippoecm.hst.core.container.PageErrorHandler" />
+    <property name="traceToolComponentClassName" value="${trace.tool.component.class}" />
+  </bean>
+
+  <!-- Pre-processing valves -->
+  
+  <bean id="initializationValve" parent="abstractValve" class="org.hippoecm.hst.core.container.InitializationValve">
+    <property name="resourceLifecycleManagements" ref="resourceLifecycleManagementList" />
+  </bean>
+  
+  <!-- Generic no-cache response headers setting valve -->
+  <bean id="noCacheResponseHeadersValve" parent="abstractValve" class="org.hippoecm.hst.core.container.GenericResponseHeadersValve">
+    <property name="settableHeaders">
+      <list>
+        <bean class="org.hippoecm.hst.util.DefaultKeyValue">
+          <constructor-arg value="Cache-Control" />
+          <constructor-arg value="no-cache" />
+        </bean>
+        <bean class="org.hippoecm.hst.util.DefaultKeyValue">
+          <constructor-arg value="Pragma" />
+          <constructor-arg value="no-cache" />
+        </bean>
+        <bean class="org.hippoecm.hst.util.DefaultKeyValue">
+          <constructor-arg value="Expires" />
+          <constructor-arg>
+            <bean class="java.lang.Long">
+              <constructor-arg value="0" />
+            </bean>
+          </constructor-arg>
+        </bean>
+      </list>
+    </property>
+  </bean>
+  
+  <!-- Main invocable valves for each request -->
+  
+  <bean id="contextResolvingValve" parent="abstractValve" class="org.hippoecm.hst.core.container.ContextResolvingValve">
+  </bean>
+  
+  <bean id="localizationValve" parent="abstractValve" class="org.hippoecm.hst.core.container.LocalizationValve">
+  </bean>
+  
+  <bean id="securityValve" parent="abstractValve" class="org.hippoecm.hst.core.container.SecurityValve">
+  </bean>
+  
+  <bean id="subjectBasedSessionValve" parent="abstractValve" class="org.hippoecm.hst.core.container.SubjectBasedSessionValve">
+    <property name="subjectBasedRepository" ref="javax.jcr.Repository.subjectBased" />
+  </bean>
+  
+  <bean id="siteMenusResolvingValve" parent="abstractValve" class="org.hippoecm.hst.core.container.SiteMenusResolvingValve">
+  </bean>
+  
+  <bean id="actionValve" parent="abstractValve" class="org.hippoecm.hst.core.container.ActionValve">
+  </bean>
+  
+  <bean id="aggregationValve" parent="abstractValve" class="org.hippoecm.hst.core.container.AggregationValve">
+  </bean>
+  
+  <bean id="resourceServingValve" parent="abstractValve" class="org.hippoecm.hst.core.container.ResourceServingValve">
+  </bean>
+  
+  <!-- Post-processing valves -->
+  
+  <bean id="cleanupValve" parent="abstractValve" class="org.hippoecm.hst.core.container.CleanupValve">
+    <property name="resourceLifecycleManagements" ref="resourceLifecycleManagementList" />
+    <property name="refreshLazySession" value="true" />
+    <property name="maxRefreshIntervalOnLazySession" value="${lazySession.maxRefreshIntervalOnCleanup}" />
+    <property name="keepChangesOnRefreshLazySession" value="false" />
+  </bean>
+  
+  <!-- Pipelines -->
+  
+  <bean id="org.hippoecm.hst.core.container.Pipelines" class="org.hippoecm.hst.core.container.HstSitePipelines">
+    <property name="defaultPipelineName" value="DefaultSitePipeline" />
+    <property name="pipelines">
+      <map>
+        <entry key="DefaultSitePipeline">
+          <bean class="org.hippoecm.hst.core.container.HstSitePipeline">
+            <property name="preInvokingValves">
+              <list>
+                <ref bean="initializationValve" />
+              </list>
+            </property>
+            <property name="invokingValves">
+              <list>
+                <ref bean="contextResolvingValve" />
+                <ref bean="localizationValve" />
+                <ref bean="securityValve" />
+                <ref bean="subjectBasedSessionValve" />
+                <ref bean="siteMenusResolvingValve" />
+                <ref bean="actionValve" />
+                <ref bean="resourceServingValve" />
+                <ref bean="aggregationValve" />
+              </list>
+            </property>
+            <property name="postInvokingValves">
+              <list>
+                <ref bean="cleanupValve" />
+              </list>
+            </property>
+          </bean>
+        </entry>
+      </map>
+    </property>
+  </bean>
+   
+</beans>
+
