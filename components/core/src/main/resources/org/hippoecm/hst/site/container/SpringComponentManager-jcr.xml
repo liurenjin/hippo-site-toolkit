@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Copyright 2008 Hippo
+  
+  Licensed under the Apache License, Version 2.0 (the  "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+  
+  http://www.apache.org/licenses/LICENSE-2.0
+  
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS"
+  BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+<beans xmlns="http://www.springframework.org/schema/beans"
+  xmlns:lang="http://www.springframework.org/schema/lang"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:util="http://www.springframework.org/schema/util"
+  xmlns:aop="http://www.springframework.org/schema/aop"
+  xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+  http://www.springframework.org/schema/lang http://www.springframework.org/schema/beans/spring-lang-2.5.xsd
+  http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.5.xsd
+  http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd">
+  
+  <bean id="javax.jcr.Credentials.default" class="javax.jcr.SimpleCredentials">
+    <constructor-arg value="${default.repository.user.name}${repository.pool.user.name.separator}${default.repository.pool.name}"/>
+    <constructor-arg value="${default.repository.password}"/>
+  </bean>
+  
+  <bean id="javax.jcr.Credentials.preview" class="javax.jcr.SimpleCredentials">
+    <constructor-arg value="${preview.repository.user.name}${repository.pool.user.name.separator}${preview.repository.pool.name}"/>
+    <constructor-arg value="${preview.repository.password}"/>
+  </bean>
+  
+  <bean id="javax.jcr.Credentials.writable" class="javax.jcr.SimpleCredentials">
+    <constructor-arg value="${writable.repository.user.name}${repository.pool.user.name.separator}${writable.repository.pool.name}"/>
+    <constructor-arg value="${writable.repository.password}"/>
+  </bean>
+  
+  <bean id="javax.jcr.Credentials.hstconfigreader" class="javax.jcr.SimpleCredentials">
+    <constructor-arg value="${hstconfigreader.repository.user.name}${repository.pool.user.name.separator}${hstconfigreader.repository.pool.name}"/>
+    <constructor-arg value="${hstconfigreader.repository.password}"/>
+  </bean>
+  
+  <bean id="javax.jcr.Credentials.binaries" class="javax.jcr.SimpleCredentials">
+    <constructor-arg value="${binaries.repository.user.name}${repository.pool.user.name.separator}${binaries.repository.pool.name}"/>
+    <constructor-arg value="${binaries.repository.password}"/>
+  </bean>
+  
+  <bean id="javax.jcr.Repository" class="org.hippoecm.hst.core.jcr.pool.MultipleRepositoryImpl">
+    <!-- Delegating session pool repositories -->
+    <constructor-arg>
+      <map>
+        <entry key-ref="javax.jcr.Credentials.default">
+          <bean class="org.hippoecm.hst.core.jcr.pool.BasicPoolingRepository"
+            init-method="initialize" destroy-method="close">
+            <!-- delegated JCR repository -->
+            <property name="repositoryProviderClassName" value="${repositoryProviderClassName}" />
+            <property name="repositoryAddress" value="${default.repository.address}"/>
+            <property name="defaultCredentialsUserID" value="${default.repository.user.name}${repository.pool.user.name.separator}${default.repository.pool.name}"/>
+            <property name="defaultCredentialsUserIDSeparator" value="${repository.pool.user.name.separator}"/>
+            <property name="defaultCredentialsPassword" value="${default.repository.password}"/>
+            <!-- Pool properties. Refer to the GenericObjectPool of commons-pool library. -->
+            <property name="maxActive" value="${default.repository.maxActive}"/>
+            <property name="maxIdle" value="${default.repository.maxIdle}"/>
+            <property name="minIdle" value="0"/>
+            <property name="initialSize" value="0"/>
+            <property name="maxWait" value="10000"/>
+            <property name="testOnBorrow" value="true"/>
+            <property name="testOnReturn" value="false"/>
+            <property name="testWhileIdle" value="false"/>
+            <property name="timeBetweenEvictionRunsMillis" value="60000"/>
+            <property name="numTestsPerEvictionRun" value="1"/>
+            <property name="minEvictableIdleTimeMillis" value="300000"/>
+            <property name="refreshOnPassivate" value="true"/>
+            <property name="maxRefreshIntervalOnPassivate" value="${sessionPool.maxRefreshIntervalOnPassivate}"/>
+          </bean>
+        </entry>
+        <entry key-ref="javax.jcr.Credentials.preview">
+          <bean class="org.hippoecm.hst.core.jcr.pool.BasicPoolingRepository"
+            init-method="initialize" destroy-method="close">
+            <!-- delegated JCR repository -->
+            <property name="repositoryProviderClassName" value="${repositoryProviderClassName}" />
+            <property name="repositoryAddress" value="${preview.repository.address}"/>
+            <property name="defaultCredentialsUserID" value="${preview.repository.user.name}${repository.pool.user.name.separator}${preview.repository.pool.name}"/>
+            <property name="defaultCredentialsUserIDSeparator" value="${repository.pool.user.name.separator}"/>
+            <property name="defaultCredentialsPassword" value="${preview.repository.password}"/>
+            <!-- Pool properties. Refer to the GenericObjectPool of commons-pool library. -->
+            <property name="maxActive" value="${preview.repository.maxActive}"/>
+            <property name="maxIdle" value="${preview.repository.maxIdle}"/>
+            <property name="minIdle" value="0"/>
+            <property name="initialSize" value="0"/>
+            <property name="maxWait" value="10000"/>
+            <property name="testOnBorrow" value="true"/>
+            <property name="testOnReturn" value="false"/>
+            <property name="testWhileIdle" value="false"/>
+            <property name="timeBetweenEvictionRunsMillis" value="60000"/>
+            <property name="numTestsPerEvictionRun" value="1"/>
+            <!-- after 10 min unused, we evict preview sessions -->
+            <property name="minEvictableIdleTimeMillis" value="300000"/>
+            <property name="refreshOnPassivate" value="true"/>
+            <property name="maxRefreshIntervalOnPassivate" value="${sessionPool.maxRefreshIntervalOnPassivate}"/>
+          </bean>
+        </entry>
+        <entry key-ref="javax.jcr.Credentials.writable">
+          <bean class="org.hippoecm.hst.core.jcr.pool.BasicPoolingRepository"
+            init-method="initialize" destroy-method="close">
+            <!-- delegated JCR repository -->
+            <property name="repositoryProviderClassName" value="${repositoryProviderClassName}" />
+            <property name="repositoryAddress" value="${writable.repository.address}"/>
+            <property name="defaultCredentialsUserID" value="${writable.repository.user.name}${repository.pool.user.name.separator}${writable.repository.pool.name}"/>
+            <property name="defaultCredentialsUserIDSeparator" value="${repository.pool.user.name.separator}"/>
+            <property name="defaultCredentialsPassword" value="${writable.repository.password}"/>
+            <!-- Pool properties. Refer to the GenericObjectPool of commons-pool library. -->
+            <property name="maxActive" value="${writable.repository.maxActive}"/>
+            <property name="maxIdle" value="${writable.repository.maxIdle}"/>
+            <property name="minIdle" value="0"/>
+            <property name="initialSize" value="0"/>
+            <property name="maxWait" value="10000"/>
+            <property name="testOnBorrow" value="true"/>
+            <property name="testOnReturn" value="false"/>
+            <property name="testWhileIdle" value="false"/>
+            <property name="timeBetweenEvictionRunsMillis" value="60000"/>
+            <property name="numTestsPerEvictionRun" value="1"/>
+            <!-- after 5 min unused, we evict writable sessions -->
+            <property name="minEvictableIdleTimeMillis" value="300000"/>
+            <property name="refreshOnPassivate" value="true"/>
+            <property name="maxRefreshIntervalOnPassivate" value="${sessionPool.maxRefreshIntervalOnPassivate}"/>
+          </bean>
+        </entry>
+        <entry key-ref="javax.jcr.Credentials.hstconfigreader">
+          <bean class="org.hippoecm.hst.core.jcr.pool.BasicPoolingRepository"
+            init-method="initialize" destroy-method="close">
+            <!-- delegated JCR repository -->
+            <property name="repositoryProviderClassName" value="${repositoryProviderClassName}" />
+            <property name="repositoryAddress" value="${hstconfigreader.repository.address}"/>
+            <property name="defaultCredentialsUserID" value="${hstconfigreader.repository.user.name}${repository.pool.user.name.separator}${hstconfigreader.repository.pool.name}"/>
+            <property name="defaultCredentialsUserIDSeparator" value="${repository.pool.user.name.separator}"/>
+            <property name="defaultCredentialsPassword" value="${hstconfigreader.repository.password}"/>
+            <!-- Pool properties. Refer to the GenericObjectPool of commons-pool library. -->
+            <property name="maxActive" value="${hstconfigreader.repository.maxActive}"/>
+            <property name="maxIdle" value="${hstconfigreader.repository.maxIdle}"/>
+            <property name="minIdle" value="0"/>
+            <property name="initialSize" value="0"/>
+            <property name="maxWait" value="10000"/>
+            <property name="testOnBorrow" value="true"/>
+            <property name="testOnReturn" value="false"/>
+            <property name="testWhileIdle" value="false"/>
+            <property name="timeBetweenEvictionRunsMillis" value="60000"/>
+            <property name="numTestsPerEvictionRun" value="1"/>
+            <!-- after 5 min unused, we evict config reader sessions -->
+            <property name="minEvictableIdleTimeMillis" value="300000"/>
+            <property name="refreshOnPassivate" value="true"/>
+            <property name="maxRefreshIntervalOnPassivate" value="${sessionPool.maxRefreshIntervalOnPassivate}"/>
+          </bean>
+        </entry>
+        <entry key-ref="javax.jcr.Credentials.binaries">
+          <bean class="org.hippoecm.hst.core.jcr.pool.BasicPoolingRepository"
+            init-method="initialize" destroy-method="close">
+            <!-- delegated JCR repository -->
+            <property name="repositoryProviderClassName" value="${repositoryProviderClassName}" />
+            <property name="repositoryAddress" value="${binaries.repository.address}"/>
+            <property name="defaultCredentialsUserID" value="${binaries.repository.user.name}${repository.pool.user.name.separator}${binaries.repository.pool.name}"/>
+            <property name="defaultCredentialsUserIDSeparator" value="${repository.pool.user.name.separator}"/>
+            <property name="defaultCredentialsPassword" value="${binaries.repository.password}"/>
+            <!-- Pool properties. Refer to the GenericObjectPool of commons-pool library. -->
+            <property name="maxActive" value="${binaries.repository.maxActive}"/>
+            <property name="maxIdle" value="${binaries.repository.maxIdle}"/>
+            <property name="minIdle" value="0"/>
+            <property name="initialSize" value="0"/>
+            <property name="maxWait" value="10000"/>
+            <property name="testOnBorrow" value="true"/>
+            <property name="testOnReturn" value="false"/>
+            <property name="testWhileIdle" value="false"/>
+            <property name="timeBetweenEvictionRunsMillis" value="60000"/>
+            <property name="numTestsPerEvictionRun" value="1"/>
+            <!-- after 5 min unused, we evict binaries sessions -->
+            <property name="minEvictableIdleTimeMillis" value="300000"/>
+            <property name="refreshOnPassivate" value="true"/>
+            <property name="maxRefreshIntervalOnPassivate" value="${sessionPool.maxRefreshIntervalOnPassivate}"/>
+          </bean>
+        </entry>
+      </map>
+    </constructor-arg>
+    <!-- The default credentials for login() without credentials parameter. -->
+    <constructor-arg ref="javax.jcr.Credentials.default"/>
+  </bean>
+  
+</beans>

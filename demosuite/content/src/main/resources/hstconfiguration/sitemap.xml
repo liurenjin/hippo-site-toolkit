@@ -1,0 +1,356 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sv:node sv:name="hst:sitemap" xmlns:sv="http://www.jcp.org/jcr/sv/1.0">
+    <sv:property sv:name="jcr:primaryType" sv:type="Name">
+        <sv:value>hst:sitemap</sv:value>
+    </sv:property>
+    <sv:node sv:name="home">
+        <sv:property sv:name="jcr:primaryType" sv:type="Name">
+            <sv:value>hst:sitemapitem</sv:value>
+        </sv:property>
+        <sv:property sv:name="hst:componentconfigurationid" sv:type="String">
+            <sv:value>hst:pages/home</sv:value>
+        </sv:property>
+        <sv:property sv:name="hst:portletcomponentconfigurationid" sv:type="String">
+            <sv:value>hst:components/bodyhome/bodymain</sv:value>
+        </sv:property>
+        <sv:property sv:name="hst:relativecontentpath" sv:type="String">
+            <sv:value>common/homepage</sv:value>
+        </sv:property>
+    </sv:node>
+    <sv:node sv:name="about">
+        <sv:property sv:name="jcr:primaryType" sv:type="Name">
+            <sv:value>hst:sitemapitem</sv:value>
+        </sv:property>
+        <sv:property sv:name="hst:componentconfigurationid" sv:type="String">
+            <sv:value>hst:pages/detailpage</sv:value>
+        </sv:property>
+        <sv:property sv:name="hst:portletcomponentconfigurationid" sv:type="String">
+            <sv:value>hst:components/bodydetailpage/content</sv:value>
+        </sv:property>
+        <sv:property sv:name="hst:relativecontentpath" sv:type="String">
+            <sv:value>common/About Us</sv:value>
+        </sv:property>
+    </sv:node>
+    <sv:node sv:name="news">
+        <sv:property sv:name="jcr:primaryType" sv:type="Name">
+            <sv:value>hst:sitemapitem</sv:value>
+        </sv:property>
+        <sv:property sv:name="hst:componentconfigurationid" sv:type="String">
+            <sv:value>hst:pages/newsarchive</sv:value>
+        </sv:property>
+        <sv:property sv:name="hst:portletcomponentconfigurationid" sv:type="String">
+            <sv:value>hst:components/bodynewsarchive/content</sv:value>
+        </sv:property>
+        <sv:property sv:name="hst:relativecontentpath" sv:type="String">
+            <sv:value>news</sv:value>
+        </sv:property>
+        <sv:node sv:name="_any_">
+            <sv:property sv:name="jcr:primaryType" sv:type="Name">
+                <sv:value>hst:sitemapitem</sv:value>
+            </sv:property>
+            <sv:property sv:name="hst:componentconfigurationid" sv:type="String">
+                <sv:value>hst:pages/newsarchive</sv:value>
+            </sv:property>
+            <sv:property sv:name="hst:portletcomponentconfigurationid" sv:type="String">
+                <sv:value>hst:components/bodynewsarchive/content</sv:value>
+            </sv:property>
+            <sv:property sv:name="hst:relativecontentpath" sv:type="String">
+                <sv:value>news/${1}</sv:value>
+            </sv:property>
+        </sv:node>
+        <sv:node sv:name="_any_.html">
+            <sv:property sv:name="jcr:primaryType" sv:type="Name">
+                <sv:value>hst:sitemapitem</sv:value>
+            </sv:property>
+            <sv:property sv:name="hst:componentconfigurationid" sv:type="String">
+                <sv:value>hst:pages/detailpage</sv:value>
+            </sv:property>
+            <sv:property sv:name="hst:portletcomponentconfigurationid" sv:type="String">
+                <sv:value>hst:components/bodydetailpage/content</sv:value>
+            </sv:property>
+            <sv:property sv:name="hst:relativecontentpath" sv:type="String">
+                <sv:value>news/${1}</sv:value>
+            </sv:property>
+            <sv:property sv:name="hst:parameternames" sv:type="String">
+                <sv:value>go-back-link</sv:value>
+            </sv:property>
+            <sv:property sv:name="hst:parametervalues" sv:type="String">
+                <sv:value>/news</sv:value>
+            </sv:property>
+        </sv:node>
+    </sv:node>
+    <sv:node sv:name="news1">
+        <sv:property sv:name="jcr:primaryType" sv:type="Name">
+            <sv:value>hst:sitemapitem</sv:value>
+        </sv:property>
+        <sv:property sv:name="hst:componentconfigurationid" sv:type="String">
+            <sv:value>hst:pages/newsarchive</sv:value>
+        </sv:property>
+        <sv:property sv:name="hst:portletcomponentconfigurationid" sv:type="String">
+            <sv:value>hst:components/bodynewsarchive/content</sv:value>
+        </sv:property>
+        <sv:property sv:name="hst:relativecontentpath" sv:type="String">
+            <sv:value>news</sv:value>
+        </sv:property>
+        <sv:node sv:name="_any_">
+            <sv:property sv:name="jcr:primaryType" sv:type="Name">
+                <sv:value>hst:sitemapitem</sv:value>
+            </sv:property>
+            <sv:property sv:name="hst:componentconfigurationid" sv:type="String">
+                <sv:value>hst:pages/newsarchive</sv:value>
+            </sv:property>
+            <sv:property sv:name="hst:portletcomponentconfigurationid" sv:type="String">
+                <sv:value>hst:components/bodynewsarchive/content</sv:value>
+            </sv:property>
+            <sv:property sv:name="hst:relativecontentpath" sv:type="String">
+                <sv:value>news/${1}</sv:value>
+            </sv:property>
+        </sv:node>
+        <sv:node sv:name="_any_.html">
+            <sv:property sv:name="jcr:primaryType" sv:type="Name">
+                <sv:value>hst:sitemapitem</sv:value>
+            </sv:property>
+            <sv:property sv:name="hst:componentconfigurationid" sv:type="String">
+                <sv:value>hst:pages/detailpage</sv:value>
+            </sv:property>
+            <sv:property sv:name="hst:portletcomponentconfigurationid" sv:type="String">
+                <sv:value>hst:components/bodydetailpage/content</sv:value>
+            </sv:property>
+            <sv:property sv:name="hst:relativecontentpath" sv:type="String">
+                <sv:value>news/${1}</sv:value>
+            </sv:property>
+            <sv:property sv:name="hst:parameternames" sv:type="String">
+                <sv:value>go-back-link</sv:value>
+            </sv:property>
+            <sv:property sv:name="hst:parametervalues" sv:type="String">
+                <sv:value>/news</sv:value>
+            </sv:property>
+        </sv:node>
+    </sv:node>
+    <sv:node sv:name="news2">
+        <sv:property sv:name="jcr:primaryType" sv:type="Name">
+            <sv:value>hst:sitemapitem</sv:value>
+        </sv:property>
+        <sv:property sv:name="hst:componentconfigurationid" sv:type="String">
+            <sv:value>hst:pages/newsarchive</sv:value>
+        </sv:property>
+        <sv:property sv:name="hst:portletcomponentconfigurationid" sv:type="String">
+            <sv:value>hst:components/bodynewsarchive/content</sv:value>
+        </sv:property>
+        <sv:property sv:name="hst:relativecontentpath" sv:type="String">
+            <sv:value>news</sv:value>
+        </sv:property>
+        <sv:node sv:name="_any_">
+            <sv:property sv:name="jcr:primaryType" sv:type="Name">
+                <sv:value>hst:sitemapitem</sv:value>
+            </sv:property>
+            <sv:property sv:name="hst:componentconfigurationid" sv:type="String">
+                <sv:value>hst:pages/newsarchive</sv:value>
+            </sv:property>
+            <sv:property sv:name="hst:portletcomponentconfigurationid" sv:type="String">
+                <sv:value>hst:components/bodynewsarchive/content</sv:value>
+            </sv:property>
+            <sv:property sv:name="hst:relativecontentpath" sv:type="String">
+                <sv:value>news/${1}</sv:value>
+            </sv:property>
+        </sv:node>
+        <sv:node sv:name="_any_.html">
+            <sv:property sv:name="jcr:primaryType" sv:type="Name">
+                <sv:value>hst:sitemapitem</sv:value>
+            </sv:property>
+            <sv:property sv:name="hst:componentconfigurationid" sv:type="String">
+                <sv:value>hst:pages/detailpage</sv:value>
+            </sv:property>
+            <sv:property sv:name="hst:portletcomponentconfigurationid" sv:type="String">
+                <sv:value>hst:components/bodydetailpage/content</sv:value>
+            </sv:property>
+            <sv:property sv:name="hst:relativecontentpath" sv:type="String">
+                <sv:value>news/${1}</sv:value>
+            </sv:property>
+            <sv:property sv:name="hst:parameternames" sv:type="String">
+                <sv:value>go-back-link</sv:value>
+            </sv:property>
+            <sv:property sv:name="hst:parametervalues" sv:type="String">
+                <sv:value>/news</sv:value>
+            </sv:property>
+        </sv:node>
+    </sv:node>
+
+    <sv:node sv:name="newsctxonly">
+        <sv:property sv:name="jcr:primaryType" sv:type="Name">
+            <sv:value>hst:sitemapitem</sv:value>
+        </sv:property>
+        <sv:property sv:name="hst:componentconfigurationid" sv:type="String">
+            <sv:value>hst:pages/newsarchive</sv:value>
+        </sv:property>
+        <sv:property sv:name="hst:portletcomponentconfigurationid" sv:type="String">
+            <sv:value>hst:components/bodynewsarchive/content</sv:value>
+        </sv:property>
+        <sv:property sv:name="hst:relativecontentpath" sv:type="String">
+            <sv:value>news</sv:value>
+        </sv:property>
+        <sv:node sv:name="_default_">
+            <sv:property sv:name="jcr:primaryType" sv:type="Name">
+                <sv:value>hst:sitemapitem</sv:value>
+            </sv:property>
+            <sv:property sv:name="hst:componentconfigurationid" sv:type="String">
+                <sv:value>hst:pages/newsarchive</sv:value>
+            </sv:property>
+            <sv:property sv:name="hst:portletcomponentconfigurationid" sv:type="String">
+                <sv:value>hst:components/bodynewsarchive/content</sv:value>
+            </sv:property>
+            <sv:property sv:name="hst:relativecontentpath" sv:type="String">
+                <sv:value>news</sv:value>
+            </sv:property>
+            <sv:node sv:name="_default_">
+                <sv:property sv:name="jcr:primaryType" sv:type="Name">
+                    <sv:value>hst:sitemapitem</sv:value>
+                </sv:property>
+                <sv:property sv:name="hst:componentconfigurationid" sv:type="String">
+                    <sv:value>hst:pages/newsarchive</sv:value>
+                </sv:property>
+                <sv:property sv:name="hst:portletcomponentconfigurationid" sv:type="String">
+                    <sv:value>hst:components/bodynewsarchive/content</sv:value>
+                </sv:property>
+                <sv:property sv:name="hst:relativecontentpath" sv:type="String">
+                    <sv:value>news</sv:value>
+                </sv:property>
+                <sv:node sv:name="_any_">
+                    <sv:property sv:name="jcr:primaryType" sv:type="Name">
+                        <sv:value>hst:sitemapitem</sv:value>
+                    </sv:property>
+                    <sv:property sv:name="hst:componentconfigurationid" sv:type="String">
+                        <sv:value>hst:pages/newsarchive</sv:value>
+                    </sv:property>
+                    <sv:property sv:name="hst:portletcomponentconfigurationid" sv:type="String">
+                        <sv:value>hst:components/bodynewsarchive/content</sv:value>
+                    </sv:property>
+                    <sv:property sv:name="hst:relativecontentpath" sv:type="String">
+                        <sv:value>news/${3}</sv:value>
+                    </sv:property>
+                </sv:node>
+                <sv:node sv:name="_any_.html">
+                    <sv:property sv:name="jcr:primaryType" sv:type="Name">
+                        <sv:value>hst:sitemapitem</sv:value>
+                    </sv:property>
+                    <sv:property sv:name="hst:componentconfigurationid" sv:type="String">
+                        <sv:value>hst:pages/detailpage</sv:value>
+                    </sv:property>
+                    <sv:property sv:name="hst:portletcomponentconfigurationid" sv:type="String">
+                        <sv:value>hst:components/bodydetailpage/content</sv:value>
+                    </sv:property>
+                    <sv:property sv:name="hst:relativecontentpath" sv:type="String">
+                        <sv:value>news/${3}</sv:value>
+                    </sv:property>
+                    <sv:property sv:name="hst:parameternames" sv:type="String">
+                        <sv:value>go-back-link</sv:value>
+                    </sv:property>
+                    <sv:property sv:name="hst:parametervalues" sv:type="String">
+                        <sv:value>/news</sv:value>
+                    </sv:property>
+                </sv:node>
+            </sv:node>
+        </sv:node>
+    </sv:node>
+    <sv:node sv:name="rss.xml">
+        <sv:property sv:name="jcr:primaryType" sv:type="Name">
+            <sv:value>hst:sitemapitem</sv:value>
+        </sv:property>
+        <sv:property sv:name="hst:componentconfigurationid" sv:type="String">
+            <sv:value>hst:components/rss</sv:value>
+        </sv:property>
+        <sv:property sv:name="hst:relativecontentpath" sv:type="String">
+            <sv:value>news</sv:value>
+        </sv:property>
+    </sv:node>
+    <sv:node sv:name="search">
+        <sv:property sv:name="jcr:primaryType" sv:type="Name">
+            <sv:value>hst:sitemapitem</sv:value>
+        </sv:property>
+        <sv:property sv:name="hst:componentconfigurationid" sv:type="String">
+            <sv:value>hst:pages/searchpage</sv:value>
+        </sv:property>
+        <sv:property sv:name="hst:portletcomponentconfigurationid" sv:type="String">
+            <sv:value>hst:components/bodysearch/content</sv:value>
+        </sv:property>
+    </sv:node>
+    <sv:node sv:name="error">
+        <sv:property sv:name="jcr:primaryType" sv:type="Name">
+            <sv:value>hst:sitemapitem</sv:value>
+        </sv:property>
+        <sv:property sv:name="hst:componentconfigurationid" sv:type="String">
+            <sv:value>hst:pages/errorpage</sv:value>
+        </sv:property>
+    </sv:node>
+    <sv:node sv:name="_any_">
+        <sv:property sv:name="jcr:primaryType" sv:type="Name">
+            <sv:value>hst:sitemapitem</sv:value>
+        </sv:property>
+        <sv:property sv:name="hst:componentconfigurationid" sv:type="String">
+            <sv:value>hst:pages/errorpage</sv:value>
+        </sv:property>
+    </sv:node>
+    <sv:node sv:name="todo">
+        <sv:property sv:name="jcr:primaryType" sv:type="Name">
+            <sv:value>hst:sitemapitem</sv:value>
+        </sv:property>
+        <sv:property sv:name="hst:componentconfigurationid" sv:type="String">
+            <sv:value>hst:components/bodyhome/bodymain/todolist</sv:value>
+        </sv:property>
+    </sv:node>
+    <sv:node sv:name="portletprefseditor">
+        <sv:property sv:name="jcr:primaryType" sv:type="Name">
+            <sv:value>hst:sitemapitem</sv:value>
+        </sv:property>
+        <sv:property sv:name="hst:portletcomponentconfigurationid" sv:type="String">
+            <sv:value>hst:components/portletprefseditor</sv:value>
+        </sv:property>
+    </sv:node>
+    <sv:node sv:name="faceted">
+        <sv:property sv:name="jcr:primaryType" sv:type="Name">
+            <sv:value>hst:sitemapitem</sv:value>
+        </sv:property>
+        <sv:property sv:name="hst:componentconfigurationid" sv:type="String">
+            <sv:value>hst:pages/faceted</sv:value>
+        </sv:property>
+        <sv:property sv:name="hst:portletcomponentconfigurationid" sv:type="String">
+            <sv:value>hst:components/bodyfaceted/content</sv:value>
+        </sv:property>
+        <sv:property sv:name="hst:relativecontentpath" sv:type="String">
+            <sv:value>faceted</sv:value>
+        </sv:property>
+        <sv:node sv:name="_any_">
+            <sv:property sv:name="jcr:primaryType" sv:type="Name">
+                <sv:value>hst:sitemapitem</sv:value>
+            </sv:property>
+            <sv:property sv:name="hst:componentconfigurationid" sv:type="String">
+                <sv:value>hst:pages/faceted</sv:value>
+            </sv:property>
+            <sv:property sv:name="hst:portletcomponentconfigurationid" sv:type="String">
+                <sv:value>hst:components/bodyfaceted/content</sv:value>
+            </sv:property>
+            <sv:property sv:name="hst:relativecontentpath" sv:type="String">
+                <sv:value>faceted/${1}</sv:value>
+            </sv:property>
+        </sv:node>
+    </sv:node>
+    <sv:node sv:name="products">
+        <sv:property sv:name="jcr:primaryType" sv:type="Name">
+            <sv:value>hst:sitemapitem</sv:value>
+        </sv:property>
+        <sv:node sv:name="_any_.html">
+            <sv:property sv:name="jcr:primaryType" sv:type="Name">
+                <sv:value>hst:sitemapitem</sv:value>
+            </sv:property>
+            <sv:property sv:name="hst:componentconfigurationid" sv:type="String">
+                <sv:value>hst:pages/productpage</sv:value>
+            </sv:property>
+            <sv:property sv:name="hst:portletcomponentconfigurationid" sv:type="String">
+                <sv:value>hst:components/bodyproductpage/content</sv:value>
+            </sv:property>
+            <sv:property sv:name="hst:relativecontentpath" sv:type="String">
+                <sv:value>products/${1}</sv:value>
+            </sv:property>
+        </sv:node>
+    </sv:node>
+</sv:node>
