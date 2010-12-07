@@ -39,21 +39,18 @@ Hippo.App.PageEditor = Ext.extend(Ext.App, {
         this.pageModelFacade = null;
 
         this.initUI();
-        Ext.TaskMgr.start({
-            run: this.keepAlive,
-            interval: 60000,
-            scope: this
-        });
     },
 
     //Keeps the session alive every minute
     keepAlive : function() {
-         Ext.Ajax.request({
-            url: '_rp/' + this.ids.site + './keepalive',
-            success: function () {
-                //Do nothing
-            }
-        });
+        if(this.ids.site !=null) {
+             Ext.Ajax.request({
+                url: '_rp/' + this.ids.site + './keepalive',
+                success: function () {
+                    //Do nothing
+                }
+            });
+        }
     },
 
     initUI : function() {
@@ -212,6 +209,12 @@ Hippo.App.PageEditor = Ext.extend(Ext.App, {
         this.ids.page = pageId;
         this.ids.toolkit = toolkitId;
         this.ids.site = siteId;
+
+        Ext.TaskMgr.start({
+            run: this.keepAlive,
+            interval: 60000,
+            scope: this
+        });
     },
 
     createToolkitStore : function(toolkitId) {
