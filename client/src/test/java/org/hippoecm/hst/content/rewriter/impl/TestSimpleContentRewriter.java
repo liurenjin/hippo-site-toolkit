@@ -45,6 +45,12 @@ public class TestSimpleContentRewriter {
         "<body/>\n" + 
         "</html>";
     
+    private static final String CONTENT_ONLY_HTML = 
+        "<div>\n" + 
+        "<h1>Hello, World!</h1>\n" + 
+        "<p>Test</p>\n" + 
+        "</div>";
+    
     private Node node;
     private HstRequest request;
     private HstResponse response;
@@ -74,4 +80,10 @@ public class TestSimpleContentRewriter {
         assertNull(html);
     }
     
+    @Test
+    public void testContentOnlyHtml() {
+        ContentRewriter<String> rewriter = new SimpleContentRewriter();
+        String html = rewriter.rewrite(CONTENT_ONLY_HTML, node, request, response);
+        assertEquals(CONTENT_ONLY_HTML, html);
+    }
 }
