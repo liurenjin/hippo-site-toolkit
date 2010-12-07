@@ -65,15 +65,12 @@ public class SimpleContentRewriter implements ContentRewriter<String> {
         String innerHTML = SimpleHtmlExtractor.getInnerHtml(html, "body", false);
         
         if (innerHTML == null) {
-            // if the input html doesn't have html and body tag at all, return the input
-            if (html != null && !HTML_TAG_PATTERN.matcher(html).find() && !BODY_TAG_PATTERN.matcher(html).find()) {
-                return html;
+            if (html == null || HTML_TAG_PATTERN.matcher(html).find() || BODY_TAG_PATTERN.matcher(html).find()) {
+                return null;
             }
-            
-            return null;
+        } else {
+            html = innerHTML;
         }
-        
-        html = innerHTML.trim();
         
         if ("".equals(html)) {
             return "";
