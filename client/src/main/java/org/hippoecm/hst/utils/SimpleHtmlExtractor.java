@@ -160,7 +160,7 @@ public class SimpleHtmlExtractor {
                                 if (offset == -1) {
                                     out.println(temp);
                                 } else {
-                                    out.println(temp.substring(0, offset));
+                                    out.print(temp.substring(0, offset));
                                     break;
                                 }
                             }

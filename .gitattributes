@@ -229,6 +229,7 @@ client/src/main/java/org/hippoecm/hst/utils/PageContextPropertyUtils.java svneol
 client/src/main/java/org/hippoecm/hst/utils/SimpleHmlStringParser.java svneol=native#text/plain
 client/src/main/java/org/hippoecm/hst/utils/SimpleHtmlExtractor.java svneol=native#text/plain
 client/src/main/resources/META-INF/hst-core.tld svneol=native#text/plain
+client/src/test/java/org/hippoecm/hst/content/rewriter/impl/TestSimpleContentRewriter.java -text
 client/src/test/java/org/hippoecm/hst/mock/MockHstRequest.java svneol=native#text/plain
 client/src/test/java/org/hippoecm/hst/mock/MockHstRequestContext.java svneol=native#text/plain
 client/src/test/java/org/hippoecm/hst/servlet/BinariesServletTest.java svneol=native#text/plain
