@@ -13,24 +13,23 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.hippoecm.hst.mock;
+package org.hippoecm.hst.mock.core.component;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import org.hippoecm.hst.core.component.HstRequest;
 import org.hippoecm.hst.core.request.HstRequestContext;
-import org.springframework.mock.web.MockHttpServletRequest;
 
-public class MockHstRequest extends MockHttpServletRequest implements HstRequest {
+public class MockHstRequest extends MockHstRequestBase implements HstRequest {
 
-    protected String referencePath;
-    protected Map<String, Map<String, Object>> attributeMap = new HashMap<String, Map<String, Object>>();
-    protected Map<String, Map<String, String []>> parameterMap = new HashMap<String, Map<String, String []>>();
-    protected HstRequestContext requestContext;
-    protected String resourceId;
-    protected String referenceNamespace;
-    protected String lifecyclePhase;
+    private String referencePath;
+    private Map<String, Map<String, Object>> attributeMap = new HashMap<String, Map<String, Object>>();
+    private Map<String, Map<String, String []>> parameterMap = new HashMap<String, Map<String, String []>>();
+    private HstRequestContext requestContext;
+    private String resourceId;
+    private String referenceNamespace;
+    private String lifecyclePhase;
     
     public void setReferencePath(String referencePath) {
         this.referencePath = referencePath;
@@ -87,5 +86,4 @@ public class MockHstRequest extends MockHttpServletRequest implements HstRequest
     public void setLifecyclePhase(String lifecyclePhase) {
         this.lifecyclePhase = lifecyclePhase;
     }
-    
 }

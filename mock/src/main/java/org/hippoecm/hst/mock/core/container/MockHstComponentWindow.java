@@ -13,43 +13,45 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.hippoecm.hst.mock;
+package org.hippoecm.hst.mock.core.container;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
-import org.apache.commons.collections.IteratorUtils;
-import org.apache.commons.collections.map.LinkedMap;
 import org.hippoecm.hst.configuration.components.HstComponentInfo;
 import org.hippoecm.hst.core.component.HstComponent;
 import org.hippoecm.hst.core.component.HstComponentException;
 import org.hippoecm.hst.core.component.HstResponseState;
 import org.hippoecm.hst.core.container.HstComponentWindow;
+import org.hippoecm.hst.mock.util.IteratorEnumeration;
 
 public class MockHstComponentWindow implements HstComponentWindow {
     
-    protected String name;
-    protected String referenceName;
-    protected String referenceNamespace;
-    protected HstComponent component;
-    protected String renderPath;
-    protected String namedRenderer;
-    protected String serveResourcePath;
-    protected String namedResourceServer;
-    protected String pageErrorHandlerClassName;
-    protected Map<String, String> parameters;
-    protected Map<String, String> localParameters;
-    protected HstComponentWindow parentWindow;
-    protected List<HstComponentException> componentExceptions = new LinkedList<HstComponentException>();
-    protected LinkedMap childWindowMap = new LinkedMap();
-    protected LinkedMap childWindowMapByReferenceName = new LinkedMap();
-    protected HstResponseState responseState;
-    protected HstComponentInfo componentInfo;
-    protected Map<String, Object> attributes;
+    private String name;
+    private String referenceName;
+    private String referenceNamespace;
+    private HstComponent component;
+    private String renderPath;
+    private String namedRenderer;
+    private String serveResourcePath;
+    private String namedResourceServer;
+    private String pageErrorHandlerClassName;
+    private Map<String, String> parameters;
+    private Map<String, String> localParameters;
+    private HstComponentWindow parentWindow;
+    private List<HstComponentException> componentExceptions = new LinkedList<HstComponentException>();
+    private LinkedHashMap<String, HstComponentWindow> childWindowMap = new LinkedHashMap<String, HstComponentWindow>();
+    private LinkedHashMap<String, HstComponentWindow> childWindowMapByReferenceName = new LinkedHashMap<String, HstComponentWindow>();
+    private HstResponseState responseState;
+    private HstComponentInfo componentInfo;
+    private Map<String, Object> attributes;
 
     public void addComponentExcpetion(HstComponentException e) {
         componentExceptions.add(e);
@@ -75,7 +77,11 @@ public class MockHstComponentWindow implements HstComponentWindow {
         if (this.childWindowMap == null) {
             return Collections.emptyList();
         } else {
-            return this.childWindowMap.asList();
+            List<String> keyList = new ArrayList<String>();
+            for (String key : childWindowMap.keySet()) {
+                keyList.add(key);
+            }
+            return keyList;
         }
     }
     
@@ -83,7 +89,7 @@ public class MockHstComponentWindow implements HstComponentWindow {
         return component;
     }
     
-    public void setCompnoent(HstComponent component) {
+    public void setComponent(HstComponent component) {
         this.component = component;
     }
 
@@ -93,6 +99,10 @@ public class MockHstComponentWindow implements HstComponentWindow {
 
     public String getName() {
         return name;
+    }
+    
+    public void setName(String name) {
+        this.name = name;
     }
 
     public HstComponentWindow getParentWindow() {
@@ -233,10 +243,10 @@ public class MockHstComponentWindow implements HstComponentWindow {
     
     public Enumeration<String> getAttributeNames() {
         if (attributes != null) {
-            return (Enumeration<String>) IteratorUtils.asEnumeration(attributes.keySet().iterator());
+            return new IteratorEnumeration<String>(attributes.keySet().iterator());
         }
         
-        return (Enumeration<String>) IteratorUtils.asEnumeration(Collections.emptySet().iterator());
+        Set<String> emptySet = Collections.emptySet();
+        return new IteratorEnumeration<String>(emptySet.iterator());
     }
-    
 }
