@@ -43,14 +43,15 @@ Hippo.App.PageEditor = Ext.extend(Ext.App, {
 
     //Keeps the session alive every minute
     keepAlive : function() {
-        if(this.ids.site !=null) {
-             Ext.Ajax.request({
-                url: '_rp/' + this.ids.site + './keepalive',
-                success: function () {
-                    //Do nothing
-                }
-            });
+        if(this.ids.site != null){ //Ping only if the site id is not null
+            Ext.Ajax.request({
+               url: '_rp/' + this.ids.site + './keepalive',
+               success: function () {
+                   //Do nothing
+               }
+           });
         }
+
     },
 
     initUI : function() {
@@ -81,17 +82,6 @@ Hippo.App.PageEditor = Ext.extend(Ext.App, {
                             }
                         },
                         '->',
-                            //Removing the refresh button, this doesn't serve any purpose anymore.
-//                        {
-//                            text: 'Refresh',
-//                            id: 'refreshButton',
-//                            listeners: {
-//                                'click' : {
-//                                    fn: this.refreshIframe,
-//                                    scope: this
-//                                }
-//                            }
-//                        },
                         {
                             text: 'Logout',
                             id: 'logoutButton',
@@ -538,9 +528,9 @@ Hippo.App.PageEditor = Ext.extend(Ext.App, {
             }
         } catch(e) {
             console.error(e);
+            throw e;
         }
     }
-
 });
 
 Hippo.App.RestStore = Ext.extend(Ext.data.Store, {
