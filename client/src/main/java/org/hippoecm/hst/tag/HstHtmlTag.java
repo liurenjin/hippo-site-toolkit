@@ -202,6 +202,9 @@ public class HstHtmlTag extends TagSupport {
         this.hippoHtml = hippoHtml;
     }
     
+    /**
+     * @deprecated Use {@link #setHippohtml(HippoHtml)} directly.
+     */
     public void setHippohtmlByBeanPath(String beanPath) {
         this.hippoHtml = (HippoHtml) PageContextPropertyUtils.getProperty(pageContext, beanPath);
         if(this.hippoHtml == null) {
@@ -214,6 +217,9 @@ public class HstHtmlTag extends TagSupport {
         this.contentRewriter = contentRewriter;
     }
     
+    /**
+     * @deprecated Use {@link #setContentRewriter(ContentRewriter)} directly.
+     */
     public void setContentRewriterByBeanPath(String beanPath) {
         contentRewriter = (ContentRewriter<String>) PageContextPropertyUtils.getProperty(pageContext, beanPath);
     }

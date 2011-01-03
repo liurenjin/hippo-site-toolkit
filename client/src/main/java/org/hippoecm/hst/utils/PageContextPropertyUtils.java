@@ -25,7 +25,8 @@ import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.lang.StringUtils;
 
 /**
- * Class containing utility methods for bean properties
+ * <P>Class containing utility methods for bean properties.</P>
+ * @deprecated Use {@link PageContext#findAttribute(String)} instead.
  */
 public class PageContextPropertyUtils {
     
@@ -33,6 +34,9 @@ public class PageContextPropertyUtils {
         
     }
     
+    /**
+     * @deprecated 
+     */
     public static Object getProperty(PageContext pageContext, String beanPath) {
         Object bean = null;
         

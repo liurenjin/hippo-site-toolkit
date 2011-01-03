@@ -140,6 +140,9 @@ public class SiteMapItemTag extends TagSupport {
         this.siteMapItem = siteMapItem;
     }
     
+    /**
+     * @deprecated Use {@link #setPreferItem(HstSiteMapItem)} directly.
+     */
     public void setPreferItemByPath(String preferItemByPath) {
         this.siteMapItem = (HstSiteMapItem)PageContextPropertyUtils.getProperty(pageContext, preferItemByPath);
         if(this.siteMapItem == null) {

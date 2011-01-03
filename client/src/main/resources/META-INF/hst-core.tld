@@ -196,9 +196,8 @@
             <rtexprvalue>true</rtexprvalue>
             <type>java.lang.String</type>
             <description>
+              Deprecated: Use link attribute instead.
               A bean path of HstLink object which can be retrieved via pageContext.
-              NOTE: This is mainly for allowing script templates (such as Freemarker) to set object property by bean name.
-                    JSP developers could ignore this attribute and use 'link' attribute instead directly with object property value.
             </description>
         </attribute>
         <attribute>
@@ -222,9 +221,8 @@
             <rtexprvalue>true</rtexprvalue>
             <type>java.lang.String</type>
             <description>
+              Deprecated: use hippobean attribute instead.
               A bean path of HippoBean object which can be retrieved via pageContext.
-              NOTE: This is mainly for allowing script templates (such as Freemarker) to set object property by bean path.
-                    JSP developers could ignore this attribute and use 'hippobean' attribute instead directly with object property value.
             </description>
         </attribute>
         <attribute>
@@ -247,9 +245,9 @@
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
             <type>java.lang.Boolean</type>
-            <description>Deprecated: use navigationStateful instead.</description>
-            <description>If the link should be created for the virtual location of the jcr node behind the bean, use this attr with value true. When having canonical='true', this 
-            attribute is ignored.</description>
+            <description>Deprecated: use navigationStateful instead. If the link should be created 
+                for the virtual location of the jcr node behind the bean, use this attr with value true. 
+                When having canonical='true', this attribute is ignored.</description>
         </attribute>
         <attribute>
             <name>navigationStateful</name>
@@ -345,9 +343,8 @@
             <rtexprvalue>true</rtexprvalue>
             <type>java.lang.String</type>
             <description>
+              Deprecated: use preferItem attribute instead.
               A bean path of HstSiteMapItem object which can be retrieved via pageContext.
-              NOTE: This is mainly for allowing script templates (such as Freemarker) to set object property by bean path.
-                    JSP developers could ignore this attribute and use 'hippobean' attribute instead directly with object property value.
             </description>
         </attribute>
         <attribute>
@@ -391,9 +388,8 @@
             <rtexprvalue>true</rtexprvalue>
             <type>java.lang.String</type>
             <description>
+              Deprecated: Use current attribute instead.
               A bean path of a HippoFacetSubNavigation object which can be retrieved via pageContext.
-              NOTE: This is mainly for allowing script templates (such as Freemarker) to set object property by bean path.
-                    JSP developers could ignore this attribute and use 'hippobean' attribute instead directly with object property value.
             </description>
         </attribute>
         <attribute>
@@ -409,9 +405,8 @@
             <rtexprvalue>true</rtexprvalue>
             <type>java.lang.String</type>
             <description>
+              Deprecated: Use remove attribute instead.
               A bean path of a HippoFacetSubNavigation object which can be retrieved via pageContext.
-              NOTE: This is mainly for allowing script templates (such as Freemarker) to set object property by bean path.
-                    JSP developers could ignore this attribute and use 'hippobean' attribute instead directly with object property value.
             </description>
         </attribute>
         <attribute>
@@ -427,9 +422,8 @@
             <rtexprvalue>true</rtexprvalue>
             <type>java.lang.String</type>
             <description>
+              Deprecated: Use removeList attribute instead.
               A bean path of a HippoFacetSubNavigation object which can be retrieved via pageContext.
-              NOTE: This is mainly for allowing script templates (such as Freemarker) to set object property by bean path.
-                    JSP developers could ignore this attribute and use 'hippobean' attribute instead directly with object property value.
             </description>
         </attribute>
     </tag>
@@ -462,9 +456,8 @@
             <rtexprvalue>true</rtexprvalue>
             <type>java.lang.String</type>
             <description>
+              Deprecated: Use hippobean attribute instead.
               A bean path of HippoBean object which can be retrieved via pageContext.
-              NOTE: This is mainly for allowing script templates (such as Freemarker) to set object property by bean name.
-                    JSP developers could ignore this attribute and use 'hippobean' attribute instead directly with object property value.
             </description>
         </attribute>
     </tag>
@@ -496,9 +489,8 @@
             <rtexprvalue>true</rtexprvalue>
             <type>java.lang.String</type>
             <description>
+              Deprecated: Use hippohtml attribute instead.
               A bean name of HippoHtml object which can be retrieved from pageContext.
-              NOTE: This is mainly for allowing script templates (such as Freemarker) to set object property by bean name.
-                    JSP developers could ignore this attribute and use 'hippohtml' attribute instead directly with object property value.
             </description>
         </attribute>
         <attribute>
@@ -514,9 +506,8 @@
             <rtexprvalue>true</rtexprvalue>
             <type>java.lang.String</type>
             <description>
+              Deprecated: Use contentRewriter attribute instead.
               A bean name of ContentRewriter object which can be retrieved from pageContext.
-              NOTE: This is mainly for allowing script templates (such as Freemarker) to set object property by bean name.
-                    JSP developers could ignore this attribute and use 'contentRewriter' attribute instead directly with object property value.
             </description>
         </attribute>
         <example><![CDATA[
@@ -607,7 +598,8 @@
             <required>false</required>
             <rtexprvalue>true</rtexprvalue>
             <type>java.lang.String</type>
-            <description>Tag is Deprecated: use headContribution instead.
+            <description>This tag is Deprecated: use headContribution instead.
+                Also, this attribute is Deprecated: use element attribute instead.
             </description>
         </attribute>
         <attribute>
@@ -658,9 +650,8 @@
             <rtexprvalue>true</rtexprvalue>
             <type>java.lang.String</type>
             <description>
+              Deprecated: use element attribute instead.
               A bean name of Element object which can be retrieved from pageContext.
-              NOTE: This is mainly for allowing script templates (such as Freemarker) to set object property by bean name.
-                    JSP developers could ignore this attribute and use 'element' attribute instead directly with object property value.
             </description>
         </attribute>
         <attribute>
@@ -861,9 +852,8 @@
             <rtexprvalue>true</rtexprvalue>
             <type>java.lang.String</type>
             <description>
+              Deprecated: use element attribute instead.
               A bean name of Element object which can be retrieved from pageContext.
-              NOTE: This is mainly for allowing script templates (such as Freemarker) to set object property by bean name.
-                    JSP developers could ignore this attribute and use 'element' attribute instead directly with object property value.
             </description>
         </attribute>
         <example><![CDATA[

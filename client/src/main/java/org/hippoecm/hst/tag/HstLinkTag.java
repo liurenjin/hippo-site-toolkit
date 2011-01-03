@@ -304,6 +304,9 @@ public class HstLinkTag extends ParamContainerTag {
         this.link = hstLink;
     }
     
+    /**
+     * @deprecated Use {@link #setLink(HstLink)} directly.
+     */
     public void setLinkByBeanPath(String beanPath) {
         this.link = (HstLink) PageContextPropertyUtils.getProperty(pageContext, beanPath);
     }
@@ -336,6 +339,9 @@ public class HstLinkTag extends ParamContainerTag {
         this.hippoBean = hippoBean;
     }
     
+    /**
+     * @deprecated Use {@link HstLinkTag#setHippobean(HippoBean)} directly.
+     */
     public void setHippobeanByBeanPath(String beanPath) {
         this.hippoBean = (HippoBean) PageContextPropertyUtils.getProperty(pageContext, beanPath);
         if(this.hippoBean == null) {

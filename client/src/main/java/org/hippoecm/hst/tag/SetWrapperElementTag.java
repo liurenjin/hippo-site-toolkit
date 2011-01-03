@@ -90,6 +90,9 @@ public class SetWrapperElementTag extends BodyTagSupport {
         this.element = element;
     }
     
+    /**
+     * @deprecated Use {@link #setElement(Element)} directly.
+     */
     public void setElementByBeanPath(String beanPath) {
         this.element = (Element) PageContextPropertyUtils.getProperty(pageContext, beanPath);
     }

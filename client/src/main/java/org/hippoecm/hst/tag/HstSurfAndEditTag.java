@@ -241,6 +241,9 @@ public class HstSurfAndEditTag extends TagSupport {
         this.hippoBean = hippoBean;
     }
     
+    /**
+     * @deprecated Use {@link #setHippobean(HippoBean)} directly.
+     */
     public void setHippobeanByBeanPath(String beanPath) {
         this.hippoBean = (HippoBean) PageContextPropertyUtils.getProperty(pageContext, beanPath);
         if(this.hippoBean == null) {

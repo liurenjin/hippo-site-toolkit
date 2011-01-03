@@ -181,6 +181,9 @@ public class HstFacetNavigationLinkTag extends TagSupport {
         this.current = current;
     }
     
+    /**
+     * @deprecated Use {@link #setCurrent(HippoFacetSubNavigation)} directly.
+     */
     public void setCurrentByBeanPath(String beanPath) {
         this.current = (HippoFacetSubNavigation) PageContextPropertyUtils.getProperty(pageContext, beanPath);
         if(this.current == null) {
@@ -195,6 +198,10 @@ public class HstFacetNavigationLinkTag extends TagSupport {
     public void setRemove(HippoFacetSubNavigation remove) {
         this.remove = remove;
     }
+    
+    /**
+     * @deprecated Use {@link #setRemove(HippoFacetSubNavigation)} directly.
+     */
     public void setRemoveByBeanPath(String beanPath) {
         this.remove = (HippoFacetSubNavigation) PageContextPropertyUtils.getProperty(pageContext, beanPath);
         if(this.remove == null) {
@@ -209,6 +216,10 @@ public class HstFacetNavigationLinkTag extends TagSupport {
     public void setRemoveList(List<HippoFacetSubNavigation> removeList) {
         this.removeList = removeList;
     }
+    
+    /**
+     * @deprecated Use {@link #setRemoveList(List)} directly.
+     */
     public void setRemoveListByBeanPath(String beanPath) {
         this.removeList = (List<HippoFacetSubNavigation>) PageContextPropertyUtils.getProperty(pageContext, beanPath);
         if(this.removeList == null) {
