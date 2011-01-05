@@ -281,7 +281,7 @@ public class BinariesServlet extends HttpServlet {
         String resourcePath = ResourceUtils.getResourcePath(request, baseBinariesContentPath);
         BinaryPage page = binariesCache.getPageFromBlockingCache(resourcePath);
         if (page != null) {
-            validatePageInCache(request, page);
+            page = getValidatedPageFromCache(request, page);
         } else {
             page = getPage(request, resourcePath);
             binariesCache.putPage(page);
@@ -289,7 +289,7 @@ public class BinariesServlet extends HttpServlet {
         return page;
     }
 
-    private void validatePageInCache(HttpServletRequest request, BinaryPage page) {
+    private BinaryPage getValidatedPageFromCache(HttpServletRequest request, BinaryPage page) {
         if (HeaderUtils.isForcedCheck(request) || binariesCache.hasPageExpired(page)) {
             long lastModified = getLastModifiedFromResource(request, page.getResourcePath());
             if (binariesCache.isPageStale(page, lastModified)) {
@@ -300,6 +300,7 @@ public class BinariesServlet extends HttpServlet {
                 binariesCache.updateExpirationTime(page);
             }
         }
+        return page;
     }
 
     private long getLastModifiedFromResource(HttpServletRequest request, String resourcePath) {
