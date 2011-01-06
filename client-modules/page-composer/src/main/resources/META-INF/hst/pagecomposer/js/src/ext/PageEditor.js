@@ -246,7 +246,7 @@ Hippo.App.PageEditor = Ext.extend(Ext.App, {
                                 this.isReloading = true;
                             }
                         }
-											},
+					},
                     scope: this
                 },
                 load :{
@@ -626,6 +626,9 @@ Hippo.App.PageModelStore = Ext.extend(Hippo.App.RestStore, {
                 write :{
                      fn: function(store, action, result, res,  rs ) {
                          Ext.Msg.hide();
+                         Ext.Msg.wait('Refreshing page ...');
+                         var iframe = Ext.getCmp('Iframe');
+                         iframe.setSrc(iframe.getFrameDocument().location.href);
                      }
                 },
                 load : {
@@ -633,8 +636,6 @@ Hippo.App.PageModelStore = Ext.extend(Hippo.App.RestStore, {
                         Ext.Msg.hide();
                     }
                 }
-
-
             }
         });
         var cfg = {
