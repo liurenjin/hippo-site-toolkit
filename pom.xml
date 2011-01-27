@@ -98,10 +98,10 @@
     <jackrabbit.version>2.1.2</jackrabbit.version>
     <jackrabbit-ocm.version>1.5.3</jackrabbit-ocm.version>
 
-    <cms.version>2.18.00</cms.version>
-    <repository.version>2.18.00</repository.version>
-    <hippo-packages.version>2.18.00</hippo-packages.version>
-    <publication-workflow.version>2.18.00</publication-workflow.version>
+    <cms.version>2.18.01</cms.version>
+    <repository.version>2.18.01</repository.version>
+    <hippo-packages.version>2.18.01</hippo-packages.version>
+    <publication-workflow.version>2.18.01</publication-workflow.version>
     <configeditor.version>1.05.00</configeditor.version>
   
    
@@ -120,7 +120,7 @@
     <mime4j.version>0.6</mime4j.version>
     <jetty.version>6.1.18</jetty.version>
     <atomikos.version>3.1.4</atomikos.version>
-    <forge.gallerypicker.version>1.07.00</forge.gallerypicker.version>    
+    <forge.gallerypicker.version>1.07.01</forge.gallerypicker.version>    
   </properties>
 
   <!--
@@ -146,7 +146,7 @@
     <repository>
       <id>hippo</id>
       <name>Hippo maven 2 repository.</name>
-      <url>http://repository.hippocms.org/maven2/</url>
+      <url>http://maven.onehippo.com/maven2/</url>
     </repository>
     <repository>
       <id>codehaus</id>
