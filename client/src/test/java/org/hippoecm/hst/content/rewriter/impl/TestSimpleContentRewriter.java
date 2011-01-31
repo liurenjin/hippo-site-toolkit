@@ -127,7 +127,6 @@ public class TestSimpleContentRewriter {
         };
         
         String html = rewriter.rewrite(CONTENT_WITH_LINKS, node, request, response);
-        System.out.println("html: " + html);
         assertTrue(html.contains("/foo/bar?a=b"));
     }
 }
