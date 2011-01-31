@@ -99,7 +99,8 @@ public class SimpleContentRewriter implements ContentRewriter<String> {
                 if (hrefIndexEnd > hrefIndexStart) {
                     String documentPath = html.substring(hrefIndexStart, hrefIndexEnd);
                     String queryString = StringUtils.substringAfter(documentPath, "?");
-                    if (!StringUtils.isEmpty(queryString)) {
+                    boolean hasQueryString = !StringUtils.isEmpty(queryString); 
+                    if (hasQueryString) {
                         documentPath = StringUtils.substringBefore(documentPath, "?");
                     }
 
@@ -116,7 +117,7 @@ public class SimpleContentRewriter implements ContentRewriter<String> {
                            log.warn("Skip href because url is null"); 
                         }
                     }
-                    if (!StringUtils.isEmpty(queryString)) {
+                    if (hasQueryString) {
                         sb.append('?').append(queryString);
                     }
                     sb.append(html.substring(hrefIndexEnd, endTag));
