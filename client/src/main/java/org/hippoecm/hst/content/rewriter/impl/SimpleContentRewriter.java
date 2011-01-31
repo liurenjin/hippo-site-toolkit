@@ -98,11 +98,6 @@ public class SimpleContentRewriter implements ContentRewriter<String> {
                 int hrefIndexEnd = html.indexOf(ATTR_END, hrefIndexStart);
                 if (hrefIndexEnd > hrefIndexStart) {
                     String documentPath = html.substring(hrefIndexStart, hrefIndexEnd);
-                    String queryString = StringUtils.substringAfter(documentPath, "?");
-                    boolean hasQueryString = !StringUtils.isEmpty(queryString); 
-                    if (hasQueryString) {
-                        documentPath = StringUtils.substringBefore(documentPath, "?");
-                    }
 
                     offset = endTag;
                     sb.append(html.substring(globalOffset, hrefIndexStart));
@@ -110,16 +105,24 @@ public class SimpleContentRewriter implements ContentRewriter<String> {
                     if(isExternal(documentPath)) {
                         sb.append(documentPath);
                     } else {
+                        String queryString = StringUtils.substringAfter(documentPath, "?");
+                        boolean hasQueryString = !StringUtils.isEmpty(queryString); 
+                        if (hasQueryString) {
+                            documentPath = StringUtils.substringBefore(documentPath, "?");
+                        }
+                        
                         HstLink href = getDocumentLink(documentPath,node, request, response);
                         if(href != null && href.getPath() != null) {
                             sb.append(href.toUrlForm(request, response, false));
                         } else {
                            log.warn("Skip href because url is null"); 
                         }
+                        
+                        if (hasQueryString) {
+                            sb.append('?').append(queryString);
+                        }
                     }
-                    if (hasQueryString) {
-                        sb.append('?').append(queryString);
-                    }
+                    
                     sb.append(html.substring(hrefIndexEnd, endTag));
                     appended = true;
                 }

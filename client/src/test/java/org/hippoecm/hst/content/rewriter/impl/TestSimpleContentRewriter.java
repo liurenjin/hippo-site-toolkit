@@ -63,6 +63,7 @@ public class TestSimpleContentRewriter {
         "<p>Test</p>\n" + 
         "<a href=\"/foo/bar\">Foo1</a>\n" +
         "<a href=\"/foo/bar?a=b\">Foo2</a>\n" +
+        "<a href=\"http://www.onehippo.org/external/foo/bar?a=b\">Foo2</a>\n" +
         "</div>";
     
     private Node node;
@@ -128,5 +129,6 @@ public class TestSimpleContentRewriter {
         
         String html = rewriter.rewrite(CONTENT_WITH_LINKS, node, request, response);
         assertTrue(html.contains("/foo/bar?a=b"));
+        assertTrue(html.contains("http://www.onehippo.org/external/foo/bar?a=b"));
     }
 }
