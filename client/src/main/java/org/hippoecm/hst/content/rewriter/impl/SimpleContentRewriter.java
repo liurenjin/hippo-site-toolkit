@@ -23,6 +23,7 @@ import javax.jcr.InvalidItemStateException;
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 
+import org.apache.commons.lang.StringUtils;
 import org.hippoecm.hst.content.rewriter.ContentRewriter;
 import org.hippoecm.hst.core.component.HstRequest;
 import org.hippoecm.hst.core.component.HstResponse;
@@ -97,6 +98,10 @@ public class SimpleContentRewriter implements ContentRewriter<String> {
                 int hrefIndexEnd = html.indexOf(ATTR_END, hrefIndexStart);
                 if (hrefIndexEnd > hrefIndexStart) {
                     String documentPath = html.substring(hrefIndexStart, hrefIndexEnd);
+                    String queryString = StringUtils.substringAfter(documentPath, "?");
+                    if (!StringUtils.isEmpty(queryString)) {
+                        documentPath = StringUtils.substringBefore(documentPath, "?");
+                    }
 
                     offset = endTag;
                     sb.append(html.substring(globalOffset, hrefIndexStart));
@@ -110,6 +115,9 @@ public class SimpleContentRewriter implements ContentRewriter<String> {
                         } else {
                            log.warn("Skip href because url is null"); 
                         }
+                    }
+                    if (!StringUtils.isEmpty(queryString)) {
+                        sb.append('?').append(queryString);
                     }
                     sb.append(html.substring(hrefIndexEnd, endTag));
                     appended = true;
