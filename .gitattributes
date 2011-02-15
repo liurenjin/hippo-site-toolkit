@@ -243,6 +243,7 @@ commons/src/main/java/org/hippoecm/hst/container/HstContainerConfigImpl.java -te
 commons/src/main/java/org/hippoecm/hst/container/HstContainerPortlet.java svneol=native#text/plain
 commons/src/main/java/org/hippoecm/hst/container/HstContainerServlet.java svneol=native#text/plain
 commons/src/main/java/org/hippoecm/hst/container/HstVirtualHostsFilter.java svneol=native#text/plain
+commons/src/main/java/org/hippoecm/hst/container/XSSUrlFilter.java -text
 commons/src/main/java/org/hippoecm/hst/core/component/AbstractHstResponseState.java svneol=native#text/plain
 commons/src/main/java/org/hippoecm/hst/core/component/HeadElementImpl.java svneol=native#text/plain
 commons/src/main/java/org/hippoecm/hst/core/component/HstPortletResponseState.java svneol=native#text/plain
