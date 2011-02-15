@@ -34,6 +34,7 @@ import org.hippoecm.hst.core.component.HstComponentException;
 import org.hippoecm.hst.core.component.HstRequest;
 import org.hippoecm.hst.core.component.HstResponse;
 import org.hippoecm.hst.util.PathUtils;
+import org.hippoecm.hst.utils.SimpleHtmlExtractor;
 import org.hippoecm.repository.reviewedactions.FullReviewedActionsWorkflow;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -111,8 +112,8 @@ public class Detail extends BaseHstComponent {
                     // retrieve the comment content to manipulate
                     TextPage commentPage = (TextPage) wpm.getObject(commentsFolderPath + "/" + commentNodeName);
                     // update content properties
-                    commentPage.setTitle(title);
-                    commentPage.setBodyContent(comment);
+                    commentPage.setTitle(SimpleHtmlExtractor.getText(title));
+                    commentPage.setBodyContent(SimpleHtmlExtractor.getText(comment));
                     
                     // update now
                     wpm.update(commentPage);
