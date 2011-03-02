@@ -44,17 +44,41 @@ public class JcrHippoRepository implements Repository {
     protected HippoRepository hippoRepository;       // repository created via HippoRepositoryFactory
     protected Repository jcrDelegateeRepository;     // repository created from hippo ecm jca support
     
-    protected boolean vmRepositoryUsed;
+    private boolean vmRepositoryUsed;
+    private boolean localRepositoryUsed;
     
     private boolean repositoryInitialized;
     
     public JcrHippoRepository(String repositoryURI) {
         this.repositoryURI = repositoryURI;
         vmRepositoryUsed = (repositoryURI != null && repositoryURI.startsWith("vm:"));
+        
+        if (StringUtils.isBlank(repositoryURI)) {
+            localRepositoryUsed = true;
+        } else if (StringUtils.startsWith(repositoryURI, "file:")) {
+            localRepositoryUsed = true;
+        } else if (StringUtils.startsWith(repositoryURI, "/")) {
+            localRepositoryUsed = true;
+        }
     }
     
     public JcrHippoRepository(HippoRepository hippoRepository) {
         this.hippoRepository = hippoRepository;
+        
+        if (hippoRepository != null) {
+            repositoryInitialized = true;
+            repositoryURI = hippoRepository.getLocation();
+            
+            vmRepositoryUsed = (repositoryURI != null && repositoryURI.startsWith("vm:"));
+            
+            if (StringUtils.isBlank(repositoryURI)) {
+                localRepositoryUsed = true;
+            } else if (StringUtils.startsWith(repositoryURI, "file:")) {
+                localRepositoryUsed = true;
+            } else if (StringUtils.startsWith(repositoryURI, "/")) {
+                localRepositoryUsed = true;
+            }
+        }
     }
     
     private synchronized void initHippoRepository() throws RepositoryException {
@@ -200,7 +224,7 @@ public class JcrHippoRepository implements Repository {
     }
     
     public void closeHippoRepository() {
-        if (hippoRepository != null) {
+        if (hippoRepository != null && !localRepositoryUsed && !vmRepositoryUsed) {
             hippoRepository.close();
         }
     }
