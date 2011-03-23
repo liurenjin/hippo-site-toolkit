@@ -130,8 +130,7 @@ public class HstComponentConfigurationService extends AbstractJCRService impleme
 
             if (parameterNames != null && parameterValues != null) {
                 if (parameterNames.length != parameterValues.length) {
-                    log
-                            .warn("Skipping parameters for component because they only make sense if there are equal number of names and values");
+                    log.warn("Skipping parameters for component '{}' because they only make sense if there are equal number of names and values", id);
                 } else {
                     for (int i = 0; i < parameterNames.length; i++) {
                         this.parameters.put(parameterNames[i], parameterValues[i]);
