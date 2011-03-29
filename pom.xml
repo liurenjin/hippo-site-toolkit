@@ -117,15 +117,13 @@
 
   <distributionManagement>
     <repository>
-      <id>repository.hippocms.org</id>
-      <url>ftp://repository.hippocms.org/maven2</url>
+      <name>Hippo Maven 2 Repository</name>
+      <id>hippo-maven2</id>
+      <url>https://maven.onehippo.com/content/repositories/releases/</url>
+      <uniqueVersion>false</uniqueVersion>
     </repository>
-    <snapshotRepository>
-      <id>repository.hippocms.org</id>
-      <url>ftp://repository.hippocms.org/maven2</url>
-    </snapshotRepository>
   </distributionManagement>
-
+  
   <developers>
     <developer>
       <name>Woonsan Ko</name>
