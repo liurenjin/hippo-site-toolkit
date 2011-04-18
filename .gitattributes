@@ -379,6 +379,7 @@ components/core/src/main/java/org/hippoecm/hst/site/request/HstRequestContextImp
 components/core/src/main/java/org/hippoecm/hst/site/request/MatchedMappingImpl.java svneol=native#text/plain
 components/core/src/main/java/org/hippoecm/hst/site/request/ResolvedSiteMapItemImpl.java svneol=native#text/plain
 components/core/src/main/java/org/hippoecm/hst/site/request/SiteNameDecoratedContextCredentialsProvider.java svneol=native#text/plain
+components/core/src/main/resources/ehcache.xml -text svneol=unset#text/plain
 components/core/src/main/resources/org/hippoecm/hst/site/container/SpringComponentManager-configuration.xml svneol=native#text/plain
 components/core/src/main/resources/org/hippoecm/hst/site/container/SpringComponentManager-container.xml svneol=native#text/plain
 components/core/src/main/resources/org/hippoecm/hst/site/container/SpringComponentManager-jcr.xml svneol=native#text/plain
