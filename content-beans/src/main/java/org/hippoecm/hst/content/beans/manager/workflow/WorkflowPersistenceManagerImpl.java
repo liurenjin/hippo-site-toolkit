@@ -17,7 +17,9 @@ package org.hippoecm.hst.content.beans.manager.workflow;
 
 import java.rmi.RemoteException;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
+import java.util.Map.Entry;
 
 import javax.jcr.Item;
 import javax.jcr.Node;
@@ -75,9 +77,9 @@ public class WorkflowPersistenceManagerImpl extends ObjectBeanManagerImpl implem
     protected String folderNodeTypeName = "hippostd:folder";
 
     /**
-     * The workflow category name to get a folder workflow.
+     * The workflow category name to get a folder workflow. We use threepane as this is the same as the CMS uses
      */
-    protected String folderNodeWorkflowCategory = "internal"; 
+    protected String folderNodeWorkflowCategory = "threepane"; 
     
     /**
      * The workflow category name to get a document workflow. 
@@ -274,8 +276,26 @@ public class WorkflowPersistenceManagerImpl extends ObjectBeanManagerImpl implem
 
                 String category = documentAdditionWorkflowCategory;
 
+                
                 if (nodeTypeName.equals(folderNodeTypeName)) {
                     category = folderAdditionWorkflowCategory;
+                    
+                    // now check if there is some more specific workflow for hippostd:folder
+                    if(fwf.hints() != null &&  fwf.hints().get("prototypes") != null ) {
+                        Object protypesMap = fwf.hints().get("prototypes");
+                        if(protypesMap instanceof Map) {
+                            for(Object o : ((Map)protypesMap).entrySet()) {
+                                Entry entry = (Entry) o;
+                                if(entry.getKey() instanceof String && entry.getValue() instanceof Set) {
+                                    if( ((Set)entry.getValue()).contains(folderNodeTypeName)) {
+                                        // we found possibly a more specific workflow for folderNodeTypeName. Use the key as category
+                                        category =  (String)entry.getKey();
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
 
                 String nodeName = uriEncoding.encode(name);
