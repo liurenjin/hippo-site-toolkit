@@ -115,15 +115,22 @@
     <url>http://svn.hippocms.org/repos/hippo/ecm/site-toolkit/branches/Branch-HSTTWO-v2_05_xx</url>
   </scm>
 
- <distributionManagement>
+
+   <distributionManagement>
     <repository>
       <name>Hippo Maven 2 Repository</name>
       <id>hippo-maven2</id>
       <url>https://maven.onehippo.com/content/repositories/releases/</url>
       <uniqueVersion>false</uniqueVersion>
     </repository>
+    <snapshotRepository>
+      <id>hippo-maven2-snapshots</id>
+      <name>Hippo Maven 2 Snapshots Repository</name>
+      <url>https://maven.onehippo.com/content/repositories/snapshots/</url>
+      <uniqueVersion>false</uniqueVersion>
+    </snapshotRepository>
   </distributionManagement>
-
+ 
   <developers>
     <developer>
       <name>Woonsan Ko</name>
@@ -209,37 +216,105 @@
 
   <repositories>
     <repository>
-      <id>hippoecm</id>
-      <name>Hippo ECM maven 2 repository.</name>
-      <url>http://repository.hippocms.org/maven2</url>
+      <id>hippo-maven2-snapshots</id>
+      <name>Hippo Maven 2</name>
+      <url>http://maven.onehippo.com/maven2-snapshots/</url>
       <snapshots>
         <enabled>true</enabled>
+      </snapshots>
+    </repository>
+    <repository>
+      <id>hippo</id>
+      <name>Hippo Maven 2</name>
+      <url>http://maven.onehippo.com/maven2/</url>
+      <snapshots>
+        <enabled>false</enabled>
       </snapshots>
       <releases>
         <updatePolicy>never</updatePolicy>
       </releases>
-      <layout>default</layout>
+    </repository>
+    <!-- DISABLED repositories which are often "transitively" pulled in 
+        and/or were used in the past
+    -->
+    <repository>
+      <id>codehaus</id>
+      <url>https://nexus.codehaus.org/content/repositories/releases/org/codehaus/mojo</url>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
     </repository>
     <repository>
       <id>hippoecm.legacy</id>
       <name>Hippo ECM Maven 1 repository.</name>
-      <url>http://repository.hippocms.org/maven</url>
+      <url>http://repository.hippocms.org/maven/</url>
       <snapshots>
-        <enabled>true</enabled>
+        <enabled>false</enabled>
       </snapshots>
       <releases>
-        <updatePolicy>never</updatePolicy>
+        <enabled>false</enabled>
       </releases>
-      <layout>legacy</layout>
     </repository>
     <repository>
-      <id>codehaus</id>
-      <url>https://nexus.codehaus.org/content/repositories/releases/org/codehaus/mojo/</url>
+      <id>jpox</id>
+      <name>JPOX maven repository.</name>
+      <url>http://www.jpox.org/downloads/maven2/</url>
+      <layout>default</layout>
       <snapshots>
-        <enabled>true</enabled>
+        <enabled>false</enabled>
       </snapshots>
       <releases>
-        <updatePolicy>never</updatePolicy>
+        <enabled>true</enabled>
+      </releases>
+    </repository>
+    <repository>
+      <id>jpox.legacy</id>
+      <name>JPOX maven repository.</name>
+      <url>http://www.jpox.org/downloads/maven/</url>
+      <layout>default</layout>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+    </repository>
+    <repository>
+      <id>glassfish</id>
+      <name>Glassfish maven repository</name>
+      <url>http://download.java.net/maven/glassfish</url>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+    </repository>
+    <repository>
+      <id>openqa</id>
+      <name>OpenQA Repository</name>
+      <url>http://nexus.openqa.org/content/repositories/releases</url>
+      <layout>default</layout>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+    </repository>
+    <repository>
+      <id>m2snapshots</id>
+      <name>Maven 2 snapshots repository</name>
+      <url>http://people.apache.org/repo/m2-snapshot-repository</url>
+      <layout>default</layout>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+      <releases>
+        <enabled>false</enabled>
       </releases>
     </repository>
     <repository>
