@@ -142,6 +142,7 @@ public class BinariesCache {
                 log.warn("No EhCache configuration found. Create new memory cache '{}' with {} maxObjects.", name,
                         maxObjectsInMem);
                 cache = new Cache(name, maxObjectsInMem, false, true, 0, 0);
+                cache.setStatisticsEnabled(true);
                 cacheManager.addCache(cache);
             }
 
