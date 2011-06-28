@@ -142,7 +142,6 @@ public class BinariesCache {
                 log.warn("No EhCache configuration found. Create new memory cache '{}' with {} maxObjects.", name,
                         maxObjectsInMem);
                 cache = new Cache(name, maxObjectsInMem, false, true, 0, 0);
-                cache.setStatisticsEnabled(true);
                 cacheManager.addCache(cache);
             }
 
@@ -162,6 +161,7 @@ public class BinariesCache {
     private void registerCacheMBeans() {
         synchronized (cacheManager) {
             if (!mBeansRegistered) {
+                blockingCache.setStatisticsEnabled(true);
                 MBeanServer mBeanServer = ManagementFactory.getPlatformMBeanServer();
                 ManagementService.registerMBeans(cacheManager, mBeanServer, true, true, true, true);
                 mBeansRegistered = true;
