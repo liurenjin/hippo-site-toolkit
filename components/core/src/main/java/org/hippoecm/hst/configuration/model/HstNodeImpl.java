@@ -86,9 +86,10 @@ public class HstNodeImpl implements HstNode {
        
        provider = inheritedNode.provider;
        nodeTypeName = inheritedNode.nodeTypeName;
+       this.parent = parent;
        children = new LinkedHashMap<String, HstNode>();
        for(Entry<String, HstNode> entry : inheritedNode.children.entrySet()) {
-           children.put(entry.getKey(), new HstNodeImpl((HstNodeImpl)entry.getValue()));
+           children.put(entry.getKey(), new HstNodeImpl((HstNodeImpl)entry.getValue(), this));
        }
 
     }
@@ -205,8 +206,7 @@ public class HstNodeImpl implements HstNode {
      * @param inheritedNode
      */
     protected void addDescendantHstNodeCopy(String nodeName, HstNodeImpl nodeToCopyAndAdd) {
-        HstNodeImpl copy = new HstNodeImpl(nodeToCopyAndAdd);
-        copy.parent = this;
+        HstNodeImpl copy = new HstNodeImpl(nodeToCopyAndAdd, this);
         addNode(nodeName, copy);
     }
 
