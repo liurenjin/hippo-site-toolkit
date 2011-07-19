@@ -82,7 +82,7 @@ public class HstNodeImpl implements HstNode {
      * 
      * @param inheritedNode
      */
-    private HstNodeImpl(HstNodeImpl inheritedNode) {
+    private HstNodeImpl(HstNodeImpl inheritedNode, HstNode parent) {
        
        provider = inheritedNode.provider;
        nodeTypeName = inheritedNode.nodeTypeName;
