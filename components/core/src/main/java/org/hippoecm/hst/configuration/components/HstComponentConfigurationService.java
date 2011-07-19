@@ -339,6 +339,7 @@ public class HstComponentConfigurationService implements HstComponentConfigurati
         HstComponentConfigurationService copy = new HstComponentConfigurationService(intern(newId));
         copy.parent = parent;
         copy.componentClassName = child.componentClassName;
+        copy.hasClassNameConfigured = child.hasClassNameConfigured;
         copy.name = child.name;
         copy.referenceName = child.referenceName;
         copy.hstTemplate = child.hstTemplate;
@@ -395,6 +396,7 @@ public class HstComponentConfigurationService implements HstComponentConfigurati
                 // get all properties that are null from the referenced component:
                 if (!this.hasClassNameConfigured) {
                     this.componentClassName = referencedComp.componentClassName;
+                    this.hasClassNameConfigured = referencedComp.hasClassNameConfigured;
                 }
                 if (this.name == null) {
                     this.name = referencedComp.name;
@@ -491,6 +493,7 @@ public class HstComponentConfigurationService implements HstComponentConfigurati
         
         if (!this.hasClassNameConfigured) {
             this.componentClassName = childToMerge.componentClassName;
+            this.hasClassNameConfigured = childToMerge.hasClassNameConfigured;
         }
         if (this.hstTemplate == null) {
             this.hstTemplate = childToMerge.hstTemplate;
