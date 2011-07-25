@@ -85,9 +85,9 @@ public class SecurityValve extends AbstractValve {
             HstLink destinationLink = null;
             String formLoginPage = resolvedMount.getFormLoginPage();
             
+            Mount destLinkMount = resolvedMount.getMount();
+            
             try {
-                Mount destLinkMount = resolvedMount.getMount();
-                
                 if (!destLinkMount.isSite()) {
                     Mount siteMount = requestContext.getMount(ContainerConstants.MOUNT_ALIAS_SITE);
                     
@@ -115,9 +115,10 @@ public class SecurityValve extends AbstractValve {
                 if (!StringUtils.isBlank(formLoginPage)) {
                     try {
                         HttpSession httpSession = servletRequest.getSession(true);
-                        httpSession.setAttribute(DESTINATION_ATTR_NAME, destinationLink.toUrlForm(requestContext, false));
+                        httpSession.setAttribute(DESTINATION_ATTR_NAME, destinationLink.toUrlForm(requestContext, true));
                         httpSession.setAttribute(SECURITY_EXCEPTION_ATTR_NAME, securityException);
-                        servletResponse.sendRedirect(servletResponse.encodeURL(servletRequest.getContextPath() + formLoginPage));
+                        String formLoginURL = requestContext.getHstLinkCreator().create(formLoginPage, destLinkMount).toUrlForm(requestContext, true);
+                        servletResponse.sendRedirect(formLoginURL);
                         return;
                     } catch (IOException ioe) {
                         if (log.isDebugEnabled()) {
