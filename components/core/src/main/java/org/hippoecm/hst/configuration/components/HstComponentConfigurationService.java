@@ -25,6 +25,8 @@ import java.util.Map.Entry;
 
 import org.apache.commons.lang.StringUtils;
 import org.hippoecm.hst.configuration.HstNodeTypes;
+import org.hippoecm.hst.configuration.StringPool;
+import org.hippoecm.hst.configuration.components.HstComponentConfigurationService;
 import org.hippoecm.hst.configuration.model.HstNode;
 import org.hippoecm.hst.core.component.GenericHstComponent;
 import org.hippoecm.hst.provider.ValueProvider;
@@ -567,25 +569,27 @@ public class HstComponentConfigurationService implements HstComponentConfigurati
     }
 
     protected void setRenderPath(Map<String, HstNode> templateResourceMap) {
-        String templateRenderPath = null;
-        HstNode template = templateResourceMap.get(getHstTemplate());
-        
-        if (template != null) {
-            ValueProvider valueProvider = template.getValueProvider();
-            
-            if (valueProvider.hasProperty(HstNodeTypes.TEMPLATE_PROPERTY_RENDERPATH)) {
-                templateRenderPath = valueProvider.getString(HstNodeTypes.TEMPLATE_PROPERTY_RENDERPATH);
+        if(getHstTemplate()  != null) {
+            String templateRenderPath = null;
+            HstNode template = templateResourceMap.get(getHstTemplate());
+            if (template != null) {
+                ValueProvider valueProvider = template.getValueProvider();
+                
+                if (valueProvider.hasProperty(HstNodeTypes.TEMPLATE_PROPERTY_RENDERPATH)) {
+                    templateRenderPath = valueProvider.getString(HstNodeTypes.TEMPLATE_PROPERTY_RENDERPATH);
+                }
+                
+                if (StringUtils.isBlank(templateRenderPath) && valueProvider.hasProperty(HstNodeTypes.TEMPLATE_PROPERTY_SCRIPT)) {
+                    templateRenderPath = "jcr:" + valueProvider.getPath();
+                }
+                
+                this.isNamedRenderer = valueProvider.getBoolean(HstNodeTypes.TEMPLATE_PROPERTY_IS_NAMED);
             }
-            
-            if (StringUtils.isBlank(templateRenderPath) && valueProvider.hasProperty(HstNodeTypes.TEMPLATE_PROPERTY_SCRIPT)) {
-                templateRenderPath = "jcr:" + valueProvider.getPath();
+            renderPath = StringPool.get(templateRenderPath);
+            if(renderPath == null) {
+                log.warn("renderer '{}' for component '{}' can not be found. This component will not have a renderer.", getHstTemplate(), id);
             }
-            
-            this.isNamedRenderer = valueProvider.getBoolean(HstNodeTypes.TEMPLATE_PROPERTY_IS_NAMED);
         }
-        
-        this.renderPath = intern(templateRenderPath);
-        
         for (HstComponentConfigurationService child : orderedListConfigs) {
             child.setRenderPath(templateResourceMap);
         }
