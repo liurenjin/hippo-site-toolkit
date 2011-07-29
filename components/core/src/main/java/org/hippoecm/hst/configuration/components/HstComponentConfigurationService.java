@@ -25,7 +25,6 @@ import java.util.Map.Entry;
 
 import org.apache.commons.lang.StringUtils;
 import org.hippoecm.hst.configuration.HstNodeTypes;
-import org.hippoecm.hst.configuration.StringPool;
 import org.hippoecm.hst.configuration.components.HstComponentConfigurationService;
 import org.hippoecm.hst.configuration.model.HstNode;
 import org.hippoecm.hst.core.component.GenericHstComponent;
@@ -585,7 +584,7 @@ public class HstComponentConfigurationService implements HstComponentConfigurati
                 
                 this.isNamedRenderer = valueProvider.getBoolean(HstNodeTypes.TEMPLATE_PROPERTY_IS_NAMED);
             }
-            renderPath = StringPool.get(templateRenderPath);
+            renderPath = intern(templateRenderPath);
             if(renderPath == null) {
                 log.warn("renderer '{}' for component '{}' can not be found. This component will not have a renderer.", getHstTemplate(), id);
             }
