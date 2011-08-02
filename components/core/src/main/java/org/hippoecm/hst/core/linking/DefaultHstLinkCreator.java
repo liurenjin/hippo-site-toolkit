@@ -33,6 +33,7 @@ import org.hippoecm.hst.content.beans.standard.HippoBean;
 import org.hippoecm.hst.core.request.HstRequestContext;
 import org.hippoecm.hst.core.request.ResolvedSiteMapItem;
 import org.hippoecm.hst.provider.jcr.JCRUtilities;
+import org.hippoecm.hst.core.util.HstSiteMapUtils;
 import org.hippoecm.hst.util.PathUtils;
 import org.hippoecm.repository.api.HippoNodeType;
 import org.slf4j.Logger;
@@ -193,7 +194,7 @@ public class DefaultHstLinkCreator implements HstLinkCreator {
 
 
     public HstLink create(HstSiteMapItem toHstSiteMapItem) {
-        return postProcess(new HstLinkImpl(getPath(toHstSiteMapItem), toHstSiteMapItem.getHstSiteMap().getSite().getMount()));
+        return postProcess(new HstLinkImpl(HstSiteMapUtils.getPath(toHstSiteMapItem), toHstSiteMapItem.getHstSiteMap().getSite().getMount()));
     }
 
     public HstLink createByRefId(String siteMapItemRefId, Mount mount) {
@@ -275,7 +276,7 @@ public class DefaultHstLinkCreator implements HstLinkCreator {
             return null;
         }
         
-        return postProcess(new HstLinkImpl(getPath(siteMapItem), hstSite.getMount()));
+        return postProcess(new HstLinkImpl(HstSiteMapUtils.getPath(siteMapItem), hstSite.getMount()));
     }
 
     @Deprecated
@@ -300,36 +301,6 @@ public class DefaultHstLinkCreator implements HstLinkCreator {
         return link;
     }
     
-    /**
-     * @param siteMapItem
-     * @return String representation of the path
-     */
-    public static String getPath(HstSiteMapItem siteMapItem) {
-        StringBuffer path = new StringBuffer(siteMapItem.getValue());
-        while (siteMapItem.getParentItem() != null) {
-            siteMapItem = siteMapItem.getParentItem();
-            path.insert(0, "/").insert(0, siteMapItem.getValue());
-        }
-        return path.toString();
-    }
-    
-    public static String getPath(HstSiteMapItem siteMapItem, String relPath) {
-        StringBuffer path = new StringBuffer(siteMapItem.getValue());
-        while (siteMapItem.getParentItem() != null) {
-            siteMapItem = siteMapItem.getParentItem();
-            path.insert(0, "/").insert(0, siteMapItem.getValue());
-        }
-        if(relPath == null) {
-            return path.toString();
-        }
-        if(relPath.startsWith("/")) {
-            path.append(relPath);
-        } else {
-            path.append("/").append(relPath);
-        }
-        return path.toString();
-    }
-
     public String getBinariesPrefix() {
         return this.binariesPrefix == null ? "" : this.binariesPrefix;
     }
