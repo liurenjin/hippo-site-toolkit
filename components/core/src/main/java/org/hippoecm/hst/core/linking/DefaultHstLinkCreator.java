@@ -33,7 +33,7 @@ import org.hippoecm.hst.content.beans.standard.HippoBean;
 import org.hippoecm.hst.core.request.HstRequestContext;
 import org.hippoecm.hst.core.request.ResolvedSiteMapItem;
 import org.hippoecm.hst.provider.jcr.JCRUtilities;
-import org.hippoecm.hst.core.util.HstSiteMapUtils;
+import org.hippoecm.hst.util.HstSiteMapUtils;
 import org.hippoecm.hst.util.PathUtils;
 import org.hippoecm.repository.api.HippoNodeType;
 import org.slf4j.Logger;
@@ -460,14 +460,14 @@ public class DefaultHstLinkCreator implements HstLinkCreator {
                     
                     if(!virtual && nodePath.equals(mount.getCanonicalContentPath())) {
                         // the root node of the site. Return the homepage
-                        return new HstLinkImpl(mount.getHomePage(), mount);
+                        return new HstLinkImpl(HstSiteMapUtils.getPath(mount, mount.getHomePage()), mount);
                     }
                     if(!virtual && nodePath.startsWith(mount.getCanonicalContentPath() + "/")) {
                         nodePath = nodePath.substring(mount.getCanonicalContentPath().length());
                         matchedMount = true;
                     } else if (virtual && nodePath.equals(mount.getContentPath())) { 
                         // the root node of the site. Return the homepage
-                        return new HstLinkImpl(mount.getHomePage(), mount);
+                        return new HstLinkImpl(HstSiteMapUtils.getPath(mount, mount.getHomePage()), mount);
                     }  else if (virtual && nodePath.startsWith(mount.getContentPath()  + "/")) { 
                         nodePath = nodePath.substring(mount.getContentPath().length());
                         matchedMount = true;
@@ -542,7 +542,7 @@ public class DefaultHstLinkCreator implements HstLinkCreator {
                    
                         if(nodePath.equals("")) {
                             // the root node of the found mount. Return the homepage for this mount
-                            return new HstLinkImpl(mount.getHomePage(), mount);
+                            return new HstLinkImpl(HstSiteMapUtils.getPath(mount, mount.getHomePage()), mount);
                         }
                         matchedMount = true;
                         
