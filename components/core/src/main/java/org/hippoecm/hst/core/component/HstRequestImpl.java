@@ -304,12 +304,7 @@ public class HstRequestImpl extends HttpServletRequestWrapper implements HstRequ
         }
     }
     
-    /**
-     * @deprecated we modify the locale not any more on the request. Also see {@link LocalizationValve}
-     * and HSTTWO-1665
-     */
     @Override
-    @Deprecated 
     public Locale getLocale() {
         Locale preferredLocale = requestContext.getPreferredLocale();
         
@@ -320,11 +315,6 @@ public class HstRequestImpl extends HttpServletRequestWrapper implements HstRequ
         return preferredLocale;
     }
     
-    /**
-     * @deprecated we set the locales not any more on the request. Also see {@link LocalizationValve}
-     * and HSTTWO-1665
-     */
-    @Deprecated 
     @SuppressWarnings("unchecked")
     @Override
     public Enumeration getLocales() {

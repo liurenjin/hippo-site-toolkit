@@ -79,7 +79,6 @@ public class LocalizationValve extends AbstractValve {
             
             requestContext.setAttribute("javax.servlet.jsp.jstl.fmt.locale.application", preferredLocale);
             servletRequest.setAttribute("javax.servlet.jsp.jstl.fmt.locale.request", preferredLocale);
-            context.getServletResponse().setLocale(preferredLocale);
         }
 
         // continue
