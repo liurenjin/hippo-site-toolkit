@@ -249,14 +249,20 @@ public class BinariesServlet extends HttpServlet {
             IOUtils.copy(input, output);
             output.flush();
         } catch (RepositoryException e) {
-            log.error(
-                    "RepositoryException while getting stream for binaries request '" + request.getRequestURI() + "'",
-                    e);
+            if (log.isDebugEnabled()) {
+                log.warn("RepositoryException while getting stream for binaries request '" + request.getRequestURI() + "'", e);
+            } else {
+                log.warn("RepositoryException while getting stream for binaries request '{}'. {}", request.getRequestURI(), e);
+            }
             binariesCache.removePage(page);
             response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
                     "Unable to stream binary content to client: " + e.getMessage());
         } catch (IOException e) {
-            log.error("IOException while getting stream for binaries request '" + request.getRequestURI() + "'", e);
+            if (log.isDebugEnabled()) {
+                log.warn("Stream Read/Write failed for binaries request '" + request.getRequestURI() + "'", e);
+            } else {
+                log.warn("Stream Read/Write failed for binaries request '{}'. {}", request.getRequestURI(), e);
+            }
         } finally {
             IOUtils.closeQuietly(input);
             IOUtils.closeQuietly(output);
@@ -304,8 +310,11 @@ public class BinariesServlet extends HttpServlet {
                     allResourceContainers);
             return ResourceUtils.getLastModifiedDate(resourceNode, binaryLastModifiedPropName);
         } catch (RepositoryException e) {
-            log.error("Repository exception while resolving binaries request '" + request.getRequestURI() + "' : "
-                    + e.getMessage(), e);
+            if (log.isDebugEnabled()) {
+                log.warn("Repository exception while resolving binaries request '" + request.getRequestURI() + "' : " + e, e);
+            } else {
+                log.warn("Repository exception while resolving binaries request '{}'. {}", request.getRequestURI(), e);
+            }
         } finally {
             SessionUtils.releaseSession(request, session);
         }
@@ -318,11 +327,14 @@ public class BinariesServlet extends HttpServlet {
         try {
             session = SessionUtils.getBinariesSession(request);
             initBinaryPageValues(session, page);
-            log.info("Page loaded: " + page);
+            log.info("Page loaded: {}", page);
         } catch (RepositoryException e) {
             page.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            log.error("Repository exception while resolving binaries request '" + request.getRequestURI() + "' : "
-                    + e.getMessage(), e);
+            if (log.isDebugEnabled()) {
+                log.warn("Repository exception while resolving binaries request '" + request.getRequestURI() + "' : " + e, e);
+            } else {
+                log.warn("Repository exception while resolving binaries request '{}'. {}", request.getRequestURI(), e);
+            }
         } finally {
             SessionUtils.releaseSession(request, session);
         }
@@ -374,10 +386,18 @@ public class BinariesServlet extends HttpServlet {
             InputStream input = resourceNode.getProperty(binaryDataPropName).getBinary().getStream();
             page.loadDataFromStream(input);
         } catch (RepositoryException e) {
-            log.warn("Unable to cache page data for " + page.getResourcePath(), e);
+            if (log.isDebugEnabled()) {
+                log.warn("Unable to cache page data for " + page.getResourcePath(), e);
+            } else {
+                log.warn("Unable to cache page data for '{}'. {}", page.getResourcePath(), e);
+            }
         } catch (IOException e) {
             page.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            log.error("Error while copying datastream from resource node " + page.getResourcePath(), e);
+            if (log.isDebugEnabled()) {
+                log.warn("Error while copying datastream from resource node " + page.getResourcePath(), e);
+            } else {
+                log.warn("Error while copying datastream from resource node '{}'. {}", page.getResourcePath(), e);
+            }
         }
     }
 
