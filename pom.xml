@@ -98,11 +98,11 @@
     <jackrabbit.version>2.1.2</jackrabbit.version>
     <jackrabbit-ocm.version>1.5.3</jackrabbit-ocm.version>
 
-    <cms.version>2.18.01</cms.version>
-    <repository.version>2.18.02</repository.version>
-    <hippo-packages.version>2.18.01</hippo-packages.version>
-    <publication-workflow.version>2.18.01</publication-workflow.version>
-    <configeditor.version>1.05.00</configeditor.version>
+    <cms.version>2.18.06</cms.version>
+    <repository.version>2.18.05</repository.version>
+    <hippo-packages.version>2.18.03</hippo-packages.version>
+    <publication-workflow.version>2.18.02</publication-workflow.version>
+    <configeditor.version>1.05.02</configeditor.version>
   
    
     <jdo.version>2.3-eb</jdo.version>

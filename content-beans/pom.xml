@@ -63,7 +63,7 @@
     <dependency>
       <groupId>org.onehippo.cms7</groupId>
       <artifactId>hippo-repository-builtin</artifactId>
-      <version>${cms.version}</version>
+      <version>${repository.version}</version>
       <exclusions>
         <exclusion>
           <groupId>org.onehippo.cms7</groupId>
