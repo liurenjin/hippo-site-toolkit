@@ -32,6 +32,7 @@ import org.hippoecm.hst.configuration.hosting.VirtualHostsService;
 import org.hippoecm.hst.core.component.HstURLFactory;
 import org.hippoecm.hst.core.container.HstComponentRegistry;
 import org.hippoecm.hst.core.container.RepositoryNotAvailableException;
+import org.hippoecm.hst.core.linking.HstLinkCreator;
 import org.hippoecm.hst.core.request.HstSiteMapMatcher;
 import org.hippoecm.hst.core.sitemapitemhandler.HstSiteMapItemHandlerFactory;
 import org.hippoecm.hst.core.sitemapitemhandler.HstSiteMapItemHandlerRegistry;
@@ -56,6 +57,7 @@ public class HstManagerImpl implements HstManager {
     
     private HstComponentRegistry componentRegistry;
     private HstSiteMapItemHandlerRegistry siteMapItemHandlerRegistry;
+    private HstLinkCreator hstLinkCreator;
     
     
     /**
@@ -134,6 +136,10 @@ public class HstManagerImpl implements HstManager {
     
     public HstSiteMapItemHandlerFactory getSiteMapItemHandlerFactory() {
         return siteMapItemHandlerFactory;
+    }
+    
+    public void setHstLinkCreator(HstLinkCreator hstLinkCreator) {
+        this.hstLinkCreator = hstLinkCreator;
     }
     
     public VirtualHosts getVirtualHosts() throws RepositoryNotAvailableException {
@@ -237,6 +243,7 @@ public class HstManagerImpl implements HstManager {
          
         try {
             this.virtualHosts = new VirtualHostsService(getVirtualHostsNode(), this);
+            hstLinkCreator.clear();
         } catch (ServiceException e) {
             throw new RepositoryNotAvailableException(e);
         }
