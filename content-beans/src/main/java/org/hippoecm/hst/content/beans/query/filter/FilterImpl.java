@@ -26,6 +26,7 @@ import javax.jcr.RepositoryException;
 import org.apache.jackrabbit.value.ValueFactoryImpl;
 import org.hippoecm.hst.content.beans.query.exceptions.FilterException;
 import org.slf4j.LoggerFactory;
+import org.hippoecm.hst.util.SearchInputParsingUtils;
 
 public class FilterImpl implements Filter{
 
@@ -64,8 +65,9 @@ public class FilterImpl implements Filter{
             throw new FilterException("Not allowed to search on 'null'.");
         }
         
+        String text = fullTextSearch;
         // we rewrite a search for * into a more efficient search
-        if("*".equals(fullTextSearch)) {
+        if("*".equals(text)) {
               if(".".equals(scope)) {
                   // searching on * with scope '.' implies no extra filter: just return
                   return;
@@ -74,9 +76,15 @@ public class FilterImpl implements Filter{
                   this.addNotNull(scope);
                   return;
               }
-        } 
+        } else {
+            text = SearchInputParsingUtils.removeLeadingWildCardsFromWords(text);
+            if(!text.equals(fullTextSearch)) {
+                log.warn("Replaced fullTextSearch '{}' with '{}' as " +
+                        "it contained terms that started with a wildcard. Use '{}'.parse(...) to first parse the input.", new Object[]{fullTextSearch, text, SearchInputParsingUtils.class.getName()});
+            }
+        }
         
-        jcrExpression = "jcr:contains(" + scope + ", '" + fullTextSearch+ "')";     
+        jcrExpression = "jcr:contains(" + scope + ", '" + text+ "')";     
         
         if(isNot) {
             addNotExpression(jcrExpression);

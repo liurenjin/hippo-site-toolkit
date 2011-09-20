@@ -1633,6 +1633,7 @@ content-beans/src/main/java/org/hippoecm/hst/service/ServiceBeanAccessProviderIm
 content-beans/src/main/java/org/hippoecm/hst/service/ServiceFactory.java svneol=native#text/plain
 content-beans/src/main/java/org/hippoecm/hst/util/NOOPELMap.java svneol=native#text/plain
 content-beans/src/main/java/org/hippoecm/hst/util/ObjectConverterUtils.java -text
+content-beans/src/main/java/org/hippoecm/hst/util/SearchInputParsingUtils.java -text svneol=unset#text/plain
 content-beans/src/test/java/org/hippoecm/hst/AbstractBeanTestCase.java svneol=native#text/plain
 content-beans/src/test/java/org/hippoecm/hst/content/beans/PersistableTextPage.java svneol=native#text/plain
 content-beans/src/test/java/org/hippoecm/hst/content/beans/PersistableTextPageCopy.java svneol=native#text/plain
@@ -1650,6 +1651,7 @@ content-beans/src/test/java/org/hippoecm/hst/service/jcr/TestJCRServiceBean.java
 content-beans/src/test/java/org/hippoecm/hst/service/jcr/TextPage.java svneol=native#text/plain
 content-beans/src/test/java/org/hippoecm/hst/service/jcr/TextPageImpl.java svneol=native#text/plain
 content-beans/src/test/java/org/hippoecm/hst/util/TestObjectConverterUtils.java -text
+content-beans/src/test/java/org/hippoecm/hst/util/TestSearchInputParsingUtils.java -text svneol=unset#text/plain
 content-beans/src/test/resources/org/hippoecm/hst/util/TestObjectConverterUtils-beans-annotated-classes.xml -text
 demosuite/README.txt -text svneol=unset#text/plain
 demosuite/cms/pom.xml -text
