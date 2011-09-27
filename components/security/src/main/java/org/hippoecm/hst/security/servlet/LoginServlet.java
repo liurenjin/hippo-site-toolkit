@@ -16,8 +16,10 @@
 package org.hippoecm.hst.security.servlet;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintWriter;
 import java.security.Principal;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -32,8 +34,13 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.BooleanUtils;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.velocity.VelocityContext;
+import org.apache.velocity.app.Velocity;
+import org.apache.velocity.context.Context;
 import org.hippoecm.hst.configuration.hosting.Mount;
 import org.hippoecm.hst.configuration.hosting.VirtualHost;
 import org.hippoecm.hst.configuration.hosting.VirtualHosts;
@@ -46,11 +53,6 @@ import org.hippoecm.hst.util.HstRequestUtils;
 import org.hippoecm.hst.util.ServletConfigUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import freemarker.cache.ClassTemplateLoader;
-import freemarker.template.Configuration;
-import freemarker.template.DefaultObjectWrapper;
-import freemarker.template.Template;
 
 /**
  * LoginServlet
@@ -159,7 +161,7 @@ public class LoginServlet extends HttpServlet {
     protected String defaultLoginSecurityCheckFormPagePath;
     protected String defaultLoginErrorPagePath;
     
-    private Configuration freeMarkerConfiguration;
+    private Map<String, String> templateContentMap = Collections.synchronizedMap(new HashMap<String, String>());
     
     @Override
     public void init(ServletConfig servletConfig) throws ServletException {
@@ -168,10 +170,6 @@ public class LoginServlet extends HttpServlet {
         defaultLoginResourcePath = ServletConfigUtils.getInitParameter(servletConfig, null, "loginResource", DEFAULT_LOGIN_RESOURCE_PATH);
         defaultLoginSecurityCheckFormPagePath = ServletConfigUtils.getInitParameter(servletConfig, null, "loginSecurityCheckFormPagePath", null);
         defaultLoginErrorPagePath = ServletConfigUtils.getInitParameter(servletConfig, null, "loginErrorPage", null);
-        
-        freeMarkerConfiguration = new Configuration();
-        freeMarkerConfiguration.setObjectWrapper(new DefaultObjectWrapper());
-        freeMarkerConfiguration.setTemplateLoader(new ClassTemplateLoader(getClass(), ""));
     }
 
     @Override
@@ -399,7 +397,7 @@ public class LoginServlet extends HttpServlet {
         params.put("j_username", username);
         params.put("destination", response.encodeURL(destination));
         
-        renderTemplatePage(request, response, "login_form.ftl", params);
+        renderTemplatePage(request, response, "login_form.vm", params);
     }
     
     protected void renderAutoLoginPage(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
@@ -419,7 +417,7 @@ public class LoginServlet extends HttpServlet {
         params.put("j_username", username);
         params.put("j_password", password);
         
-        renderTemplatePage(request, response, "login_security_check.ftl", params);
+        renderTemplatePage(request, response, "login_security_check.vm", params);
     }
     
     protected void renderLoginErrorPage(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
@@ -437,16 +435,27 @@ public class LoginServlet extends HttpServlet {
         params.put("j_username", username);
         params.put("destination", response.encodeURL(destination));
         
-        renderTemplatePage(request, response, "login_failure.ftl", params);
+        renderTemplatePage(request, response, "login_failure.vm", params);
     }
     
     protected void renderTemplatePage(HttpServletRequest request, HttpServletResponse response, String templateResourcePath, Map<String, Object> params) throws IOException, ServletException {
-        response.setContentType("text/html; charset=UTF-8");
+        if (!templateContentMap.containsKey(templateResourcePath)) {
+            InputStream input = null;
+            
+            try {
+                input = getClass().getResourceAsStream(templateResourcePath);
+                templateContentMap.put(templateResourcePath, IOUtils.toString(input, "UTF-8"));
+            } finally {
+                IOUtils.closeQuietly(input);
+            }
+        }
         
-        Template template = freeMarkerConfiguration.getTemplate(templateResourcePath);
+        String templateContent = templateContentMap.get(templateResourcePath);
+        
+        response.setContentType("text/html; charset=UTF-8");
         PrintWriter out = response.getWriter();
         
-        Map<String, Object> context = new HashMap<String, Object>();
+        Context context = new VelocityContext();
         
         if (params != null && !params.isEmpty()) {
             for (Map.Entry<String, Object> entry : params.entrySet()) {
@@ -465,15 +474,18 @@ public class LoginServlet extends HttpServlet {
             }
             
             context.put("messages", bundle);
-            
-            context.put("request", request);
-
-            template.process(context, out);
-            
-            out.flush();
         } catch (Exception e) {
             log.warn("Cannot find resource bundle. " + RESOURCE_BUNDLE_BASE_NAME);
         }
+        
+        context.put("request", request);
+        
+        // add utilities
+        context.put("StringEscapeUtils", StringEscapeUtils.class);
+        
+        Velocity.evaluate(context, out, templateResourcePath, templateContent);
+        
+        out.flush();
     }
     
     private String getRequestOrSessionAttributeAsString(HttpServletRequest request, String name, String defaultValue) {
