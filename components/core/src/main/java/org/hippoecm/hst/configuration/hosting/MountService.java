@@ -455,7 +455,11 @@ public class MountService implements Mount {
         ((VirtualHostsService)virtualHost.getVirtualHosts()).addMount(this);
     }
     
-
+    @Override
+    public List<Mount> getChildMounts() {
+        return Collections.unmodifiableList(new ArrayList<Mount>(childMountServices.values()));
+    }
+    
     public Mount getChildMount(String name) {
         return childMountServices.get(name);
     }
@@ -637,6 +641,7 @@ public class MountService implements Mount {
         }
         return mountProperties;
     }
+
 
 
 }
