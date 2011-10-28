@@ -17,6 +17,7 @@ package org.hippoecm.hst.configuration.model;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import javax.jcr.Credentials;
 import javax.jcr.Node;
@@ -27,6 +28,7 @@ import javax.jcr.Session;
 import javax.jcr.query.QueryResult;
 
 import org.hippoecm.hst.configuration.HstNodeTypes;
+import org.hippoecm.hst.configuration.components.HstComponentsConfigurationService;
 import org.hippoecm.hst.configuration.hosting.VirtualHosts;
 import org.hippoecm.hst.configuration.hosting.VirtualHostsService;
 import org.hippoecm.hst.core.component.HstURLFactory;
@@ -59,7 +61,15 @@ public class HstManagerImpl implements HstManager {
     private HstSiteMapItemHandlerRegistry siteMapItemHandlerRegistry;
     private HstLinkCreator hstLinkCreator;
     
-    
+    /**
+      * This is a temporal cache only used during building the hst config model: When all the backing HstNode's for
+      * hst:pages, hst:components, hst:catalog and hst:templates, then, the HstComponentsConfiguration object can be shared between different Mounts.
+      * The key is the Set of all HstNode path's directly below the components, pages, catalog and templates : The path uniquely defines the HstNode
+      * and there is only inheritance on the nodes directly below components, pages, catalog and templates: Since no fine-grained inheritance, these
+      * HstNode's identify uniqueness
+      */
+      private Map<Set<String>, HstComponentsConfigurationService> tmpHstComponentsConfigurationInstanceCache;
+      
     /**
      * The root path of all the hst configuations nodes, by default /hst:hst
      */
@@ -242,10 +252,13 @@ public class HstManagerImpl implements HstManager {
         }
          
         try {
-            this.virtualHosts = new VirtualHostsService(getVirtualHostsNode(), this);
+            tmpHstComponentsConfigurationInstanceCache = new HashMap<Set<String>, HstComponentsConfigurationService>();
+            this.virtualHosts = new VirtualHostsService(virtualHostsNode, this);
             hstLinkCreator.clear();
         } catch (ServiceException e) {
             throw new RepositoryNotAvailableException(e);
+        } finally {
+            tmpHstComponentsConfigurationInstanceCache = null;
         }
     }
     
@@ -255,6 +268,11 @@ public class HstManagerImpl implements HstManager {
         configurationRootNodes.clear();
         siteRootNodes.clear();
     }
+    
+    public Map<Set<String>, HstComponentsConfigurationService> getTmpHstComponentsConfigurationInstanceCache() {
+         return tmpHstComponentsConfigurationInstanceCache;
+    }
+    
     
     public HstNode getVirtualHostsNode() {
         return virtualHostsNode;
