@@ -595,10 +595,8 @@ public class DefaultHstLinkCreator implements HstLinkCreator {
                             if (log.isInfoEnabled()) log.info("Succesfull linkcreation for nodepath '{}' to new path '{}'", nodePath, resolvedLocation.getPath());
                             pathInfo = resolvedLocation.getPath();
                         } else {
-                             if (log.isWarnEnabled()) {
-                                log.warn("Unable to create a link for '{}' for Mount '{}'. Return page not found HstLink to '"+DefaultHstLinkCreator.this.pageNotFoundPath+"'", nodePath, mount.getName());
-                                return pageNotFoundLink(mount);
-                            }
+                            log.warn("Unable to create a link for '{}' for Mount '{}'. Return page not found HstLink to '"+DefaultHstLinkCreator.this.pageNotFoundPath+"'", nodePath, mount.getName());
+                            return pageNotFoundLink(mount);
                         }
                     } else {
                         // the Mount does not have a HstSite attached to it. Just use the 'nodePath' we have so far as
