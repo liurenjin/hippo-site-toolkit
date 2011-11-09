@@ -29,6 +29,8 @@ import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.security.auth.Subject;
 import javax.servlet.ServletContext;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.hippoecm.hst.configuration.hosting.Mount;
 import org.hippoecm.hst.configuration.hosting.VirtualHost;
@@ -59,6 +61,8 @@ public class HstRequestContextImpl implements HstMutableRequestContext {
     private final static Logger log = LoggerFactory.getLogger(HstRequestContextImpl.class);
     
 	protected ServletContext servletContext;
+    protected HttpServletRequest servletRequest;
+    protected HttpServletResponse servletResponse;
     protected Repository repository;
     protected ContextCredentialsProvider contextCredentialsProvider;
     protected Session session;
@@ -104,6 +108,22 @@ public class HstRequestContextImpl implements HstMutableRequestContext {
     	this.servletContext = servletContext;
     }
     
+    public HttpServletRequest getServletRequest() {
+        return servletRequest;
+    }
+
+    public void setServletRequest(HttpServletRequest servletRequest) {
+        this.servletRequest = servletRequest;
+    }
+
+    public HttpServletResponse getServletResponse() {
+        return servletResponse;
+    }
+
+    public void setServletResponse(HttpServletResponse servletResponse) {
+        this.servletResponse = servletResponse;
+    }
+
     public void setContextNamespace(String contextNamespace) {
         this.contextNamespace = contextNamespace;
     }

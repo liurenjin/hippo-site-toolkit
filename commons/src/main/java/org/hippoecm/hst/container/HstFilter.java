@@ -38,6 +38,7 @@ import org.hippoecm.hst.configuration.hosting.Mount;
 import org.hippoecm.hst.configuration.hosting.VirtualHosts;
 import org.hippoecm.hst.configuration.model.HstManager;
 import org.hippoecm.hst.configuration.sitemapitemhandlers.HstSiteMapItemHandlerConfiguration;
+import org.hippoecm.hst.container.RequestContextProvider;
 import org.hippoecm.hst.core.container.ComponentManager;
 import org.hippoecm.hst.core.container.ContainerConstants;
 import org.hippoecm.hst.core.container.ContainerException;
@@ -216,6 +217,8 @@ public class HstFilter implements Filter {
 
     	Logger logger = HstServices.getLogger(LOGGER_CATEGORY_NAME);
 
+        boolean requestContextSetToProvider = false;
+
     	try {
     		if (!HstServices.isAvailable()) {
     			res.sendError(HttpServletResponse.SC_SERVICE_UNAVAILABLE);
@@ -294,7 +297,11 @@ public class HstFilter implements Filter {
     		}
     		requestContext.setServletContext(filterConfig.getServletContext());
             requestContext.setPathSuffix(containerRequest.getPathSuffix());
-            
+
+            // sets up the current thread's active request context object.
+            RequestContextProvider.set(requestContext);
+            requestContextSetToProvider = true;
+
             if (containerRequest.getPathInfo().startsWith(PATH_PREFIX_UUID_REDIRECT)) {
                 /*
                  * The request starts PATH_PREFIX_UUID_REDIRECT which means it is called from the cms with a uuid. Below, we compute
@@ -385,6 +392,11 @@ public class HstFilter implements Filter {
             sendError(req, res, HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
     	}
     	finally {
+            // clears up the current thread's active request context object.
+    	    if (requestContextSetToProvider) {
+    	        RequestContextProvider.clear();
+    	    }
+            
     		if (logger != null && logger.isDebugEnabled()) {
     			long starttick = request.getAttribute(REQUEST_START_TICK_KEY) == null ? 0 : (Long)request.getAttribute(REQUEST_START_TICK_KEY);
     			if(starttick != 0) {
