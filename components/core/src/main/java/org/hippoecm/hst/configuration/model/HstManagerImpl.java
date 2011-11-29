@@ -157,9 +157,6 @@ public class HstManagerImpl implements HstManager {
             synchronized(this) {
                 if (virtualHosts == null) {
                     buildSites();
-                    // when we have a new virtualhosts object, clear all registries
-                    componentRegistry.unregisterAllComponents();
-                    siteMapItemHandlerRegistry.unregisterAllSiteMapItemHandlers();
                 }
             }
         }
@@ -251,8 +248,11 @@ public class HstManagerImpl implements HstManager {
             }
         }
          
-        try {
+        try { 
             tmpHstComponentsConfigurationInstanceCache = new HashMap<Set<String>, HstComponentsConfigurationService>();
+            // clear all registries
+            componentRegistry.unregisterAllComponents();
+            siteMapItemHandlerRegistry.unregisterAllSiteMapItemHandlers();
             this.virtualHosts = new VirtualHostsService(virtualHostsNode, this);
             hstLinkCreator.clear();
         } catch (ServiceException e) {
@@ -262,11 +262,11 @@ public class HstManagerImpl implements HstManager {
         }
     }
     
-    public void invalidate(String path) {
-        virtualHosts = null;
-        commonCatalog = null;
-        configurationRootNodes.clear();
-        siteRootNodes.clear();
+    public synchronized void invalidate(String path) {
+            virtualHosts = null;
+            commonCatalog = null;
+            configurationRootNodes.clear();
+            siteRootNodes.clear();
     }
     
     public Map<Set<String>, HstComponentsConfigurationService> getTmpHstComponentsConfigurationInstanceCache() {
