@@ -59,9 +59,9 @@ public class HstSiteMenuItemImpl extends AbstractMenuItem implements HstSiteMenu
         this.depth = hstSiteMenuItemConfiguration.getDepth();
         this.repositoryBased = hstSiteMenuItemConfiguration.isRepositoryBased();
         this.properties = hstSiteMenuItemConfiguration.getProperties();
-     // if there is an hst:mountalias, we use the mount beloning to that alias. If there is no mount alias defined,
+        // if there is an hst:mountalias, we use the mount beloning to that alias. If there is no mount alias defined,
         // we use the mount from the request context
-        
+         
         if(hstSiteMenuItemConfiguration.getMountAlias() != null) {
             targetMount = hstRequestContext.getMount(hstSiteMenuItemConfiguration.getMountAlias());
             if(targetMount == null) {
