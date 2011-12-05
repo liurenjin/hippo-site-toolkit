@@ -165,6 +165,11 @@ public class HstManagerImpl implements HstManager {
     }
     
     protected void buildSites() throws RepositoryNotAvailableException{
+
+        commonCatalog = null;
+        configurationRootNodes.clear();
+        siteRootNodes.clear();
+        
         Session session = null;
         
         try {
@@ -262,11 +267,8 @@ public class HstManagerImpl implements HstManager {
         }
     }
     
-    public synchronized void invalidate(String path) {
-            virtualHosts = null;
-            commonCatalog = null;
-            configurationRootNodes.clear();
-            siteRootNodes.clear();
+    public void invalidate(String path) {
+         virtualHosts = null;
     }
     
     public Map<Set<String>, HstComponentsConfigurationService> getTmpHstComponentsConfigurationInstanceCache() {
