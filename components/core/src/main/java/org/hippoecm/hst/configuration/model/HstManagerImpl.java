@@ -153,18 +153,24 @@ public class HstManagerImpl implements HstManager {
     }
     
     public VirtualHosts getVirtualHosts() throws RepositoryNotAvailableException {
-        if (virtualHosts == null) {
+        // virtualHosts can be flushed in invalidate which cannot be synchronized due
+        // to synchronous observers in repository : If we make it the invalidate synchronized, it
+        // can cause deadlocks, see HSTTWO-1904
+        VirtualHosts currentHosts = virtualHosts;
+        if (currentHosts == null) {
             synchronized(this) {
-                if (virtualHosts == null) {
-                    buildSites();
+                currentHosts = virtualHosts;
+                if (currentHosts == null) {
+                    currentHosts =  buildSites();
+                    virtualHosts = currentHosts;
                 }
             }
         }
         
-        return virtualHosts;
+        return currentHosts;
     }
     
-    protected void buildSites() throws RepositoryNotAvailableException{
+    protected VirtualHosts buildSites() throws RepositoryNotAvailableException{
 
         commonCatalog = null;
         configurationRootNodes.clear();
@@ -258,8 +264,9 @@ public class HstManagerImpl implements HstManager {
             // clear all registries
             componentRegistry.unregisterAllComponents();
             siteMapItemHandlerRegistry.unregisterAllSiteMapItemHandlers();
-            this.virtualHosts = new VirtualHostsService(virtualHostsNode, this);
+            VirtualHosts vhosts = new VirtualHostsService(virtualHostsNode, this);
             hstLinkCreator.clear();
+            return vhosts;
         } catch (ServiceException e) {
             throw new RepositoryNotAvailableException(e);
         } finally {
