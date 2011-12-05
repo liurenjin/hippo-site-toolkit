@@ -22,7 +22,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.hippoecm.hst.configuration.hosting.Mount;
-import org.hippoecm.hst.configuration.site.HstSite;
 import org.hippoecm.hst.configuration.sitemap.HstSiteMapItem;
 import org.hippoecm.hst.configuration.sitemenu.HstSiteMenuItemConfiguration;
 import org.hippoecm.hst.core.linking.HstLink;
@@ -45,38 +44,50 @@ public class HstSiteMenuItemImpl extends AbstractMenuItem implements HstSiteMenu
     private HstLinkCreator linkCreator;
     private ResolvedSiteMapItem resolvedSiteMapItem;
     private HstSiteMenuItemConfiguration hstSiteMenuItemConfiguration;
-    private HstSite hstSite;
     private String hstSiteMapItemRefId;
     private String hstSiteMapItemPath;
     private String externalLink;
-    private Mount mount;
+    private Mount targetMount;
     
     public HstSiteMenuItemImpl(HstSiteMenu hstSiteMenu, HstSiteMenuItem parent, HstSiteMenuItemConfiguration hstSiteMenuItemConfiguration, HstRequestContext hstRequestContext) {
         this.hstSiteMenu = hstSiteMenu;
         this.parent = parent;
         this.hstSiteMenuItemConfiguration = hstSiteMenuItemConfiguration;
-        this.hstSite = hstSiteMenuItemConfiguration.getHstSiteMenuConfiguration().getSiteMenusConfiguration().getSite();
         this.externalLink = hstSiteMenuItemConfiguration.getExternalLink();
         this.linkCreator = hstRequestContext.getHstLinkCreator();
         this.name = hstSiteMenuItemConfiguration.getName();
         this.depth = hstSiteMenuItemConfiguration.getDepth();
         this.repositoryBased = hstSiteMenuItemConfiguration.isRepositoryBased();
         this.properties = hstSiteMenuItemConfiguration.getProperties();
-        this.mount = hstRequestContext.getResolvedMount().getMount();
+     // if there is an hst:mountalias, we use the mount beloning to that alias. If there is no mount alias defined,
+        // we use the mount from the request context
         
-        String siteMapItemRefIdOrPath = PathUtils.normalizePath(hstSiteMenuItemConfiguration.getSiteMapItemPath());
-        HstSiteMapItem siteMapItemByRefId = mount.getHstSite().getSiteMap().getSiteMapItemByRefId(siteMapItemRefIdOrPath);
-        
-        if (siteMapItemByRefId != null) {
-            hstSiteMapItemRefId = siteMapItemRefIdOrPath;
-            hstSiteMapItemPath = HstSiteMapUtils.getPath(siteMapItemByRefId);
-            if (log.isDebugEnabled()) {
-                log.debug("sitemapitem of sitemenu, '{}', found by refid, '{}'. sitemapitem path: " + hstSiteMapItemPath, name, siteMapItemRefIdOrPath);
+        if(hstSiteMenuItemConfiguration.getMountAlias() != null) {
+            targetMount = hstRequestContext.getMount(hstSiteMenuItemConfiguration.getMountAlias());
+            if(targetMount == null) {
+                log.warn("Cannot create links for SiteMenuItem '"+hstSiteMenu.getName()+"' because could not lookup mount with alias '{}' for current mount '{}'",
+                        hstSiteMenuItemConfiguration.getMountAlias(), hstRequestContext.getResolvedMount().getMount().getName());
             }
         } else {
-            hstSiteMapItemPath = siteMapItemRefIdOrPath;
-            if (log.isDebugEnabled()) {
-                log.debug("sitemapitem of sitemenu, '{}', will be found by path, '{}'.", name, siteMapItemRefIdOrPath);
+            targetMount = hstRequestContext.getResolvedMount().getMount();
+        }
+        
+        String siteMapItemRefIdOrPath = PathUtils.normalizePath(hstSiteMenuItemConfiguration.getSiteMapItemPath());
+        
+        if(targetMount != null) {
+            HstSiteMapItem siteMapItemByRefId = targetMount.getHstSite().getSiteMap().getSiteMapItemByRefId(siteMapItemRefIdOrPath);
+            
+            if (siteMapItemByRefId != null) {
+                hstSiteMapItemRefId = siteMapItemRefIdOrPath;
+                hstSiteMapItemPath = HstSiteMapUtils.getPath(siteMapItemByRefId);
+                if (log.isDebugEnabled()) {
+                    log.debug("sitemapitem of sitemenu, '{}', found by refid, '{}'. sitemapitem path: " + hstSiteMapItemPath, name, siteMapItemRefIdOrPath);
+                }
+            } else {
+                hstSiteMapItemPath = siteMapItemRefIdOrPath;
+                if (log.isDebugEnabled()) {
+                    log.debug("sitemapitem of sitemenu, '{}', will be found by path, '{}'.", name, siteMapItemRefIdOrPath);
+                }
             }
         }
         
@@ -118,12 +129,16 @@ public class HstSiteMenuItemImpl extends AbstractMenuItem implements HstSiteMenu
     }
 
     public HstLink getHstLink() {
-        if (hstSiteMapItemRefId != null) {
-            return linkCreator.createByRefId(hstSiteMapItemRefId, mount);
-        } else if (hstSiteMapItemPath != null) {
-            return linkCreator.create(hstSiteMapItemPath, mount);
+        if(targetMount == null) {
+            log.warn("Cannot create link for sitemenu item '{}' because target mount is null. Return null", hstSiteMenu.getName());
+            return null;
         }
-
+        if (hstSiteMapItemRefId != null) {
+            return linkCreator.createByRefId(hstSiteMapItemRefId, targetMount);
+        } else if (hstSiteMapItemPath != null) {
+            return linkCreator.create(hstSiteMapItemPath, targetMount);
+        }
+        log.warn("Sitemenu item '{}' does not contain a hstSiteMapItemRefId nor hstSiteMapItemPath, cannot create link, return null", hstSiteMenu.getName());
         return null;
     }
     
