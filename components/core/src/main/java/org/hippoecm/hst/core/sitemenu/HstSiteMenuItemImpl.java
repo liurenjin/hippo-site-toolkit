@@ -59,10 +59,10 @@ public class HstSiteMenuItemImpl extends AbstractMenuItem implements HstSiteMenu
         this.depth = hstSiteMenuItemConfiguration.getDepth();
         this.repositoryBased = hstSiteMenuItemConfiguration.isRepositoryBased();
         this.properties = hstSiteMenuItemConfiguration.getProperties();
-        // if there is an hst:mountalias, we use the mount beloning to that alias. If there is no mount alias defined,
+        // if there is an hst:mountalias, we use the mount belonging to that alias. If there is no mount alias defined,
         // we use the mount from the request context
          
-        if(hstSiteMenuItemConfiguration.getMountAlias() != null) {
+        if (hstSiteMenuItemConfiguration.getMountAlias() != null) {
             targetMount = hstRequestContext.getMount(hstSiteMenuItemConfiguration.getMountAlias());
             if(targetMount == null) {
                 log.warn("Cannot create links for SiteMenuItem '"+hstSiteMenu.getName()+"' because could not lookup mount with alias '{}' for current mount '{}'",
@@ -74,7 +74,7 @@ public class HstSiteMenuItemImpl extends AbstractMenuItem implements HstSiteMenu
         
         String siteMapItemRefIdOrPath = PathUtils.normalizePath(hstSiteMenuItemConfiguration.getSiteMapItemPath());
         
-        if(targetMount != null) {
+        if (targetMount != null) {
             HstSiteMapItem siteMapItemByRefId = targetMount.getHstSite().getSiteMap().getSiteMapItemByRefId(siteMapItemRefIdOrPath);
             
             if (siteMapItemByRefId != null) {
