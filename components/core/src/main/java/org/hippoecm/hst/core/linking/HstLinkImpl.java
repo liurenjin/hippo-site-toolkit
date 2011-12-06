@@ -15,6 +15,7 @@
  */
 package org.hippoecm.hst.core.linking;
 
+import org.apache.commons.lang.StringUtils;
 import org.hippoecm.hst.configuration.hosting.Mount;
 import org.hippoecm.hst.configuration.site.HstSite;
 import org.hippoecm.hst.core.component.HstRequest;
@@ -154,6 +155,10 @@ public class HstLinkImpl implements HstLink {
             
             HstContainerURL navURL = requestContext.getContainerURLProvider().createURL(mount, requestContext.getBaseURL() , path);
             urlString  = requestContext.getURLFactory().createURL(HstURL.RENDER_TYPE, null, navURL, requestContext).toString();
+            if(StringUtils.isEmpty(path) && StringUtils.isEmpty(urlString)) {
+                // homepage with no contextpath : replace urlString with /
+                urlString= "/";
+            }
         }
         
         Mount requestMount = requestContext.getResolvedMount().getMount();
