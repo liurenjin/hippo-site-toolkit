@@ -36,3 +36,10 @@ To hot deploy, redeploy or undeploy the CMS or site:
 
   $ cd cms (or site)
   $ mvn cargo:redeploy (or cargo:undeploy, or cargo:deploy)
+
+Monitoring with JMX Console
+===========================
+You may run the following command:
+
+  $ jconsole service:jmx:rmi:///jndi/rmi://localhost:9875/jmxrmi
+  
