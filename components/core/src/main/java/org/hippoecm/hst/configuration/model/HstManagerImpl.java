@@ -32,6 +32,7 @@ import org.hippoecm.hst.configuration.hosting.VirtualHostsService;
 import org.hippoecm.hst.core.component.HstURLFactory;
 import org.hippoecm.hst.core.container.HstComponentRegistry;
 import org.hippoecm.hst.core.container.RepositoryNotAvailableException;
+import org.hippoecm.hst.core.linking.HstLinkCreator;
 import org.hippoecm.hst.core.request.HstSiteMapMatcher;
 import org.hippoecm.hst.core.sitemapitemhandler.HstSiteMapItemHandlerFactory;
 import org.hippoecm.hst.core.sitemapitemhandler.HstSiteMapItemHandlerRegistry;
@@ -56,6 +57,7 @@ public class HstManagerImpl implements HstManager {
     
     private HstComponentRegistry componentRegistry;
     private HstSiteMapItemHandlerRegistry siteMapItemHandlerRegistry;
+    private HstLinkCreator hstLinkCreator;
     
     
     /**
@@ -136,22 +138,35 @@ public class HstManagerImpl implements HstManager {
         return siteMapItemHandlerFactory;
     }
     
+    public void setHstLinkCreator(HstLinkCreator hstLinkCreator) {
+        this.hstLinkCreator = hstLinkCreator;
+    }
+    
     public VirtualHosts getVirtualHosts() throws RepositoryNotAvailableException {
-        if (virtualHosts == null) {
+        // virtualHosts can be flushed in invalidate which cannot be synchronized due
+        // to synchronous observers in repository : If we make it the invalidate synchronized, it
+        // can cause deadlocks, see HSTTWO-1904
+        VirtualHosts currentHosts = virtualHosts;
+        if (currentHosts == null) {
             synchronized(this) {
-                if (virtualHosts == null) {
-                    buildSites();
-                    // when we have a new virtualhosts object, clear all registries
-                    componentRegistry.unregisterAllComponents();
-                    siteMapItemHandlerRegistry.unregisterAllSiteMapItemHandlers();
+                currentHosts = virtualHosts;
+                if (currentHosts == null) {
+                    currentHosts =  buildSites();
+                    virtualHosts = currentHosts;
                 }
             }
         }
         
-        return virtualHosts;
+        return currentHosts;
     }
     
-    protected void buildSites() throws RepositoryNotAvailableException{
+    protected VirtualHosts buildSites() throws RepositoryNotAvailableException{
+        
+
+        commonCatalog = null;
+        configurationRootNodes.clear();
+        siteRootNodes.clear();
+        
         Session session = null;
         
         try {
@@ -236,7 +251,14 @@ public class HstManagerImpl implements HstManager {
         }
          
         try {
-            this.virtualHosts = new VirtualHostsService(getVirtualHostsNode(), this);
+         // clear all registries
+            componentRegistry.unregisterAllComponents();
+            siteMapItemHandlerRegistry.unregisterAllSiteMapItemHandlers();
+            VirtualHosts vhosts = new VirtualHostsService(virtualHostsNode, this);
+            if(hstLinkCreator != null) {
+                hstLinkCreator.clear();
+            }
+            return vhosts;
         } catch (ServiceException e) {
             throw new RepositoryNotAvailableException(e);
         }
@@ -244,9 +266,6 @@ public class HstManagerImpl implements HstManager {
     
     public void invalidate(String path) {
         virtualHosts = null;
-        commonCatalog = null;
-        configurationRootNodes.clear();
-        siteRootNodes.clear();
     }
     
     public HstNode getVirtualHostsNode() {

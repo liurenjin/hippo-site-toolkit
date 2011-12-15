@@ -402,5 +402,10 @@ public interface HstLinkCreator {
      * @return the list of location resolvers, primarily used for resolving custom binary locations 
      */
     List<LocationResolver> getLocationResolvers();
+    
+    /**
+     * Clears possibly available caches
+     */
+    void clear();
 
 }
