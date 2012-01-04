@@ -195,7 +195,7 @@ public class HstPingServlet extends HttpServlet {
         }
     }
 
-    private synchronized void doRepositoryChecks(HttpServletRequest req) throws PingException {
+    private void doRepositoryChecks(HttpServletRequest req) throws PingException {
         Session session = null;
         try {
             session = obtainSession(req);
@@ -247,7 +247,7 @@ public class HstPingServlet extends HttpServlet {
         }
     }
 
-    private void doWriteTest(Session session) throws PingException {
+    private synchronized void doWriteTest(Session session) throws PingException {
         try {
             Node writePath = getOrCreateWriteNode(session);
             writePath.setProperty("lastcheck", Calendar.getInstance());
