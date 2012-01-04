@@ -24,7 +24,6 @@ import javax.jcr.PathNotFoundException;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
 
@@ -159,24 +158,5 @@ public class CXFJaxrsContentService extends CXFJaxrsService {
     		log.debug("Invoking JAX-RS endpoint {}: {} for contentPath {}", new Object[]{request.getMethod(), jaxrsEndpointRequestPath.toString(), requestContentPath});
     	}
     	return new PathsAdjustedHttpServletRequestWrapper(requestContext, request, getJaxrsServletPath(requestContext), jaxrsEndpointRequestPath.toString());
-	}
-	
-	@Override
-	public void invoke(HstRequestContext requestContext, HttpServletRequest request, HttpServletResponse response) throws ContainerException {
-		try {
-			super.invoke(requestContext, request, response);
-		}
-		catch (ContainerException ce) {
-			// TODO: preliminary hard-coded DELETE handling of a no (longer) existing content resource which might/should be ignorable?
-			if (request.getMethod().equalsIgnoreCase("DELETE") && ce.getCause() != null && ce.getCause() instanceof WebApplicationException) {
-				WebApplicationException we = (WebApplicationException)ce.getCause();
-				if (we.getResponse().getStatus() == Response.Status.NOT_FOUND.getStatusCode()) {
-					// TODO: determine the appropriate response status: SC_GONE, SC_OK ???
-					response.setStatus(HttpServletResponse.SC_GONE);
-					return;
-				}
-			}
-			throw ce;
-		}
 	}
 }
