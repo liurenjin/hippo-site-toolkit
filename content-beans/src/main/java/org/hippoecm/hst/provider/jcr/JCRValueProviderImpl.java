@@ -51,7 +51,6 @@ public class JCRValueProviderImpl implements JCRValueProvider{
     
     private boolean detached = false;
     private boolean isLoaded = false;
-    private List<Integer> supportedPropertyTypes = new ArrayList<Integer>();
    
     private final static List<Integer> SUPPORTED_PROPERTY_TYPES = new ArrayList<Integer>();
     
@@ -124,7 +123,7 @@ public class JCRValueProviderImpl implements JCRValueProvider{
         }
         this.detached = true;
         this.jcrNode = null;
-        propertyMap.providerDetached();
+        //propertyMap.providerDetached();
     }
     
     public boolean isDetached(){
@@ -572,7 +571,7 @@ public class JCRValueProviderImpl implements JCRValueProvider{
                     // already loaded
                     continue;
                 }
-                if(supportedPropertyTypes.contains(p.getType())) {
+                if(SUPPORTED_PROPERTY_TYPES.contains(p.getType())) {
                    loadProperty(p, p.getDefinition(), p.getName());
                 }
             }
