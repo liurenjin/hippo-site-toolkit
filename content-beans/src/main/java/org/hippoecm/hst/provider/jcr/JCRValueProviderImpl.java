@@ -53,19 +53,17 @@ public class JCRValueProviderImpl implements JCRValueProvider{
     private boolean isLoaded = false;
     private List<Integer> supportedPropertyTypes = new ArrayList<Integer>();
    
-    //private Map<String, Object> properties = new HashMap<String, Object>();
-    
-    private PropertyMapImpl propertyMap = new PropertyMapImpl();
+    private final static List<Integer> SUPPORTED_PROPERTY_TYPES = new ArrayList<Integer>();
     
     {
-        supportedPropertyTypes.add(PropertyType.STRING);
-        supportedPropertyTypes.add(PropertyType.BOOLEAN);
-        supportedPropertyTypes.add(PropertyType.DATE);
-        supportedPropertyTypes.add(PropertyType.DOUBLE);
-        supportedPropertyTypes.add(PropertyType.LONG);
+        SUPPORTED_PROPERTY_TYPES.add(PropertyType.STRING);
+        SUPPORTED_PROPERTY_TYPES.add(PropertyType.BOOLEAN);
+        SUPPORTED_PROPERTY_TYPES.add(PropertyType.DATE);
+        SUPPORTED_PROPERTY_TYPES.add(PropertyType.DOUBLE);
+        SUPPORTED_PROPERTY_TYPES.add(PropertyType.LONG);
     }
     
-    
+    private PropertyMapImpl propertyMap = new PropertyMapImpl();
     
     public JCRValueProviderImpl(Node jcrNode) {
         this(jcrNode, true);
@@ -126,6 +124,7 @@ public class JCRValueProviderImpl implements JCRValueProvider{
         }
         this.detached = true;
         this.jcrNode = null;
+        propertyMap.providerDetached();
     }
     
     public boolean isDetached(){

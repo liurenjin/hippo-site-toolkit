@@ -266,6 +266,10 @@ public class HstManagerImpl implements HstManager {
             siteMapItemHandlerRegistry.unregisterAllSiteMapItemHandlers();
             VirtualHosts vhosts = new VirtualHostsService(virtualHostsNode, this);
             hstLinkCreator.clear();
+            /* clean up object retaining HstNode's now because hst model has been build they are not needed anymore */
+            configurationRootNodes.clear();
+            siteRootNodes.clear();
+            virtualHostsNode = null;
             return vhosts;
         } catch (ServiceException e) {
             throw new RepositoryNotAvailableException(e);
@@ -280,11 +284,6 @@ public class HstManagerImpl implements HstManager {
     
     public Map<Set<String>, HstComponentsConfigurationService> getTmpHstComponentsConfigurationInstanceCache() {
          return tmpHstComponentsConfigurationInstanceCache;
-    }
-    
-    
-    public HstNode getVirtualHostsNode() {
-        return virtualHostsNode;
     }
     
     public Map<String, HstSiteRootNode> getHstSiteRootNodes(){

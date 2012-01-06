@@ -16,6 +16,7 @@
 package org.hippoecm.hst.configuration.model;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -50,7 +51,7 @@ public class HstNodeImpl implements HstNode {
     /**
      * We use a LinkedHashMap because insertion order does matter. 
      */
-    private Map<String, HstNode> children = new LinkedHashMap<String, HstNode>(); 
+    private Map<String, HstNode> children = null; 
     
     /**
      * The primary node type name
@@ -87,11 +88,14 @@ public class HstNodeImpl implements HstNode {
        provider = inheritedNode.provider;
        nodeTypeName = inheritedNode.nodeTypeName;
        this.parent = parent;
-       children = new LinkedHashMap<String, HstNode>();
-       for(Entry<String, HstNode> entry : inheritedNode.children.entrySet()) {
-           children.put(entry.getKey(), new HstNodeImpl((HstNodeImpl)entry.getValue(), this));
+       if(inheritedNode.children != null) {
+           if (children == null) {
+               children = new LinkedHashMap<String, HstNode>();
+           }
+           for(Entry<String, HstNode> entry : inheritedNode.children.entrySet()) {
+               children.put(entry.getKey(), new HstNodeImpl((HstNodeImpl)entry.getValue(), this));
+           }
        }
-
     }
 
     protected void loadChilds(Node jcrNode, HstNode parent) throws RepositoryException {
@@ -108,6 +112,9 @@ public class HstNodeImpl implements HstNode {
                 log.warn("Failed to load configuration node for '{}'. {}", child.getPath(), e.toString());
             }
             if (childRepositoryNode != null) {
+                if(children == null) {
+                    children = new LinkedHashMap<String, HstNode>();
+                }
                 HstNodeImpl existing = (HstNodeImpl) children.get(childRepositoryNode.getValueProvider().getName());
                 if (existing != null) {
                     log.warn("Ignoring node configuration at '{}' for '{}' because it is duplicate. This is not allowed",
@@ -133,6 +140,9 @@ public class HstNodeImpl implements HstNode {
     
 
     public Map<String, HstNode> getChildren() {
+        if(children == null) {
+            return Collections.emptyMap();
+        }
         return children;
     }
     
@@ -142,6 +152,9 @@ public class HstNodeImpl implements HstNode {
     public HstNode getNode(String relPath) throws IllegalArgumentException{
         if(relPath == null || "".equals(relPath) || relPath.startsWith("/")) {
             throw new IllegalArgumentException("Not a valid relPath '"+relPath+"'");
+        }
+        if(children == null) {
+            return null;
         }
         relPath = StringUtils.stripEnd(relPath, "/");
         String[] args = relPath.split("/");
@@ -158,6 +171,9 @@ public class HstNodeImpl implements HstNode {
     }
     
     public void addNode(String name, HstNode hstNode)  {
+        if(children == null) {
+            children = new LinkedHashMap<String, HstNode>();
+        }
         children.put(name, hstNode);
     }
 
@@ -165,6 +181,9 @@ public class HstNodeImpl implements HstNode {
      * @see org.hippoecm.hst.configuration.model.HstNode#getNodes()
      */
     public List<HstNode> getNodes()  {
+        if(children == null) {
+            return Collections.emptyList();
+        }
         return new ArrayList<HstNode>(children.values());
     }
   
@@ -174,6 +193,9 @@ public class HstNodeImpl implements HstNode {
     public List<HstNode> getNodes(String configNodeTypeName)  {
         if(configNodeTypeName == null) {
             throw new IllegalArgumentException("configNodeTypeName is not allowed to be null");
+        }
+        if(children == null) {
+            return Collections.emptyList();
         }
         List<HstNode> childrenOfType = new ArrayList<HstNode>();
         for(HstNode child : children.values()) {
