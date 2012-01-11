@@ -159,11 +159,8 @@ jQuery.noConflict();
 
         inside : function (source, el, direction, opts) {
             this._draw('inside', source, el, function(data) {
-                if(direction == HST.DIR.VERTICAL) {
-                    data.ind.left += (data.src.width-data.ind.width) / 2;
-                    data.ind.top  += (data.src.height-data.ind.height) / 2;
-                } else {
-                }
+                data.ind.left += (data.src.width-data.ind.width) / 2;
+                data.ind.top  += (data.src.height-data.ind.height) / 2;
             }, direction, opts);
         },
 
@@ -173,6 +170,8 @@ jQuery.noConflict();
                     data.ind.left += (data.src.width-data.ind.width) / 2;
                     data.ind.top  += data.src.height + this.config.afterOffset;
                 } else {
+                    data.ind.left += data.src.width + this.config.afterOffset;
+                    data.ind.top -= this.config.afterOffset;
                 }
             }, direction, opts);
         },
@@ -181,6 +180,9 @@ jQuery.noConflict();
             this._draw('before', source, el, function(data) {
                 if(direction == HST.DIR.VERTICAL) {
                     data.ind.left += (data.src.width - data.ind.width) / 2;
+                    data.ind.top -= this.config.beforeOffset;
+                } else if(direction == HST.DIR.HORIZONTAL) {
+                    data.ind.left -= this.config.beforeOffset;
                     data.ind.top -= this.config.beforeOffset;
                 }
             }, direction, opts);
@@ -195,6 +197,8 @@ jQuery.noConflict();
                     data.ind.left += (data.src.width - data.ind.width) / 2;
                     var bottom = data.ind.top + data.src.height;
                     data.ind.top = bottom + ((nextPosition.top - bottom) / 2) - (data.ind.height/2);
+                } else if(direction == HST.DIR.HORIZONTAL) {
+                    data.ind.left += data.src.width;
                 }
 
             }, direction, opts);

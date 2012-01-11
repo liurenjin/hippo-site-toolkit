@@ -20,7 +20,8 @@ import org.hippoecm.hst.configuration.components.Parameter;
 import org.hippoecm.hst.pagecomposer.jaxrs.model.ComponentWrapper;
 
 
-public interface BannerInfo {
+public interface
+        BannerInfo {
 
     @Parameter(name = "bannerWidth", displayName = "Banner Width", typeHint = ComponentWrapper.ParameterType.NUMBER, required = true)
     int getBannerWidth();

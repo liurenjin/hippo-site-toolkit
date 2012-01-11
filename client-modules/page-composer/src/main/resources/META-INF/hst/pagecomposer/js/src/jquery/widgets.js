@@ -198,7 +198,6 @@ jQuery.noConflict();
 
             this.ddTolerance = 'intersect';
             this.dropIndicator = null;
-            this.direction = HST.DIR.VERTICAL;
             this.draw = new Hippo.Util.Draw({min: 3, thresholdLow: 0});
 
             this.parentMargin = 0; //margin of overlay
@@ -318,8 +317,9 @@ jQuery.noConflict();
                 update  : $.proxy(this.ddOnUpdate, this),
                 receive : $.proxy(this.ddOnReceive, this),
                 remove  : $.proxy(this.ddOnRemove, this),
-                tolerance : this.ddTolerance,
-                change : $.proxy(this.ddOnChange, this)
+                over    : $.proxy(this.ddOnOver, this),
+                change  : $.proxy(this.ddOnChange, this),
+                tolerance : this.ddTolerance
             }).disableSelection();
         },
 
@@ -355,6 +355,10 @@ jQuery.noConflict();
 
         ddOnUpdate : function(event, ui) {
             this.state.syncItemsWithOverlayOrder = true;
+        },
+
+        ddOnOver : function(event, ui) {
+            this.parent.onOver(ui, this);
         },
 
         ddOnReceive : function(event, ui) {
@@ -565,6 +569,8 @@ jQuery.noConflict();
             this.sel.append.item = this.sel.container + ' > tbody > tr.' + this.cls.item;
             this.sel.append.container = this.sel.container + ' > tbody';
             this.sel.append.insertAt = this.sel.container + ' > tbody > tr';
+
+            this.direction = HST.DIR.VERTICAL;
         },
 
         createItemElement : function(element) {
@@ -583,6 +589,8 @@ jQuery.noConflict();
             this.sel.append.item = this.sel.container + ' > li.' + this.cls.item;
             this.sel.append.container = this.sel.container;
             this.sel.append.insertAt = this.sel.container + ' > li';
+
+            this.direction = HST.DIR.VERTICAL;
         },
 
         createItemElement : function(element) {
@@ -600,6 +608,8 @@ jQuery.noConflict();
             this.sel.append.item = this.sel.container + ' > li.' + this.cls.item;
             this.sel.append.container = this.sel.container;
             this.sel.append.insertAt = this.sel.container + ' > li';
+
+            this.direction = HST.DIR.VERTICAL;
         },
 
         createItemElement : function(element) {
@@ -617,6 +627,8 @@ jQuery.noConflict();
             this.sel.append.item = this.sel.container + ' > div.' + this.cls.item;
             this.sel.append.container = this.sel.container;
             this.sel.append.insertAt = this.sel.container + ' > div';
+
+            this.direction = HST.DIR.VERTICAL;
         },
 
         createItemElement : function(element) {
@@ -625,6 +637,25 @@ jQuery.noConflict();
 
     });
     Hippo.PageComposer.UI.Factory.register('HST.vBox', Hippo.PageComposer.UI.Container.VerticalBox);
+
+    Hippo.PageComposer.UI.Container.Span = Hippo.PageComposer.UI.Container.Base.extend({
+
+        init : function(id, element, resources) {
+           this._super(id, element, resources);
+
+            this.sel.append.item = this.sel.container + ' > span.' + this.cls.item;
+            this.sel.append.container = this.sel.container;
+            this.sel.append.insertAt = this.sel.container + ' > span';
+
+            this.direction = HST.DIR.HORIZONTAL;
+        },
+
+        createItemElement : function(element) {
+            return $('<span class="' + this.cls.item + '"></span>').append(element);
+        }
+
+    });
+    Hippo.PageComposer.UI.Factory.register('HST.Span', Hippo.PageComposer.UI.Container.Span);
 
     //Container items
     Hippo.PageComposer.UI.ContainerItem.Base = Hippo.PageComposer.UI.Widget.extend({

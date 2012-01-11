@@ -1177,6 +1177,7 @@ client-modules/page-composer/src/main/resources/META-INF/hst/pagecomposer/js/src
 client-modules/page-composer/src/main/resources/META-INF/hst/pagecomposer/js/src/jquery/widgets.min.js -text
 client-modules/page-composer/src/main/resources/org/hippoecm/hst/pagecomposer/SpringComponentManager-pagecomposer.xml -text svneol=unset#text/plain
 client-modules/page-composer/src/main/resources/org/hippoecm/hst/pagecomposer/builtin/components/ol.ftl -text
+client-modules/page-composer/src/main/resources/org/hippoecm/hst/pagecomposer/builtin/components/span.ftl -text
 client-modules/page-composer/src/main/resources/org/hippoecm/hst/pagecomposer/builtin/components/table.ftl -text
 client-modules/page-composer/src/main/resources/org/hippoecm/hst/pagecomposer/builtin/components/ul.ftl -text
 client-modules/page-composer/src/site/site.xml -text
@@ -1723,6 +1724,8 @@ demosuite/site/src/main/java/org/hippoecm/hst/demo/components/AbstractFacetedCom
 demosuite/site/src/main/java/org/hippoecm/hst/demo/components/AbstractSearchComponent.java svneol=native#text/plain
 demosuite/site/src/main/java/org/hippoecm/hst/demo/components/Archive.java svneol=native#text/plain
 demosuite/site/src/main/java/org/hippoecm/hst/demo/components/BannerInfo.java -text
+demosuite/site/src/main/java/org/hippoecm/hst/demo/components/Block.java -text
+demosuite/site/src/main/java/org/hippoecm/hst/demo/components/BlockInfo.java -text
 demosuite/site/src/main/java/org/hippoecm/hst/demo/components/Detail.java svneol=native#text/plain
 demosuite/site/src/main/java/org/hippoecm/hst/demo/components/DummyCarDocsCreator.java svneol=native#text/plain
 demosuite/site/src/main/java/org/hippoecm/hst/demo/components/Faceted.java svneol=native#text/plain
@@ -1796,9 +1799,11 @@ demosuite/site/src/main/webapp/WEB-INF/jetty-env.xml -text
 demosuite/site/src/main/webapp/WEB-INF/jsp/components/footer/footer.jsp -text svneol=unset#text/plain
 demosuite/site/src/main/webapp/WEB-INF/jsp/components/footer/fr_footer.jsp -text svneol=unset#text/plain
 demosuite/site/src/main/webapp/WEB-INF/jsp/components/header/header.jsp -text svneol=unset#text/plain
+demosuite/site/src/main/webapp/WEB-INF/jsp/components/layout/mashup.jsp -text svneol=unset#text/plain
 demosuite/site/src/main/webapp/WEB-INF/jsp/components/layout/threecolumnlayout.jsp -text svneol=unset#text/plain
 demosuite/site/src/main/webapp/WEB-INF/jsp/components/main/archive.jsp -text svneol=unset#text/plain
 demosuite/site/src/main/webapp/WEB-INF/jsp/components/main/banner.jsp -text svneol=unset#text/plain
+demosuite/site/src/main/webapp/WEB-INF/jsp/components/main/block.jsp -text
 demosuite/site/src/main/webapp/WEB-INF/jsp/components/main/contact.jsp -text
 demosuite/site/src/main/webapp/WEB-INF/jsp/components/main/contactdispatch.jsp -text
 demosuite/site/src/main/webapp/WEB-INF/jsp/components/main/detailpage-ajaxresult.jsp -text svneol=unset#text/plain
@@ -1930,6 +1935,7 @@ test/src/site/site.xml -text
 test/src/test/java/org/hippoecm/hst/test/AbstractHstTestCase.java svneol=native#text/plain
 test/src/test/java/org/hippoecm/hst/test/JcrHippoRepository.java svneol=native#text/plain
 test/src/test/java/org/hippoecm/hst/test/basic/BasicHstTestCase.java svneol=native#text/plain
+toolkit-resources/addon/addon.iml -text
 toolkit-resources/addon/pom.xml svneol=native#text/plain
 toolkit-resources/addon/repository/pom.xml svneol=native#text/plain
 toolkit-resources/addon/repository/src/main/resources/hippoecm-extension.xml svneol=native#text/plain
