@@ -99,7 +99,10 @@ content-beans/.classpath
 content-beans/.project
 content-beans/.settings
 content-beans/hst-content-beans.iml
+content-beans/repository
 content-beans/target
+content-beans/version
+content-beans/workspaces
 dependencies/.project
 dependencies/.settings
 dependencies/client-dependencies/.project
