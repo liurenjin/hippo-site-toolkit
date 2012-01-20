@@ -155,7 +155,7 @@ Hippo.App.PageEditor = Ext.extend(Ext.App, {
    refreshIframe : function() {
 	Ext.Msg.wait('Reloading page ...');
         var iframe = Ext.getCmp('Iframe');
-        iframe.setSrc(iframe.getFrameDocument().location.href); //following links in the iframe doesn't set iframe.src..
+        iframe.getFrameDocument().location.reload(true); //following links in the iframe doesn't set iframe.src..
     },
 
     doLogout : function() {
@@ -635,7 +635,7 @@ Hippo.App.PageModelStore = Ext.extend(Hippo.App.RestStore, {
                         Ext.Msg.hide();
                         Ext.Msg.wait('Refreshing page ...');
                         var iframe = Ext.getCmp('Iframe');
-                        iframe.setSrc(iframe.getFrameDocument().location.href);
+                        iframe.getFrameDocument().location.reload(true);
                     }
                 },
                 load : {
