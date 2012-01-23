@@ -111,7 +111,7 @@ public class JCRValueProviderImpl implements JCRValueProvider{
         }
         this.detached = true;
         this.jcrNode = null;
-        //propertyMap.providerDetached();
+        propertyMap.providerDetached();
     }
     
     public boolean isDetached(){
