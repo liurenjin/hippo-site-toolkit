@@ -171,7 +171,9 @@ public class HstManagerImpl implements HstManager {
     }
     
     protected VirtualHosts buildSites() throws RepositoryNotAvailableException{
-
+        log.info("Start building in memory hst configuration model");
+        long start = System.currentTimeMillis();
+        
         commonCatalog = null;
         configurationRootNodes.clear();
         siteRootNodes.clear();
@@ -270,6 +272,8 @@ public class HstManagerImpl implements HstManager {
             configurationRootNodes.clear();
             siteRootNodes.clear();
             virtualHostsNode = null;
+
+            log.info("Finished build in memory hst configuration model in " + (System.currentTimeMillis() - start) + " ms.");
             return vhosts;
         } catch (ServiceException e) {
             throw new RepositoryNotAvailableException(e);
@@ -279,7 +283,8 @@ public class HstManagerImpl implements HstManager {
     }
     
     public void invalidate(String path) {
-         virtualHosts = null;
+        log.info("Invalidation event for hst configuration model caught. Rebuilding hst configuration model on next request.");
+        virtualHosts = null;
     }
     
     public Map<Set<String>, HstComponentsConfigurationService> getTmpHstComponentsConfigurationInstanceCache() {
