@@ -83,7 +83,7 @@ Hippo.App.PageEditor = Ext.extend(Ext.App, {
                                 }
                             }
                         },
-                        
+
                         '->',
                         {
                             text: 'Logout',
@@ -145,17 +145,17 @@ Hippo.App.PageEditor = Ext.extend(Ext.App, {
         iframe.sendMessage({}, 'toggle');
         if (!this.mainWindow.isVisible()) {
             this.mainWindow.show('pageComposerButton');
-          
-          
+
+
         } else {
             this.mainWindow.hide('pageComposerButton');
         }
     },
 
-   refreshIframe : function() {
-	Ext.Msg.wait('Reloading page ...');
+    refreshIframe : function() {
+        Ext.Msg.wait('Reloading page ...');
         var iframe = Ext.getCmp('Iframe');
-        iframe.getFrameDocument().location.reload(true); //following links in the iframe doesn't set iframe.src..
+        iframe.setSrc(iframe.getFrameDocument().location.href); // following links in the iframe doesn't set iframe.src..
     },
 
     doLogout : function() {
@@ -635,7 +635,19 @@ Hippo.App.PageModelStore = Ext.extend(Hippo.App.RestStore, {
                         Ext.Msg.hide();
                         Ext.Msg.wait('Refreshing page ...');
                         var iframe = Ext.getCmp('Iframe');
-                        iframe.getFrameDocument().location.reload(true);
+                        var location = iframe.getFrameDocument().location;
+                        var randomnumber = Math.floor(Math.random() * 100000);
+                        var href = location.href;
+                        if (href.indexOf('_rnd') == -1) {
+                            if (location.search.indexOf('?') == -1) {
+                                href += '?_rnd=' + randomnumber;
+                            } else {
+                                href += '&_rnd=' + randomnumber;
+                            }
+                        } else {
+                            href = href.replace(/_rnd=[0-9]+/, "_rnd=" + randomnumber);
+                        }
+                        iframe.setSrc(href);
                     }
                 },
                 load : {
