@@ -1,5 +1,5 @@
 /*
- *  Copyright 2011 Hippo.
+ *  Copyright 2011 - 2012 Hippo.
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -15,7 +15,8 @@
  */
 package org.hippoecm.hst.core.parameters;
 
-import java.util.Date;
+import java.text.DateFormat;
+import java.text.ParseException;
 
 public enum HstValueType {
 
@@ -35,7 +36,7 @@ public enum HstValueType {
         return defaultValue;
     }
 
-    public Object from(String string) {
+    public Object from(String string)  {
         switch (this) {
             case STRING:
                 return string;
@@ -46,7 +47,11 @@ public enum HstValueType {
             case DOUBLE:
                 return Double.parseDouble(string);
             case DATE:
-                return Date.parse(string);
+            try {
+                return DateFormat.getDateInstance().parse(string);
+            } catch (ParseException e) {
+                throw new RuntimeException("Could not parse " + string + " to type Date", e);
+            }
         }
         throw new RuntimeException("Could not parse " + string + " to type " + this);
     }
