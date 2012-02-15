@@ -15,6 +15,8 @@
  */
 package org.hippoecm.hst.site.container;
 
+import java.util.Map;
+
 import org.hippoecm.hst.core.container.ComponentManager;
 import org.hippoecm.hst.core.container.ComponentManagerAware;
 import org.hippoecm.hst.core.container.ContainerConfiguration;
@@ -42,6 +44,10 @@ public class ComponentManagerFacade implements ComponentManagerAware, ComponentM
 
     public <T> T getComponent(String name) {
         return this.componentManager.<T>getComponent(name);
+    }
+
+    public <T> Map<String, T> getComponentsOfType(Class<T> requiredType) {
+        return this.componentManager.getComponentsOfType(requiredType);
     }
 
     public ContainerConfiguration getContainerConfiguration() {

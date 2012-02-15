@@ -17,6 +17,8 @@ package org.hippoecm.hst.site.container;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Map;
 import java.util.Properties;
 
 import org.apache.commons.configuration.Configuration;
@@ -30,6 +32,8 @@ import org.hippoecm.hst.core.container.ComponentManager;
 import org.hippoecm.hst.core.container.ComponentManagerAware;
 import org.hippoecm.hst.core.container.ContainerConfiguration;
 import org.hippoecm.hst.core.container.ContainerConfigurationImpl;
+import org.hippoecm.hst.site.HstServices;
+import org.hippoecm.hst.site.container.SpringComponentManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
@@ -49,6 +53,8 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
  * @version $Id$
  */
 public class SpringComponentManager implements ComponentManager, BeanPostProcessor {
+    
+    private static final String LOGGER_FQCN = SpringComponentManager.class.getName();
     
     static Logger log = LoggerFactory.getLogger(SpringComponentManager.class);
     
@@ -144,11 +150,24 @@ public class SpringComponentManager implements ComponentManager, BeanPostProcess
         try {
             bean = (T) this.applicationContext.getBean(name);
         } catch (Exception ignore) {
+            HstServices.getLogger(LOGGER_FQCN, LOGGER_FQCN).warn("The requested bean doesn't exist: '{}'", name);
         }
         
         return bean;
     }
     
+    public <T> Map<String, T> getComponentsOfType(Class<T> requiredType) {
+        Map<String, T> beansMap = Collections.emptyMap();
+
+        try {
+            beansMap = applicationContext.getBeansOfType(requiredType);
+        } catch (Exception ignore) {
+            HstServices.getLogger(LOGGER_FQCN, LOGGER_FQCN).warn("The required typed bean doesn't exist: '{}'", requiredType);
+        }
+
+        return beansMap;
+    }
+
     public ContainerConfiguration getContainerConfiguration() {
         return this.containerConfiguration;
     }
