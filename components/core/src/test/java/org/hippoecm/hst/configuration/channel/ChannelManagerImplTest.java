@@ -451,7 +451,7 @@ public class ChannelManagerImplTest extends AbstractHstTestCase {
 
         final ChannelManagerImpl manager = createManager();
 
-        Channel channel = manager.getBlueprint("cmit-test-bp2").getPrototypeChannel();
+        Channel channel = manager.getBlueprint("cmit-test-bp2").createChannel();
         channel.setName("cmit-channel2");
         channel.setUrl("http://cmit-myhost2");
         channel.setContentRoot("/");
