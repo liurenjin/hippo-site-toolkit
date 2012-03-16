@@ -15,6 +15,8 @@
  */
 package org.hippoecm.hst.configuration.channel;
 
+import org.hippoecm.hst.configuration.channel.ChannelManagerEventListenerException.Status;
+
 /**
  * Allows implementers to register callback methods that will be executed
  * when a <CODE>ChannelManager</CODE> event occurs.
@@ -33,13 +35,20 @@ public interface ChannelManagerEventListener {
     /**
      * Called immediately after a channel has been created through {@link ChannelManager#persist(String, Channel)}.
      * @param event
+     * @throws ChannelManagerEventListenerException an exception that an implementation may choose to throw to have the {@link ChannelManager} 
+     * log a warning or even completely short circuit the channel processing when the {@link ChannelManagerEventListenerException} has
+     * {@link ChannelManagerEventListenerException#getStatus()} equal to {@link Status#STOP_CHANNEL_PROCESSING}
+     * 
      */
-    void channelCreated(ChannelManagerEvent event);
+    void channelCreated(ChannelManagerEvent event) throws ChannelManagerEventListenerException;
 
     /**
      * Called immediately after a channel has been updated through {@link ChannelManager#save(Channel)}.
      * @param event
+     * @throws ChannelManagerEventListenerException an exception that an implementation may choose to throw to have the {@link ChannelManager} 
+     * log a warning or even completely short circuit the channel processing when the {@link ChannelManagerEventListenerException} has
+     * {@link ChannelManagerEventListenerException#getStatus()} equal to {@link Status#STOP_CHANNEL_PROCESSING}
      */
-    void channelUpdated(ChannelManagerEvent event);
+    void channelUpdated(ChannelManagerEvent event) throws ChannelManagerEventListenerException;
 
 }
