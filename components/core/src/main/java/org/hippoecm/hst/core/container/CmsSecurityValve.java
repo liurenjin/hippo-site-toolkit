@@ -21,6 +21,7 @@ import java.security.SignatureException;
 
 import javax.jcr.Credentials;
 import javax.jcr.Repository;
+import javax.servlet.ServletRequestWrapper;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -30,7 +31,6 @@ import org.hippoecm.hst.configuration.hosting.MutableMount;
 import org.hippoecm.hst.core.internal.HstMutableRequestContext;
 import org.hippoecm.hst.core.jcr.LazySession;
 import org.hippoecm.hst.core.request.HstRequestContext;
-import org.hippoecm.hst.util.HstRequestUtils;
 import org.onehippo.sso.CredentialCipher;
 
 /**
@@ -108,31 +108,36 @@ public class CmsSecurityValve extends AbstractValve {
                 }
 
                 StringBuilder destinationURL = new StringBuilder();
-                String cmsBaseUrl = servletRequest.getHeader("Referer");
-                if (cmsBaseUrl == null) {
+                String cmsUrl = servletRequest.getHeader("Referer");
+                if (cmsUrl == null) {
                     throw new ContainerException("Could not establish a SSO between CMS & site application because there is no 'Referer' header on the request");
                 }
-                if (!cmsBaseUrl.endsWith("/")) {
-                    cmsBaseUrl += "/";
+                if (!cmsUrl.endsWith("/")) {
+                    cmsUrl += "/";
                 }
-                destinationURL.append(cmsBaseUrl);
-                // we append the request uri including the context path (normally this is /site/...)
-                // we need to strip the leading slash to avoid double //
-                destinationURL.append(servletRequest.getRequestURI().substring(1));
 
-                if(requestContext.getPathSuffix() != null) {
-                    String subPathDelimeter = requestContext.getVirtualHost().getVirtualHosts().getHstManager().getPathSuffixDelimiter();
-                    destinationURL.append(subPathDelimeter).append(requestContext.getPathSuffix());
+                String cmsBaseUrl = getBaseUrl(cmsUrl);
+                destinationURL.append(cmsBaseUrl);
+
+                HttpServletRequest origReq = servletRequest;
+                // we append the request uri including the context path (normally this is /site/...)
+                if (origReq instanceof ServletRequestWrapper) {
+                    // we need to get the original non wrapped request, because that contains the original non-modified request URI (including
+                    // the part after the HstManager#getPathSuffixDelimiter())
+                    while (origReq instanceof ServletRequestWrapper) {
+                        origReq = (HttpServletRequest)((ServletRequestWrapper) origReq).getRequest();
+                    }
                 }
-                
-                String qString =  servletRequest.getQueryString();
+
+                destinationURL.append(origReq.getRequestURI());
+
+                String qString =  origReq.getQueryString();
                 if(qString != null) {
                     destinationURL.append("?").append(qString);
                 }
-
                 // generate key; redirect to cms
                 try {
-                    String cmsAuthUrl = cmsBaseUrl + "auth?destinationUrl=" + destinationURL.toString() + "&key=" + key;
+                    String cmsAuthUrl = cmsUrl + "auth?destinationUrl=" + destinationURL.toString() + "&key=" + key;
                     servletResponse.sendRedirect(cmsAuthUrl);
                 } catch (UnsupportedEncodingException e) {
                     log.error("Unable to encode the destination url with utf8 encoding" + e.getMessage(), e);
@@ -178,6 +183,25 @@ public class CmsSecurityValve extends AbstractValve {
         } else {
             context.invokeNext();
         }
+    }
+
+    /**
+     * from a url, return everything up to the contextpath : Thus,
+     * scheme + host + port
+     * @param url the URL string to get the base from
+     * @return the scheme + host + port without trailing / at the end
+     * @throws ContainerException if the URL does not contain // after the scheme or does not contain a / after the host (+port)
+     */
+    private String getBaseUrl(final String url) throws ContainerException {
+        int indexOfDoubleSlash = url.indexOf("//");
+        if (indexOfDoubleSlash == -1) {
+            throw new ContainerException("Could not establish a SSO between CMS & site application because cannot get a cms url from the referer '"+url+"'");
+        }
+        int indexOfRequestURI = url.substring(indexOfDoubleSlash +2).indexOf("/") + indexOfDoubleSlash +2;
+        if (indexOfRequestURI == -1) {
+            throw new ContainerException("Could not establish a SSO between CMS & site application because cannot get a cms url from the referer '"+url+"'");
+        }
+        return url.substring(0, indexOfRequestURI);
     }
 
 }
