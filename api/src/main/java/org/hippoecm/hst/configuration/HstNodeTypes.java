@@ -150,7 +150,6 @@ public interface HstNodeTypes {
 
     public final static String CHANNEL_PROPERTY_NAME = "hst:name";
     static final String CHANNEL_PROPERTY_TYPE = "hst:type";
-    static final String CHANNEL_PROPERTY_REGION = "hst:region";
     public final static String CHANNEL_PROPERTY_CHANNELINFO_CLASS = "hst:channelinfoclass";
 
     public final static String BLUEPRINT_PROPERTY_NAME = "hst:name";

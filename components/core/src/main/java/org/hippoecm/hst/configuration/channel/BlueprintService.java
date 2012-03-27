@@ -124,6 +124,9 @@ public class BlueprintService implements Blueprint {
                     this.prototypeChannel.setHstMountPoint(mountPoint);
                 }
             }
+            if (prototypeMount.hasProperty(HstNodeTypes.GENERAL_PROPERTY_LOCALE)) {
+                this.prototypeChannel.setLocale(prototypeMount.getProperty(HstNodeTypes.GENERAL_PROPERTY_LOCALE).getString());
+            }
         }
     }
 
