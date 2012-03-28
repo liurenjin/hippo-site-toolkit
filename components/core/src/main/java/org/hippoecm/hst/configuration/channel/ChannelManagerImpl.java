@@ -399,7 +399,8 @@ public class ChannelManagerImpl implements MutableChannelManager {
                 } catch (ChannelManagerEventListenerException e) {
                     if(e.getStatus() == Status.STOP_CHANNEL_PROCESSING) {
                         session.refresh(false);
-                        throw new ChannelException(e.getMessage(), e , Type.STOPPED_BY_LISTENER, "Channel creation stopped by listener '"+listener.getClass().getName()+"'");
+                        throw new ChannelException("Channel creation stopped by listener '" + listener.getClass().getName() + "'", 
+                                e , Type.STOPPED_BY_LISTENER, e.getMessage());
                     } else {
                         log.warn("Channel created event listener, " + listener + ", failed to handle the event. Continue channel processing", e);
                     }
