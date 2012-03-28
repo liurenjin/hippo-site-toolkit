@@ -58,6 +58,11 @@ public class HstManagerImpl implements HstManager {
     
     private static final Logger log = LoggerFactory.getLogger(HstManagerImpl.class);
 
+    /**
+     * general mutex on which implementation can synchronize with the HstManagerImpl
+     */
+    public static final Object MUTEX = new Object();
+    
     private Repository repository;
     private Credentials credentials;
 
@@ -230,7 +235,7 @@ public class HstManagerImpl implements HstManager {
  
         VirtualHosts currentHosts = virtualHosts;
         if (currentHosts == null) {
-            synchronized(this) {
+            synchronized(MUTEX) {
                 if (virtualHosts == null) {
                     buildSites(); 
                     if(virtualHosts == null) {
@@ -682,7 +687,7 @@ public class HstManagerImpl implements HstManager {
     @Override
     public void invalidate(EventIterator events) {
          
-        synchronized(this) {
+        synchronized(MUTEX) {
             /* 
              * below, we are going to prepare which HstNode's should be reloaded in our model. 
              * Depending on the change in the jcr node in the hst configuration we will mark either:
@@ -793,17 +798,19 @@ public class HstManagerImpl implements HstManager {
 
     @Override
     public void invalidateAll() {
-        synchronized(this) {
+        synchronized(MUTEX) {
             invalidateVirtualHosts();
             clearAll = true;
         }
     }
 
     private final void invalidateVirtualHosts() {
-        log.info("In memory hst configuration model is invalidated. It will be reloaded on the next request.");
-        virtualHosts = null;
-        if (channelManager != null) {
-            channelManager.invalidate();
+        synchronized(MUTEX) {
+            log.info("In memory hst configuration model is invalidated. It will be reloaded on the next request.");
+            virtualHosts = null;
+            if (channelManager != null) {
+                channelManager.invalidate();
+            }
         }
     }
 

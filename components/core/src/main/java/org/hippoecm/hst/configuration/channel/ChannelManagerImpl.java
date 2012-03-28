@@ -51,6 +51,7 @@ import org.hippoecm.hst.configuration.hosting.MutableMount;
 import org.hippoecm.hst.configuration.hosting.VirtualHost;
 import org.hippoecm.hst.configuration.hosting.VirtualHosts;
 import org.hippoecm.hst.configuration.model.HstManager;
+import org.hippoecm.hst.configuration.model.HstManagerImpl;
 import org.hippoecm.hst.core.container.RepositoryNotAvailableException;
 import org.hippoecm.hst.security.HstSubject;
 import org.hippoecm.hst.site.HstServices;
@@ -256,71 +257,73 @@ public class ChannelManagerImpl implements MutableChannelManager {
         }
     }
 
-    public synchronized void load(VirtualHosts virtualHosts) throws RepositoryNotAvailableException {
-        Session session = null;
-        try {
-            session = getSession(false);
-            Node configNode = session.getNode(rootPath);
- 
-            blueprints = new HashMap<String, BlueprintService>();
-            loadBlueprints(configNode);
+    public void load(VirtualHosts virtualHosts) throws RepositoryNotAvailableException {
+        synchronized (HstManagerImpl.MUTEX) {
+            Session session = null;
+            try {
+                session = getSession(false);
+                Node configNode = session.getNode(rootPath);
 
-            channels = new HashMap<String, Channel>();
-            
-            hostGroup = virtualHosts.getChannelManagerHostGroupName();
-            sites = virtualHosts.getChannelManagerSitesName();
-            
-            List<Mount> mounts = Collections.emptyList();
-            if(hostGroup == null) {
-                log.warn("Cannot load the Channel Manager because no host group configured on hst:hosts node");
-            } else if (!virtualHosts.getHostGroupNames().contains(hostGroup)) {
-                log.warn("Configured channel manager host group name " + hostGroup + " does not exist");
-            } else {
-                // in channel manager only the mounts for at most ONE single hostGroup are shown
-                mounts = virtualHosts.getMountsByHostGroup(hostGroup);
-                if (mounts.size() == 0) {
-                    log.warn("No mounts found in host group " + hostGroup + ".");
-                }
-            }
+                blueprints = new HashMap<String, BlueprintService>();
+                loadBlueprints(configNode);
 
-            // load all the channels, even if they are not used by the current hostGroup
-            loadChannels(configNode);
-            
-            for (Mount mount : mounts) {
-                if (mount instanceof MutableMount) {
-                    loadFromMount((MutableMount) mount);
+                channels = new HashMap<String, Channel>();
+
+                hostGroup = virtualHosts.getChannelManagerHostGroupName();
+                sites = virtualHosts.getChannelManagerSitesName();
+
+                List<Mount> mounts = Collections.emptyList();
+                if(hostGroup == null) {
+                    log.warn("Cannot load the Channel Manager because no host group configured on hst:hosts node");
+                } else if (!virtualHosts.getHostGroupNames().contains(hostGroup)) {
+                    log.warn("Configured channel manager host group name " + hostGroup + " does not exist");
+                } else {
+                    // in channel manager only the mounts for at most ONE single hostGroup are shown
+                    mounts = virtualHosts.getMountsByHostGroup(hostGroup);
+                    if (mounts.size() == 0) {
+                        log.warn("No mounts found in host group " + hostGroup + ".");
+                    }
                 }
-            }
-            
-            // for ALL the mounts in ALL the host groups, set the channel Info if available
-            for(String hostGroupName : virtualHosts.getHostGroupNames()) {
-                for (Mount mount : virtualHosts.getMountsByHostGroup(hostGroupName)) {
+
+                // load all the channels, even if they are not used by the current hostGroup
+                loadChannels(configNode);
+
+                for (Mount mount : mounts) {
                     if (mount instanceof MutableMount) {
-                        try {
-                            String channelPath = mount.getChannelPath();
-                            if (StringUtils.isEmpty(channelPath)) {
-                                log.debug("Mount '{}' does not have a channelpath configured. Skipping setting channelInfo. ", mount);
-                                continue;
+                        loadFromMount((MutableMount) mount);
+                    }
+                }
+
+                // for ALL the mounts in ALL the host groups, set the channel Info if available
+                for(String hostGroupName : virtualHosts.getHostGroupNames()) {
+                    for (Mount mount : virtualHosts.getMountsByHostGroup(hostGroupName)) {
+                        if (mount instanceof MutableMount) {
+                            try {
+                                String channelPath = mount.getChannelPath();
+                                if (StringUtils.isEmpty(channelPath)) {
+                                    log.debug("Mount '{}' does not have a channelpath configured. Skipping setting channelInfo. ", mount);
+                                    continue;
+                                }
+                                String channelNodeName = channelPath.substring(channelPath.lastIndexOf("/")+1);
+                                Channel channel = this.channels.get(channelNodeName);
+                                if (channel == null) {
+                                    log.debug("Mount '{}' has channelpath configured that does not point to a channel info. Skipping setting channelInfo. ", mount);
+                                    continue;
+                                }
+                                log.debug("Setting channel info for mount '{}'.", mount);
+                                ((MutableMount)mount).setChannelInfo(getChannelInfo(channel));
+                            } catch (ChannelException e) {
+                                log.error("Could not set channel info to mount", e);
                             }
-                            String channelNodeName = channelPath.substring(channelPath.lastIndexOf("/")+1);
-                            Channel channel = this.channels.get(channelNodeName);
-                            if (channel == null) {
-                                log.debug("Mount '{}' has channelpath configured that does not point to a channel info. Skipping setting channelInfo. ", mount);
-                                continue;
-                            }
-                            log.debug("Setting channel info for mount '{}'.", mount);
-                            ((MutableMount)mount).setChannelInfo(getChannelInfo(channel));
-                        } catch (ChannelException e) {
-                            log.error("Could not set channel info to mount", e);
                         }
                     }
                 }
-            }
-        } catch (RepositoryException e) {
-            throw new RepositoryNotAvailableException("Could not load channels and/or blueprints", e);
-        } finally {
-            if (session != null) {
-                session.logout();
+            } catch (RepositoryException e) {
+                throw new RepositoryNotAvailableException("Could not load channels and/or blueprints", e);
+            } finally {
+                if (session != null) {
+                    session.logout();
+                }
             }
         }
     }
@@ -355,70 +358,75 @@ public class ChannelManagerImpl implements MutableChannelManager {
         return session;
     }
 
-    public synchronized Channel getChannel(String jcrPath) throws ChannelException {
-        load();
-        if (jcrPath == null || !jcrPath.startsWith(channelsRoot)) {
-            throw new ChannelException("Expected a JCR path starting with '" + channelsRoot + "', but got '" + jcrPath + "' instead");
+    public Channel getChannel(String jcrPath) throws ChannelException {
+        synchronized (HstManagerImpl.MUTEX) {
+            load();
+            if (jcrPath == null || !jcrPath.startsWith(channelsRoot)) {
+                throw new ChannelException("Expected a JCR path starting with '" + channelsRoot + "', but got '" + jcrPath + "' instead");
+            }
+            final String channelId = jcrPath.substring(channelsRoot.length());
+            return channels.get(channelId);
         }
-        final String channelId = jcrPath.substring(channelsRoot.length());
-        return channels.get(channelId);
     }
 
     // PUBLIC interface; all synchronised to guarantee consistent state
 
     @Override
-    public synchronized Map<String, Channel> getChannels() throws ChannelException {
-        load();
+    public Map<String, Channel> getChannels() throws ChannelException {
+        synchronized (HstManagerImpl.MUTEX) {
+            load();
 
-        Map<String, Channel> result = new HashMap<String, Channel>();
-        for (Map.Entry<String, Channel> entry : channels.entrySet()) {
-            result.put(entry.getKey(), new Channel(entry.getValue()));
+            Map<String, Channel> result = new HashMap<String, Channel>();
+            for (Map.Entry<String, Channel> entry : channels.entrySet()) {
+                result.put(entry.getKey(), new Channel(entry.getValue()));
+            }
+            return result;
         }
-        return result;
     }
 
     @Override
-    public synchronized String persist(final String blueprintId, Channel channel) throws ChannelException {
-       
-        if (!blueprints.containsKey(blueprintId)) {
-            throw new ChannelException("Blueprint id " + blueprintId + " is not valid");
-        }
-        BlueprintService bps = blueprints.get(blueprintId);
-
-        Session session = null;
-        try {
-            session = getSession(true);
-            Node configNode = session.getNode(rootPath);
-            String channelId = createUniqueChannelId(channel.getName(), session);
-            createChannel(configNode, bps, session, channelId, channel);
-
-            ChannelManagerEvent event = new ChannelManagerEventImpl(bps, channelId, channel, configNode);
-            for (ChannelManagerEventListener listener : channelManagerEventListeners) {
-                try {
-                    listener.channelCreated(event);
-                } catch (ChannelManagerEventListenerException e) {
-                    if(e.getStatus() == Status.STOP_CHANNEL_PROCESSING) {
-                        session.refresh(false);
-                        throw new ChannelException("Channel creation stopped by listener '" + listener.getClass().getName() + "'", 
-                                e , Type.STOPPED_BY_LISTENER, e.getMessage());
-                    } else {
-                        log.warn("Channel created event listener, " + listener + ", failed to handle the event. Continue channel processing", e);
-                    }
-                } catch (Exception listenerEx) {
-                    log.warn("Channel created event listener, " + listener + ", failed to handle the event", listenerEx);
-                }
+    public String persist(final String blueprintId, Channel channel) throws ChannelException {
+        synchronized (HstManagerImpl.MUTEX) {
+            if (!blueprints.containsKey(blueprintId)) {
+                throw new ChannelException("Blueprint id " + blueprintId + " is not valid");
             }
+            BlueprintService bps = blueprints.get(blueprintId);
 
-            channels = null;
+            Session session = null;
+            try {
+                session = getSession(true);
+                Node configNode = session.getNode(rootPath);
+                String channelId = createUniqueChannelId(channel.getName(), session);
+                createChannel(configNode, bps, session, channelId, channel);
 
-            session.save();
+                ChannelManagerEvent event = new ChannelManagerEventImpl(bps, channelId, channel, configNode);
+                for (ChannelManagerEventListener listener : channelManagerEventListeners) {
+                    try {
+                        listener.channelCreated(event);
+                    } catch (ChannelManagerEventListenerException e) {
+                        if(e.getStatus() == Status.STOP_CHANNEL_PROCESSING) {
+                            session.refresh(false);
+                            throw new ChannelException("Channel creation stopped by listener '" + listener.getClass().getName() + "'",
+                                    e , Type.STOPPED_BY_LISTENER, e.getMessage());
+                        } else {
+                            log.warn("Channel created event listener, " + listener + ", failed to handle the event. Continue channel processing", e);
+                        }
+                    } catch (Exception listenerEx) {
+                        log.warn("Channel created event listener, " + listener + ", failed to handle the event", listenerEx);
+                    }
+                }
 
-            return channelId;
-        } catch (RepositoryException e) {
-            throw new ChannelException("Unable to save channel to the repository", e);
-        } finally {
-            if (session != null) {
-                session.logout();
+                channels = null;
+
+                session.save();
+
+                return channelId;
+            } catch (RepositoryException e) {
+                throw new ChannelException("Unable to save channel to the repository", e);
+            } finally {
+                if (session != null) {
+                    session.logout();
+                }
             }
         }
     }
@@ -459,58 +467,64 @@ public class ChannelManagerImpl implements MutableChannelManager {
     }
 
     @Override
-    public synchronized void save(final Channel channel) throws ChannelException {
-        load();
-        if (!channels.containsKey(channel.getId())) {
-            throw new ChannelException("No channel with id " + channel.getId() + " was found");
-        }
-        Session session = null;
-        try {
-            session = getSession(true);
-            Node configNode = session.getNode(rootPath);
-            updateChannel(configNode, channel);
+    public void save(final Channel channel) throws ChannelException {
+        synchronized (HstManagerImpl.MUTEX) {
+            load();
+            if (!channels.containsKey(channel.getId())) {
+                throw new ChannelException("No channel with id " + channel.getId() + " was found");
+            }
+            Session session = null;
+            try {
+                session = getSession(true);
+                Node configNode = session.getNode(rootPath);
+                updateChannel(configNode, channel);
 
-            ChannelManagerEvent event = new ChannelManagerEventImpl(null, null, channel, configNode);
-            for (ChannelManagerEventListener listener : channelManagerEventListeners) {
-                try {
-                    listener.channelUpdated(event);
-                } catch (ChannelManagerEventListenerException e) {
-                    if(e.getStatus() == Status.STOP_CHANNEL_PROCESSING) {
-                        session.refresh(false);
-                        throw new ChannelException(e.getMessage(), e , Type.STOPPED_BY_LISTENER, "Channel '"+channel.getId()+"' update stopped by listener '"+listener.getClass().getName()+"'");
-                    } else {
-                        log.warn("Channel created event listener, " + listener + ", failed to handle the event. Continue channel processing", e);
+                ChannelManagerEvent event = new ChannelManagerEventImpl(null, null, channel, configNode);
+                for (ChannelManagerEventListener listener : channelManagerEventListeners) {
+                    try {
+                        listener.channelUpdated(event);
+                    } catch (ChannelManagerEventListenerException e) {
+                        if(e.getStatus() == Status.STOP_CHANNEL_PROCESSING) {
+                            session.refresh(false);
+                            throw new ChannelException(e.getMessage(), e , Type.STOPPED_BY_LISTENER, "Channel '"+channel.getId()+"' update stopped by listener '"+listener.getClass().getName()+"'");
+                        } else {
+                            log.warn("Channel created event listener, " + listener + ", failed to handle the event. Continue channel processing", e);
+                        }
+                    }  catch (Exception listenerEx) {
+                        log.error("Channel updated event listener, " + listener + ", failed to handle the event", listenerEx);
                     }
-                }  catch (Exception listenerEx) {
-                    log.error("Channel updated event listener, " + listener + ", failed to handle the event", listenerEx);
+                }
+
+                channels = null;
+
+                session.save();
+            } catch (RepositoryException e) {
+                throw new ChannelException("Unable to save channel to the repository", e);
+            } finally {
+                if (session != null) {
+                    session.logout();
                 }
             }
-            
-            channels = null;
+        }
+    }
 
-            session.save();
-        } catch (RepositoryException e) {
-            throw new ChannelException("Unable to save channel to the repository", e);
-        } finally {
-            if (session != null) {
-                session.logout();
+    @Override
+    public List<Blueprint> getBlueprints() throws ChannelException {
+        synchronized (HstManagerImpl.MUTEX) {
+            load();
+            return new ArrayList<Blueprint>(blueprints.values());
+        }
+    }
+
+    @Override
+    public Blueprint getBlueprint(final String id) throws ChannelException {
+        synchronized (HstManagerImpl.MUTEX) {
+            load();
+            if (!blueprints.containsKey(id)) {
+                throw new ChannelException("Blueprint " + id + " does not exist");
             }
+            return blueprints.get(id);
         }
-    }
-
-    @Override
-    public synchronized List<Blueprint> getBlueprints() throws ChannelException {
-        load();
-        return new ArrayList<Blueprint>(blueprints.values());
-    }
-
-    @Override
-    public synchronized Blueprint getBlueprint(final String id) throws ChannelException {
-        load();
-        if (!blueprints.containsKey(id)) {
-            throw new ChannelException("Blueprint " + id + " does not exist");
-        }
-        return blueprints.get(id);
     }
 
     @Override
@@ -575,9 +589,11 @@ public class ChannelManagerImpl implements MutableChannelManager {
         return false;
     }
 
-    public synchronized void invalidate() {
-        channels = null;
-        blueprints = null;
+    public void invalidate() {
+        synchronized (HstManagerImpl.MUTEX) {
+            channels = null;
+            blueprints = null;
+        }
     }
 
     // private - internal - methods
