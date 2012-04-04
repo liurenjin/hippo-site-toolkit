@@ -15,7 +15,8 @@
  */
 package org.hippoecm.hst.pagecomposer.dependencies.ext;
 
-import org.hippoecm.hst.pagecomposer.dependencies.CssDependency;
+import org.hippoecm.hst.pagecomposer.dependencies
+        .CssDependency;
 import org.hippoecm.hst.pagecomposer.dependencies.Dependency;
 import org.hippoecm.hst.pagecomposer.dependencies.JsDependency;
 import org.hippoecm.hst.pagecomposer.dependencies.PathDependency;
@@ -45,6 +46,7 @@ public class ExtApp extends PathDependency {
 
                 new JsDependency("src/globals.js", "src/globals-debug.js"),
                 new PathDependency("src/ext",
+                        new JsDependency("Util.js","Util-debug.js"),
                         new JsDependency("PropertiesPanel.js","PropertiesPanel-debug.js"),
                         new JsDependency("PageModel.js","PageModel-debug.js"),
                         new JsDependency("PageEditor.js","PageEditor-debug.js")

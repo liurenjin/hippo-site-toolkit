@@ -55,7 +55,8 @@ Hippo.App.PageEditor = Ext.extend(Ext.App, {
     },
 
     initUI : function() {
-
+        this.iframeUrl = Hippo.Util.ParseUrlForIE(this.iframeUrl);
+        
         var viewport = new Ext.Viewport({
             layout: 'fit',
             title: 'Hippo PageEditor',
@@ -155,7 +156,8 @@ Hippo.App.PageEditor = Ext.extend(Ext.App, {
    refreshIframe : function() {
 	Ext.Msg.wait('Reloading page ...');
         var iframe = Ext.getCmp('Iframe');
-        iframe.setSrc(iframe.getFrameDocument().location.href); //following links in the iframe doesn't set iframe.src..
+       var url = Hippo.Util.ParseUrlForIE(iframe.getFrameDocument().location.href);
+       iframe.setSrc(url); //following links in the iframe doesn't set iframe.src..
     },
 
     doLogout : function() {
@@ -243,6 +245,9 @@ Hippo.App.PageEditor = Ext.extend(Ext.App, {
                                     var parentIndex = store.findExact('id', parentId);
                                     var parentRecord = store.getAt(parentIndex);
                                     var children = parentRecord.get('children');
+                                    if(!Ext.isArray(children)) {
+                                        children = [];
+                                    }
                                     children.push(record.get('id'));
                                     parentRecord.set('children', children);
                                 }
@@ -278,8 +283,18 @@ Hippo.App.PageEditor = Ext.extend(Ext.App, {
                             //containerItem: unregister from parent
                             var parentRecord = store.getAt(store.findExact('id', record.get('parentId')));
                             if (typeof parentRecord !== 'undefined') {
+                                var id = record.get('id');
                                 var children = parentRecord.get('children');
-                                children.remove(record.get('id'));
+                                //IE8 - probably only the Win7 build - looses track of the array.prototype.remove method
+                                //which is added by EXT.
+                                if(typeof children.remove === 'undefined') {
+                                    var index = children.indexOf(id);
+                                    if(index != -1){
+                                        children.splice(index, 1);
+                                    }
+                                } else {
+                                    children.remove(id);    
+                                }
                                 parentRecord.set('children', children);
                             }
                         }
@@ -635,7 +650,8 @@ Hippo.App.PageModelStore = Ext.extend(Hippo.App.RestStore, {
                         Ext.Msg.hide();
                         Ext.Msg.wait('Refreshing page ...');
                         var iframe = Ext.getCmp('Iframe');
-                        iframe.setSrc(iframe.getFrameDocument().location.href);
+                        var url = Hippo.Util.ParseUrlForIE(iframe.getFrameDocument().location.href);
+                        iframe.setSrc(url);
                     }
                 },
                 load : {
@@ -643,7 +659,6 @@ Hippo.App.PageModelStore = Ext.extend(Hippo.App.RestStore, {
                         Ext.Msg.hide();
                     }
                 }
-
 
             }
         });

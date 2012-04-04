@@ -89,7 +89,8 @@ jQuery.noConflict();
         },
 
         remove : function(element) {
-            if (!element.hasAttribute('hst:id')) {
+            //if (!element.hasAttribute('hst:id')) {
+            if (!element.getAttribute('hst:id', 2)) {
                 element = $(element).parents('.componentContentWrapper')[0];
             }
 
@@ -134,6 +135,11 @@ jQuery.noConflict();
             $.each(this.containers, function(key, value) {
                 value.afterDrag();
             });
+        },
+
+        onOver : function(ui, container) {
+            this.current = container;
+            this.current.drawDropIndicator(ui, this.dropIndicator);
         },
 
         //TODO: implement group handling

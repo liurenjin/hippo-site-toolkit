@@ -37,10 +37,8 @@ jQuery.noConflict();
                     die('No implementation found for xtype=' + data.xtype);
                 }
                 var c = new this.registry[data.xtype](data.id, data.element);
-                if(verify) {
-                    if (!c instanceof data.base) {
-                        Hippo.PageComposer.Main.die('Instance with id ' + data.id + ' should be a subclass of ' + data.base);
-                    }
+                if(verify && !c instanceof data.base) {
+                    Hippo.PageComposer.Main.die('Instance with id ' + data.id + ' should be a subclass of ' + data.base);
                 }
                 this.objects[c.id] = c;
                 return c;

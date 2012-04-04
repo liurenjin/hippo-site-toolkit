@@ -58,7 +58,8 @@ Hippo.App.PropertiesPanel = Ext.extend(Ext.FormPanel, {
             success: function () {
                 Ext.Msg.wait('Refreshing page ...');
                 var iframe = Ext.getCmp('Iframe');
-                iframe.setSrc(iframe.getFrameDocument().location.href);
+                var url = Hippo.Util.ParseUrlForIE(iframe.getFrameDocument().location.href);
+                iframe.setSrc(url);
             }
 
         });
