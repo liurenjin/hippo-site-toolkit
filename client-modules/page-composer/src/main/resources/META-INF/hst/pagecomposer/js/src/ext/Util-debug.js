@@ -1,26 +1,30 @@
 Ext.namespace('Hippo.Util');
 
 Hippo.Util.ParseUrlForIE = function(url) {
-    if (Ext.isIE && (Ext.isIE8 || Ext.isIE7)) {
-        var key = '&_hstForceUniqueUrl=';
-        var chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXTZabcdefghiklmnopqrstuvwxyz";
-        var string_length = 16;
-
-        if(url.indexOf('?') == -1) {
-            url += '?'
-        }
-        var keyIndex = url.indexOf(key);
-        if(keyIndex > -1) {
-            var tmpUrl = url.substring(0, keyIndex);
-            tmpUrl += url.substring(keyIndex + key.length + string_length);
-            url = tmpUrl;
-        }
-        url += key;
-
-        for (var i=0; i<string_length; i++) {
-            var rnum = Math.floor(Math.random() * chars.length);
-            url += chars.substring(rnum,rnum+1);
-        }
+    if (!Ext.isIE7 && !Ext.isIE8) {
+        return url;
     }
-    return url;
+
+    var newUrl = '';
+    var generateRandomString = function(stringLength) {
+        var chars = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXTZabcdefghiklmnopqrstuvwxyz";
+        var string = '';
+        for (var i=0; i<stringLength; i++) {
+            var rnum = Math.floor(Math.random() * chars.length);
+            string += chars.substring(rnum,rnum+1);
+        }
+        return string;
+    };
+
+    var key = '_hstForceUniqueUrl=';
+    var randomString = generateRandomString(16);
+    if (url.indexOf(key) !== -1) {
+        newUrl = url.replace(/([&?]{1})_hstForceUniqueUrl=[0-9A-Za-z]{16}/g, '$1_hstForceUniqueUrl='+randomString);
+    } else if (url.indexOf('?') === -1) {
+        newUrl = url + '?' + key + randomString;
+    } else {
+        newUrl = url + '&' + key + randomString;
+    }
+
+    return newUrl;
 };
