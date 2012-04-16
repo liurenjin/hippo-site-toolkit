@@ -36,18 +36,13 @@ public class HstSiteMenuConfigurationService implements HstSiteMenuConfiguration
        this.hstSiteMenusConfiguration = hstSiteMenusConfiguration;
        this.name = siteMenu.getValueProvider().getName().intern();
         for(HstNode siteMenuItem : siteMenu.getNodes()) {
-            if(HstNodeTypes.NODETYPE_HST_SITEMENUITEM.equals(siteMenuItem.getNodeTypeName())) {
-                try {
-                    HstSiteMenuItemConfiguration siteMenuItemConfiguration = new HstSiteMenuItemConfigurationService(siteMenuItem, null, this);
-                    siteMenuItems.add(siteMenuItemConfiguration);
-                } catch(ServiceException e) {
-                    log.warn("Skipping siteMenuItemConfiguration for '{}' : '{}'", siteMenuItem.getValueProvider().getPath(), e.toString());
-                }
-            } else {
-                log.error("Skipping siteMenuItem '{}' because not of type '{}'", siteMenuItem.getValueProvider().getPath(), HstNodeTypes.NODETYPE_HST_SITEMENUITEM);
+            try {
+                HstSiteMenuItemConfiguration siteMenuItemConfiguration = new HstSiteMenuItemConfigurationService(siteMenuItem, null, this);
+                siteMenuItems.add(siteMenuItemConfiguration);
+            } catch(ServiceException e) {
+                log.warn("Skipping siteMenuItemConfiguration for '{}' : '{}'", siteMenuItem.getValueProvider().getPath(), e.toString());
             }
         }
-        
     }
     
 
