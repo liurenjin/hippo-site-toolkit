@@ -43,6 +43,7 @@ jQuery.noConflict();
                 overlay : {
                     base: 'hst-overlay',
                     hover : 'hst-overlay-hover',
+                    inner: 'hst-overlay-inner',
                     mark : null,
                     custom : null
                 }
@@ -681,6 +682,7 @@ jQuery.noConflict();
         onRender : function() {
             //var background = $('<div/>').addClass('hst-overlay-background');
             //this.overlay.append(background);
+            this.overlay.append($('<div/>').addClass(this.cls.overlay.inner));
 
             this.menu = $('<div/>').addClass('hst-overlay-menu'); //.appendTo(document.body);
 
