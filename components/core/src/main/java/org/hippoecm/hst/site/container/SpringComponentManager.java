@@ -30,7 +30,6 @@ import org.hippoecm.hst.core.container.ComponentManagerAware;
 import org.hippoecm.hst.core.container.ContainerConfiguration;
 import org.hippoecm.hst.core.container.ContainerConfigurationImpl;
 import org.hippoecm.hst.core.container.ModuleNotFoundException;
-import org.hippoecm.hst.site.HstServices;
 import org.hippoecm.hst.site.addon.module.model.ModuleDefinition;
 import org.hippoecm.hst.site.addon.module.runtime.ModuleInstanceImpl;
 import org.slf4j.Logger;
@@ -193,7 +192,7 @@ public class SpringComponentManager implements ComponentManager {
             try {
                 bean = (T) applicationContext.getBean(name);
             } catch (Exception ignore) {
-                HstServices.getLogger(LOGGER_FQCN, LOGGER_FQCN).warn("The requested bean doesn't exist: '{}'", name);
+                log.warn("The requested bean doesn't exist: '{}'", name);
             }
         } else {
             if (addonModuleInstancesMap == null || addonModuleInstancesMap.isEmpty()) {
@@ -217,8 +216,8 @@ public class SpringComponentManager implements ComponentManager {
             try {
                 bean = (T) moduleInstance.getComponent(name);
             } catch (Exception ignore) {
-                HstServices.getLogger(LOGGER_FQCN, LOGGER_FQCN).warn("The requested bean doesn't exist: '{}' in the addon module context, '{}'.", 
-                        name, ArrayUtils.toString(addonModuleNames));
+               log.warn("The requested bean doesn't exist: '{}' in the addon module context, '{}'.",
+                         name, ArrayUtils.toString(addonModuleNames));
             }
         }
 
@@ -236,7 +235,7 @@ public class SpringComponentManager implements ComponentManager {
             try {
                 beansMap = applicationContext.getBeansOfType(requiredType);
             } catch (Exception ignore) {
-                HstServices.getLogger(LOGGER_FQCN, LOGGER_FQCN).warn("The required typed bean doesn't exist: '{}'", requiredType);
+                log.warn("The required typed bean doesn't exist: '{}'", requiredType);
             }
         } else {
             if (addonModuleInstancesMap == null || addonModuleInstancesMap.isEmpty()) {
@@ -260,7 +259,7 @@ public class SpringComponentManager implements ComponentManager {
             try {
                 beansMap = moduleInstance.getComponentsOfType(requiredType);
             } catch (Exception ignore) {
-                HstServices.getLogger(LOGGER_FQCN, LOGGER_FQCN).warn("The required typed bean doesn't exist: '{}' in the addon module context, '{}'.", 
+                log.warn("The required typed bean doesn't exist: '{}' in the addon module context, '{}'.", 
                         requiredType, ArrayUtils.toString(addonModuleNames));
             }
         }
