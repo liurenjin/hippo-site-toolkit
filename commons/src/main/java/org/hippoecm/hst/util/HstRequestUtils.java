@@ -26,6 +26,7 @@ import java.util.regex.Pattern;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.hippoecm.hst.configuration.hosting.Mount;
 import org.hippoecm.hst.core.component.HstRequest;
 import org.hippoecm.hst.core.component.HstResponse;
 import org.hippoecm.hst.core.container.ContainerConstants;
@@ -186,24 +187,48 @@ public class HstRequestUtils {
      * @return
      */
     public static String [] getRequestHosts(HttpServletRequest request) {
-        String xfh = request.getHeader("X-Forwarded-Host");
-        
-        if (xfh != null) {
-            String [] hosts = xfh.split(",");
+        String host = request.getHeader("X-Forwarded-Host");
+
+        if (host != null) {
+            String [] hosts = host.split(",");
             
             for (int i = 0; i < hosts.length; i++) {
                 hosts[i] = hosts[i].trim();
             }
             
             return hosts;
-        } else {
-            if (request.getHeader("Host") != null && !"".equals(request.getHeader("Host"))) {
-                return new String [] { request.getHeader("Host") };
+        }
+
+        host = request.getHeader("Host");
+
+        if (host != null && !"".equals(host)) {
+            return new String [] { host };
+        }
+
+        // fallback to request server name for HTTP/1.0 clients.
+        // e.g., HTTP/1.0 based browser clients or load balancer not providing 'Host' header.
+
+        int serverPort = request.getServerPort();
+
+        // in case this utility method is invoked by a component, for some reason, ...
+        HstRequest hstRequest = getHstRequest(request);
+        if (hstRequest != null) {
+            Mount mount = hstRequest.getRequestContext().getResolvedMount().getMount();
+
+            if (mount.isPortInUrl()) {
+                serverPort = mount.getPort();
             } else {
-                // fallback to request server name for HTTP/1.0
-                return new String[] {request.getServerName()};
+                serverPort = 0;
             }
         }
+
+        if (serverPort == 80 || serverPort == 443 || serverPort <= 0) {
+            host = request.getServerName();
+        } else {
+            host = request.getServerName() + ":" + serverPort;
+        }
+
+        return new String[] { host };
     }
     
     /**
