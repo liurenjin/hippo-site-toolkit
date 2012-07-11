@@ -175,6 +175,7 @@ public class HstLinkTag extends ParamContainerTag {
            }
            
            log.warn("There is no HstRequestContext on the request. Cannot create an HstLink outside the hst request processing. Return");
+           cleanup();
            return EVAL_PAGE;
        } 
        
@@ -198,6 +199,7 @@ public class HstLinkTag extends ParamContainerTag {
        if(this.link == null && this.hippoBean != null) {
             if(hippoBean.getNode() == null) {
                 log.warn("Cannot get a link for a detached node");
+                cleanup();
                 return EVAL_PAGE;
             }
             if(mountAlias != null) {
@@ -222,6 +224,7 @@ public class HstLinkTag extends ParamContainerTag {
 
         if(this.link == null) {
             log.warn("Unable to rewrite link. Return EVAL_PAGE");
+            cleanup();
             return EVAL_PAGE;
         }
         
@@ -263,6 +266,7 @@ public class HstLinkTag extends ParamContainerTag {
                 urlString += queryString;
             }
         } catch (UnsupportedEncodingException e) {
+            cleanup();
             throw new JspException("UnsupportedEncodingException on the base url", e);
         }
         
