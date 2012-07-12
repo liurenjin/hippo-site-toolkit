@@ -48,6 +48,7 @@
             </manifest>
             <manifestEntries>
               <Hippo-Modules>org.hippoecm.hst.upgrade.Upgrader2_24_A  org.hippoecm.hst.upgrade.Upgrader_MicroCndChange_2_1_2</Hippo-Modules>
+              <Implementation-Build>22406</Implementation-Build>
             </manifestEntries>
           </archive>
         </configuration>

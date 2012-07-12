@@ -20,6 +20,7 @@ import java.net.URISyntaxException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -199,13 +200,18 @@ public class ChannelManagerImpl implements MutableChannelManager {
         String mountPoint = mount.getMountPoint();
         if (mountPoint != null) {
             channel.setHstMountPoint(mountPoint);
-            channel.setHstPreviewMountPoint(mountPoint+"-preview");
+            channel.setHstPreviewMountPoint(mountPoint + "-preview");
+            channel.setContentRoot(mount.getCanonicalContentPath());
             String configurationPath = mount.getHstSite().getConfigurationPath();
             if (configurationPath != null) {
                 channel.setHstConfigPath(configurationPath);
             }
+        }
 
-            channel.setContentRoot(mount.getCanonicalContentPath());
+        channel.setLockedBy(mount.getLockedBy());
+        final Calendar lockedOn = mount.getLockedOn();
+        if (lockedOn != null) {
+            channel.setLockedOn(lockedOn.getTimeInMillis());
         }
 
         String mountPath = mount.getMountPath();

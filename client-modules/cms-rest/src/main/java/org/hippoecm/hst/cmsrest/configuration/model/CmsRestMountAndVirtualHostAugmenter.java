@@ -17,6 +17,7 @@ package org.hippoecm.hst.cmsrest.configuration.model;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -621,6 +622,24 @@ public class CmsRestMountAndVirtualHostAugmenter implements HstConfigurationAugm
         public String getCmsLocation() {
             // nothing to return for the cms rest mount
             return null;
+        }
+
+        @Override
+        public String getLockedBy() {
+            return null;
+        }
+
+        @Override
+        public void setLockedBy(final String userId) {
+        }
+
+        @Override
+        public Calendar getLockedOn() {
+            return null;
+        }
+
+        @Override
+        public void setLockedOn(final Calendar lockedOn) {
         }
 
     }

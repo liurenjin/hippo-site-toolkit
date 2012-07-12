@@ -49,6 +49,9 @@ public interface HstNodeTypes {
     public final static String NODETYPE_HST_BLUEPRINT = "hst:blueprint";
     public final static String NODETYPE_HST_BLUEPRINTS = "hst:blueprints";
 
+	  public final static String GENERAL_PROPERTY_LOCKED_BY = "hst:lockedby";
+    public final static String GENERAL_PROPERTY_LOCKED_ON = "hst:lockedon";
+    
     public final static String GENERAL_PROPERTY_INHERITS_FROM = "hst:inheritsfrom";
     public final static String GENERAL_PROPERTY_PARAMETER_NAMES = "hst:parameternames";
     public final static String GENERAL_PROPERTY_PARAMETER_VALUES = "hst:parametervalues";

@@ -16,11 +16,13 @@
 package org.hippoecm.hst.pagecomposer.jaxrs.services;
 
 import java.util.ArrayList;
+import java.util.GregorianCalendar;
 import java.util.List;
 
 import javax.jcr.LoginException;
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
+import javax.jcr.Property;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.query.QueryManager;
@@ -37,11 +39,14 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 
+import org.apache.cxf.common.util.StringUtils;
+import org.hippoecm.hst.configuration.HstNodeTypes;
 import org.hippoecm.hst.configuration.hosting.Mount;
 import org.hippoecm.hst.configuration.internal.ContextualizableMount;
 import org.hippoecm.hst.configuration.site.HstSite;
 import org.hippoecm.hst.content.beans.ObjectBeanPersistenceException;
 import org.hippoecm.hst.content.beans.manager.workflow.WorkflowPersistenceManagerImpl;
+import org.hippoecm.hst.core.container.ContainerConstants;
 import org.hippoecm.hst.core.request.HstRequestContext;
 import org.hippoecm.hst.pagecomposer.jaxrs.model.DocumentRepresentation;
 import org.hippoecm.hst.pagecomposer.jaxrs.model.PageModelRepresentation;
@@ -53,7 +58,6 @@ import org.slf4j.LoggerFactory;
 /**
  * @version $Id$
  */
-
 @Path("/hst:mount/")
 public class MountResource extends AbstractConfigResource {
     private static Logger log = LoggerFactory.getLogger(MountResource.class);
@@ -99,6 +103,44 @@ public class MountResource extends AbstractConfigResource {
     }
 
     /**
+     * Try to lock a mount.
+     * @param servletRequest
+     * @return  ok - already-locked {@link Response} when the mount was already locked.
+     *          ok - lock-acquired {@link Response} when the lock was acquired
+     *          error {@link Response} when something went wrong
+     */
+    @POST
+    @Path("/lock/")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response setLock(@Context HttpServletRequest servletRequest) {
+        final HstRequestContext requestContext = getRequestContext(servletRequest);
+
+        ContextualizableMount ctxEditingMount = getPreviewMount(requestContext);
+        if (ctxEditingMount == null) {
+            return error("This mount is not suitable for the template composer.");
+        }
+
+        String configPath = ctxEditingMount.getPreviewHstSite().getConfigurationPath();
+
+        if(configPath != null) {
+            try {
+                Session jcrSession = requestContext.getSession();
+                if (isLocked(jcrSession, configPath)) {
+                    return ok("This configuration was already locked.", "already-locked");
+                } else {
+                    lock(jcrSession, configPath);
+                    return ok("This configuration lock was acquired.", "lock-acquired");
+                }
+            } catch (LoginException e) {
+                return error("Could not get a jcr session : " + e + ".");
+            } catch (RepositoryException e) {
+                return error("Could not check lock : " + e );
+            }
+        }
+        return error("Could not find the mount configuration.");
+    }
+
+    /**
      * If the {@link Mount} that this request belongs to does not have a preview configuration, it will 
      * be created. If it already has a preview configuration, just an ok {@link Response} is returned.
      * @param servletRequest
@@ -111,34 +153,35 @@ public class MountResource extends AbstractConfigResource {
     public Response startEdit(@Context HttpServletRequest servletRequest,
                                              @Context HttpServletResponse servletResponse) {
         final HstRequestContext requestContext = getRequestContext(servletRequest);
-        final Mount editingMount = getEditingHstMount(requestContext); 
-        
-        if(editingMount.getType().equals(Mount.PREVIEW_NAME)) {
-            return error("The mount is configured as PREVIEW. Template composer works against live mounts decorated to preview.");
+
+        ContextualizableMount ctxEditingMount = getPreviewMount(requestContext);
+        if (ctxEditingMount == null) {
+            return error("This mount is not suitable for the template composer.");
         }
-         
-        if (editingMount == null || !(editingMount instanceof ContextualizableMount)) {
-            log.error("Could not get the editing site to create the toolkit representation.");
-            return error("Could not get the editing site to create the toolkit representation.");
-        }
-        
-        ContextualizableMount ctxEditingMount = (ContextualizableMount) editingMount;
         
         String configPath = ctxEditingMount.getPreviewHstSite().getConfigurationPath();
+
         if(configPath != null) {
-            if(!configPath.endsWith("-" + Mount.PREVIEW_NAME)) {
-                // preview configuration is the same as live configuration. We need to create a preview now
-                try {
-                    Session jcrSession = requestContext.getSession();
-                    jcrSession.getWorkspace().copy(configPath, configPath+"-" + Mount.PREVIEW_NAME);
-                    
-                } catch (LoginException e) {
-                    return error("Could not get a jcr session : " + e + ". Cannot create a  preview configuration.");
-                } catch (RepositoryException e) {
-                    return error("Could not create a preview configuration : " + e );
-                } 
-            } else {
-                return ok("There is already a preview config");
+            // preview configuration is the same as live configuration. We need to create a preview now
+            try {
+                Session jcrSession = requestContext.getSession();
+
+                // check if the configuration is not locked by another user
+                if (isLocked(jcrSession, configPath)) {
+                    return error("This channel is locked.", "locked");
+                }
+
+                if(!configPath.endsWith("-" + Mount.PREVIEW_NAME)) {
+                    final String previewConfiguration = new StringBuilder().append(configPath).append("-").append(Mount.PREVIEW_NAME).toString();
+                    jcrSession.getWorkspace().copy(configPath, previewConfiguration);
+                    lock(jcrSession, previewConfiguration);
+                } else {
+                    lock(jcrSession, configPath);
+                }
+            } catch (LoginException e) {
+                return error("Could not get a jcr session : " + e + ". Cannot create a  preview configuration.");
+            } catch (RepositoryException e) {
+                return error("Could not create a preview configuration : " + e );
             }
         } else {
             // preview configuration already exists
@@ -147,19 +190,51 @@ public class MountResource extends AbstractConfigResource {
         
         return ok("Site can be edited now");
     }
-    
+
+    /**
+     * If the {@link Mount} that this request belongs to has a preview configuration, it will be discarded.
+     * @param servletRequest
+     * @return ok {@link Response} when the discard completed, error {@link Response} otherwise
+     */
+    @POST
+    @Path("/discard/")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response discardChanges(@Context HttpServletRequest servletRequest) {
+        final HstRequestContext requestContext = getRequestContext(servletRequest);
+        final Mount editingMount = getEditingHstMount(requestContext);
+        if(editingMount.getType().equals(Mount.PREVIEW_NAME)) {
+            return error("Cannot publish preview mounts. Template composer should work with live mounts decorated as preview.");
+        }
+        return deletePreviewMount(requestContext, (ContextualizableMount) editingMount, true);
+    }
+
+    /**
+     * If the {@link Mount} that this request belongs to has a preview configuration, it will be unlocked and deleted.
+     * @param servletRequest
+     * @return ok {@link Response} when the discard completed, error {@link Response} otherwise
+     */
+    @POST
+    @Path("/unlock/")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response unlock(@Context HttpServletRequest servletRequest) {
+        final HstRequestContext requestContext = getRequestContext(servletRequest);
+        final Mount editingMount = getEditingHstMount(requestContext);
+        if(editingMount.getType().equals(Mount.PREVIEW_NAME)) {
+            return error("Cannot publish preview mounts. Template composer should work with live mounts decorated as preview.");
+        }
+        return deletePreviewMount(requestContext, (ContextualizableMount) editingMount, false);
+    }
+
     /**
      * If the {@link Mount} that this request belongs to does not have a preview configuration, it will 
      * be created. If it already has a preview configuration, just an ok {@link Response} is returned.
      * @param servletRequest
-     * @param servletResponse
      * @return ok {@link Response} when editing can start, and error {@link Response} otherwise
      */
     @POST
     @Path("/publish/")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response publish(@Context HttpServletRequest servletRequest,
-                                             @Context HttpServletResponse servletResponse) {
+    public Response publish(@Context HttpServletRequest servletRequest) {
         final HstRequestContext requestContext = getRequestContext(servletRequest);
         final Mount editingMount = getEditingHstMount(requestContext); 
         
@@ -171,13 +246,25 @@ public class MountResource extends AbstractConfigResource {
        
        String previewConfigPath = ctxEditingMount.getPreviewHstSite().getConfigurationPath();
        if(previewConfigPath != null && previewConfigPath.endsWith("-" + Mount.PREVIEW_NAME)) {
-             // preview configuration exists: Rmoeve now live and rename preview
+           // preview configuration exists: Remove now live and rename preview
            String liveConfigPath = previewConfigPath.substring(0, previewConfigPath.length() - (Mount.PREVIEW_NAME.length() + 1) );
            try {
-                Session jcrSession = requestContext.getSession();
-                jcrSession.removeItem(liveConfigPath);
-                jcrSession.move(previewConfigPath, liveConfigPath);
-                jcrSession.save();
+               Session jcrSession = requestContext.getSession();
+               // Don't publish when the configuration is locked
+               if (isLocked(jcrSession, previewConfigPath)) {
+                   return error("Locked by another user.", "locked");
+               }
+               // Remove the lock properties
+               final Node node = jcrSession.getNode(previewConfigPath);
+               if (node.hasProperty(HstNodeTypes.GENERAL_PROPERTY_LOCKED_BY)) {
+                   node.getProperty(HstNodeTypes.GENERAL_PROPERTY_LOCKED_BY).remove();
+               }
+               if (node.hasProperty(HstNodeTypes.GENERAL_PROPERTY_LOCKED_ON)) {
+                   node.getProperty(HstNodeTypes.GENERAL_PROPERTY_LOCKED_ON).remove();
+               }
+               jcrSession.removeItem(liveConfigPath);
+               jcrSession.move(previewConfigPath, liveConfigPath);
+               jcrSession.save();
             } catch (LoginException e) {
                 return error("Could not get a jcr session : " + e  + ". Cannot publish configuration.");
             } catch (RepositoryException e) {
@@ -230,7 +317,7 @@ public class MountResource extends AbstractConfigResource {
 
 
     /**
-     * method that returns a {@link Response} containing the list of document of (sub)type <code>docType</code> that
+     * Method that returns a {@link Response} containing the list of document of (sub)type <code>docType</code> that
      * belong to the content of the site that is currently composed.
      *
      * @param servletRequest
@@ -285,5 +372,62 @@ public class MountResource extends AbstractConfigResource {
         return ok("Document list", documentLocations);
     }
 
-    
+    private boolean isLocked(Session session, String path) throws RepositoryException {
+        final String holder = getLockedBy(session, path);
+        if (StringUtils.isEmpty(holder)) {
+            return false;
+        }
+        return !session.getUserID().equals(holder);
+    }
+
+    private String getLockedBy(Session session, String path) throws RepositoryException {
+        final Node node = session.getNode(path);
+        if (!node.hasProperty(HstNodeTypes.GENERAL_PROPERTY_LOCKED_BY)) {
+            node.setProperty(HstNodeTypes.GENERAL_PROPERTY_LOCKED_BY, "");
+        }
+        final Property holderProperty = node.getProperty(HstNodeTypes.GENERAL_PROPERTY_LOCKED_BY);
+        return holderProperty.getString();
+    }
+
+    private void lock(Session session, String path) throws RepositoryException {
+        final Node node = session.getNode(path);
+        node.setProperty(HstNodeTypes.GENERAL_PROPERTY_LOCKED_BY, session.getUserID());
+        node.setProperty(HstNodeTypes.GENERAL_PROPERTY_LOCKED_ON, new GregorianCalendar());
+        session.save();
+    }
+
+    private ContextualizableMount getPreviewMount(final HstRequestContext requestContext) {
+        final Mount editingMount = getEditingHstMount(requestContext);
+        if (editingMount.getType().equals(Mount.PREVIEW_NAME)) {
+            log.error("The mount is configured as PREVIEW. Template composer works against live mounts decorated to preview.");
+            return null;
+        }
+        if (editingMount == null || !(editingMount instanceof ContextualizableMount)) {
+            log.error("Could not get the editing site to create the toolkit representation.");
+            return null;
+        }
+        return (ContextualizableMount) editingMount;
+    }
+
+    private Response deletePreviewMount(final HstRequestContext requestContext,
+                                        final ContextualizableMount ctxEditingMount, boolean lockCheck) {
+        String previewConfigPath = ctxEditingMount.getPreviewHstSite().getConfigurationPath();
+        if (previewConfigPath != null && previewConfigPath.endsWith("-" + Mount.PREVIEW_NAME)) {
+            try {
+                Session jcrSession = requestContext.getSession();
+                if (lockCheck && isLocked(jcrSession, previewConfigPath)) {
+                    return error("Locked by another user.", "locked");
+                }
+                jcrSession.removeItem(previewConfigPath);
+                jcrSession.save();
+            } catch (LoginException e) {
+                return error("Could not get a jcr session : " + e  + ". Cannot discard configuration.");
+            } catch (RepositoryException e) {
+                return error("Could not discard preview configuration : " + e);
+            }
+            return ok("Template is discarded");
+        } else {
+            return error("Cannot discard non preview site");
+        }
+    }
 }

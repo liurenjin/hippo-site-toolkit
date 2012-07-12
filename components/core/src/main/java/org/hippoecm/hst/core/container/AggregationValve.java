@@ -32,8 +32,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.lang.StringUtils;
 import org.hippoecm.hst.configuration.components.HstComponentConfiguration;
 import org.hippoecm.hst.configuration.hosting.Mount;
+import org.hippoecm.hst.configuration.hosting.MutableMount;
 import org.hippoecm.hst.core.component.HstRequest;
 import org.hippoecm.hst.core.component.HstRequestImpl;
 import org.hippoecm.hst.core.component.HstResponse;
@@ -41,6 +43,7 @@ import org.hippoecm.hst.core.component.HstResponseImpl;
 import org.hippoecm.hst.core.component.HstResponseState;
 import org.hippoecm.hst.core.component.HstServletResponseState;
 import org.hippoecm.hst.core.component.HstURL;
+import org.hippoecm.hst.core.component.HstURLFactory;
 import org.hippoecm.hst.core.request.HstRequestContext;
 import org.hippoecm.hst.site.HstServices;
 import org.w3c.dom.Comment;
@@ -349,6 +352,14 @@ public class AggregationValve extends AbstractValve {
                         rootWindow.getResponseState().addHeader("HST-Mount-Id", mount.getIdentifier());
                         rootWindow.getResponseState().addHeader("HST-Site-Id", mount.getHstSite().getCanonicalIdentifier());
                         rootWindow.getResponseState().addHeader("HST-Page-Id", compConfig.getCanonicalIdentifier());
+                        if (mount instanceof MutableMount) {
+                            MutableMount mutableMount = (MutableMount)mount;
+                            final String lockedBy = mutableMount.getLockedBy();
+                            if (StringUtils.isNotBlank(lockedBy)) {
+                                rootWindow.getResponseState().addHeader("HST-Mount-LockedBy", lockedBy);
+                                rootWindow.getResponseState().addHeader("HST-Mount-LockedOn", String.valueOf(mutableMount.getLockedOn().getTimeInMillis()));
+                            }
+                        }
                         boolean isPreviewConfig = false;
                         if(mount.getHstSite().getConfigurationPath().endsWith("-"+Mount.PREVIEW_NAME)) {
                             isPreviewConfig = true;
@@ -356,8 +367,6 @@ public class AggregationValve extends AbstractValve {
                         rootWindow.getResponseState().addHeader("HST-Site-HasPreviewConfig", String.valueOf(isPreviewConfig));
                         //"-" + Mount.PREVIEW_NAME;
                     } else if(Boolean.TRUE.equals(composerMode)) {
-                         // TODO replace by json marshaller
-                        
                         HashMap<String, String> attributes = new HashMap<String, String>();
                         attributes.put("uuid", compConfig.getCanonicalIdentifier());
                         if(compConfig.getXType() != null) {
@@ -386,7 +395,8 @@ public class AggregationValve extends AbstractValve {
             getComponentInvoker().invokeRender(requestContainerConfig, request, response);
         }
     }
-    
+
+    // TODO replace by json marshaller
     private Comment createCommentWithAttr(HashMap<String, String> attributes, HstResponse response) {
         StringBuilder builder = new StringBuilder();
         for(Entry<String, String> attr : attributes.entrySet()) {

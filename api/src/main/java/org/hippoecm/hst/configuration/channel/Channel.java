@@ -23,7 +23,7 @@ public class Channel implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    private final String id;
+    private String id;
 
     private String name;
     private String type;
@@ -43,6 +43,14 @@ public class Channel implements Serializable {
     private String channelInfoClassName;
     private String mountId;
     private String locale;
+    private String lockedBy;
+    private Long lockedOn;
+
+    /**
+     * {@link Channel} default constructor it is required for REST de/serialization 
+     */
+    public Channel() {
+    }
 
     /**
      * Constructor of a Channel.  Should normally only be invoked by the Channel manager implementation
@@ -79,6 +87,8 @@ public class Channel implements Serializable {
         this.channelInfoClassName = orig.channelInfoClassName;
         this.mountId = orig.mountId;
         this.locale = orig.locale;
+        this.lockedBy = orig.lockedBy;
+        this.lockedOn = orig.lockedOn;
     }
 
     /**
@@ -86,6 +96,17 @@ public class Channel implements Serializable {
      */
     public String getId() {
         return id;
+    }
+
+    /**
+     * Set the unique ID of this channel
+     */
+    public void setId(String id) throws IllegalStateException {
+    	if ( (this.id != null) && (this.id != "") ) {
+    		throw new IllegalStateException("Channel id has been already set. It can not be changed.");
+    	}
+
+        this.id = id;
     }
 
     public String getContentRoot() {
@@ -226,6 +247,39 @@ public class Channel implements Serializable {
         this.contextPath = contextPath;
     }
 
+    /**
+     * Retrieve this channel lock owner's userId. Returns null if the channel is not locked.
+     * @return this channel lock owner's userId
+     */
+    public String getLockedBy() {
+        return lockedBy;
+    }
+
+    /**
+     * Set owner of this channel's lock. Set to null if the channel is not locked.
+     * @param lockedBy this channel lock owner's userId
+     */
+    public void setLockedBy(final String lockedBy) {
+        this.lockedBy = lockedBy;
+    }
+
+    /**
+     * Retrieve the timestamp when the lock was set. Be warned that this method returns gives invalid results if the
+     * channel is not locked.
+     * @return timestamp in milliseconds of when channel lock was acquired
+     */
+    public Long getLockedOn() {
+        return lockedOn;
+    }
+
+    /**
+     * Set to null if the channel is not locked.
+     * @param lockedOn timestamp in milliseconds of when channel lock was acquired
+     */
+    public void setLockedOn(final Long lockedOn) {
+        this.lockedOn = lockedOn;
+    }
+
     public int hashCode() {
         return id.hashCode() ^ 317;
     }
@@ -256,6 +310,8 @@ public class Channel implements Serializable {
         b.append(",contextPath=").append(contextPath);
         b.append(",cmsPreviewPrefix=").append(cmsPreviewPrefix);
         b.append(",mountPath=").append(mountPath);
+        b.append(",lockedBy=").append(lockedBy);
+        b.append(",lockedOn=").append(lockedOn);
         b.append('}');
 
         return b.toString();

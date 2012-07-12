@@ -19,6 +19,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -736,7 +737,25 @@ public class ComposerMountAndVirtualHostAugmenter implements HstConfigurationAug
             }
             return null;
         }
-        
+
+        @Override
+        public String getLockedBy() {
+            return null;
+        }
+
+        @Override
+        public void setLockedBy(final String userId) {
+        }
+
+        @Override
+        public Calendar getLockedOn() {
+            return null;
+        }
+
+        @Override
+        public void setLockedOn(final Calendar lockedOn) {
+        }
+
     }
 
     

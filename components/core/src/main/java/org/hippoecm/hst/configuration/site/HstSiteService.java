@@ -71,7 +71,10 @@ public class HstSiteService implements HstSite {
         canonicalIdentifier = site.getValueProvider().getIdentifier();
         configurationPath = findConfigurationPath(site, hstManager, mount);
         HstNode configurationNode = hstManager.getEnhancedConfigurationRootNodes().get(configurationPath);
-        
+
+        mount.setLockedBy(configurationNode.getValueProvider().getString(HstNodeTypes.GENERAL_PROPERTY_LOCKED_BY));
+        mount.setLockedOn(configurationNode.getValueProvider().getDate(HstNodeTypes.GENERAL_PROPERTY_LOCKED_ON));
+
         if(configurationNode == null) {
             throw new ServiceException("Cannot find configuration at '"+configurationPath+"' for site '"+getName()+"'" );
         }
