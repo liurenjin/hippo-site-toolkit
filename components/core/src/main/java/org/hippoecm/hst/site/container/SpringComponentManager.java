@@ -150,7 +150,7 @@ public class SpringComponentManager implements ComponentManager {
                 log.warn("Failed to close non-starting module instance, " + addonModuleInstance.getFullName() + ".", e);
             }
             
-            addonModuleInstancesMap.remove(addonModuleInstance);
+            addonModuleInstancesMap.remove(addonModuleInstance.getName());
         }
     }
 
