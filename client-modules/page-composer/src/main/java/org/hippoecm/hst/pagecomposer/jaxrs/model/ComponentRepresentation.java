@@ -42,6 +42,9 @@ public class ComponentRepresentation {
     private String type;
     private String xtype;
 
+    private String[] dropDownListValues;
+    private String[] dropDownListDisplayValues;
+
     public ComponentRepresentation represent(HstComponentConfiguration componentConfiguration, Mount mount) {
 
         id = componentConfiguration.getCanonicalIdentifier();
@@ -155,7 +158,21 @@ public class ComponentRepresentation {
     public void setIconURL(String iconURL) {
         this.iconURL = iconURL;
     }
-    
-    
+
+    public String[] getDropDownListValues() {
+        return dropDownListValues;
+    }
+
+    public void setDropDownListValues(String[] dropDownValues) {
+        this.dropDownListValues = dropDownValues;
+    }
+
+    public String[] getDropDownListDisplayValues() {
+        return dropDownListDisplayValues;
+    }
+
+    public void setDropDownListDisplayValues(String[] dropDownListDisplayValues) {
+        this.dropDownListDisplayValues = dropDownListDisplayValues;
+    }
 
 }

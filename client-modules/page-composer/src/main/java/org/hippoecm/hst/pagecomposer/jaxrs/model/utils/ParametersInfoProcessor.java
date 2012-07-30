@@ -24,10 +24,7 @@ import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
-import org.hippoecm.hst.core.parameters.Color;
-import org.hippoecm.hst.core.parameters.DocumentLink;
-import org.hippoecm.hst.core.parameters.Parameter;
-import org.hippoecm.hst.core.parameters.ParametersInfo;
+import org.hippoecm.hst.core.parameters.*;
 import org.hippoecm.hst.pagecomposer.jaxrs.model.ComponentWrapper;
 import org.hippoecm.hst.pagecomposer.jaxrs.model.ComponentWrapper.Property;
 import org.slf4j.Logger;
@@ -90,6 +87,22 @@ public class ParametersInfoProcessor {
                         prop.setAllowCreation(documentLink.allowCreation());
                     } else if (annotation.annotationType() == Color.class) {
                         type = ComponentWrapper.ParameterType.COLOR;
+                    } else if (annotation instanceof DropDownList) {
+                        final DropDownList dropDownList = (DropDownList)annotation;
+                        type = ComponentWrapper.ParameterType.DROPDOWNLIST;
+                        final String values[] = dropDownList.value();
+                        final String[] displayValues = new String[values.length];
+
+                        for (int i=0; i<values.length; i++) {
+                            if (resourceBundle != null && resourceBundle.containsKey(values[i])) {
+                                displayValues[i] = resourceBundle.getString(values[i]);
+                            } else {
+                                displayValues[i] = values[i];
+                            }
+                        }
+
+                        prop.setDropDownListValues(values);
+                        prop.setDropDownListDisplayValues(displayValues);
                     }
                 }
 

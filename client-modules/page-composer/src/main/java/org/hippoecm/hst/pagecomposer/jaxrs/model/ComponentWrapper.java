@@ -124,6 +124,7 @@ public class ComponentWrapper {
         String DATE = "DATE";
         String COLOR = "COLOR";
         String DOCUMENT = "DOCUMENT";
+        String DROPDOWNLIST = "DROPDOWNLIST";
     }
     
     /**
@@ -142,6 +143,9 @@ public class ComponentWrapper {
         private String docType;
         private boolean allowCreation;
         private String docLocation;
+
+        private String[] dropDownListValues;
+        private String[] dropDownListDisplayValues;
 
         public Property() {
             name = "";
@@ -177,16 +181,18 @@ public class ComponentWrapper {
         }
 
         public void setType(String type) {
-            if (type.equals(ComponentWrapper.ParameterType.DATE)) {
+            if (ComponentWrapper.ParameterType.DATE.equals(type)) {
                 this.type = "datefield";
-            } else if (type.equals(ComponentWrapper.ParameterType.BOOLEAN)) {
+            } else if (ParameterType.BOOLEAN.equals(type)) {
                 this.type = "checkbox";
-            } else if (type.equals(ComponentWrapper.ParameterType.NUMBER)) {
+            } else if (ParameterType.NUMBER.equals(type)) {
                 this.type = "numberfield";
-            } else if (type.equals(ComponentWrapper.ParameterType.DOCUMENT)) {
-                this.type = "combo";
-            } else if (type.equals(ComponentWrapper.ParameterType.COLOR)) {
+            } else if (ParameterType.DOCUMENT.equals(type)) {
+                this.type = "documentcombobox";
+            } else if (ParameterType.COLOR.equals(type)) {
                 this.type = "colorfield";
+            } else if (ParameterType.DROPDOWNLIST.equals(type)) {
+                this.type = "combo";
             } else {
                 this.type = "textfield";
             }
@@ -246,6 +252,22 @@ public class ComponentWrapper {
 
         public void setDocLocation(String docLocation) {
             this.docLocation = docLocation;
+        }
+
+        public String[] getDropDownListValues() {
+            return dropDownListValues;
+        }
+
+        public void setDropDownListValues(String[] dropDownValues) {
+            this.dropDownListValues = dropDownValues;
+        }
+
+        public String[] getDropDownListDisplayValues() {
+            return dropDownListDisplayValues;
+        }
+
+        public void setDropDownListDisplayValues(String[] dropDownListDisplayValues) {
+            this.dropDownListDisplayValues = dropDownListDisplayValues;
         }
 
     }
