@@ -35,10 +35,10 @@ public class ParametersInfoProcessor {
     private static Logger log = LoggerFactory.getLogger(ParametersInfoProcessor.class);
 
     public static List<Property> getProperties(ParametersInfo parameterInfo) {
-        return getProperties(parameterInfo, null);
+        return getProperties(parameterInfo, null, null);
     }
 
-    public static List<Property> getProperties(ParametersInfo parameterInfo, Locale locale) {
+    public static List<Property> getProperties(ParametersInfo parameterInfo, Locale locale, String currentMountCanonicalContentPath) {
         final List<Property> properties = new ArrayList<Property>();
 
         final Class classType = parameterInfo.type();
@@ -85,6 +85,16 @@ public class ParametersInfoProcessor {
                         prop.setDocType(documentLink.docType());
                         prop.setDocLocation(documentLink.docLocation());
                         prop.setAllowCreation(documentLink.allowCreation());
+                    } else if (annotation instanceof JcrPath) {
+                        // for JcrPath we need some extra processing too
+                            final JcrPath jcrPath = (JcrPath) annotation;
+                        type = ComponentWrapper.ParameterType.DOCUMENTPICKER;
+                        prop.setPickerConfiguration(jcrPath.pickerConfiguration());
+                        prop.setPickerInitialPath(jcrPath.pickerInitialPath());
+                        prop.setPickerRootPath(currentMountCanonicalContentPath);
+                        prop.setPickerPathIsRelative(jcrPath.isRelative());
+                        prop.setPickerRemembersLastVisited(jcrPath.pickerRemembersLastVisited());
+                        prop.setPickerSelectableNodeTypes(jcrPath.pickerSelectableNodeTypes());
                     } else if (annotation.annotationType() == Color.class) {
                         type = ComponentWrapper.ParameterType.COLOR;
                     } else if (annotation instanceof DropDownList) {

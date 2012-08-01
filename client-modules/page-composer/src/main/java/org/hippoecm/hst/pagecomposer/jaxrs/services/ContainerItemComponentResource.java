@@ -75,7 +75,9 @@ public class ContainerItemComponentResource extends AbstractConfigResource {
                     log.warn("Failed to create Locale from string '{}'", localeString);
                 }
             }
-            return new ComponentWrapper(getRequestConfigNode(requestContext), locale);
+
+            final String currentMountCanonicalContentPath = getCurrentMountCanonicalContentPath(servletRequest);
+            return new ComponentWrapper(getRequestConfigNode(requestContext), locale, currentMountCanonicalContentPath);
         } catch (Exception e) {
             if (log.isDebugEnabled()) {
                 log.debug("Failed to retrieve parameters.", e);

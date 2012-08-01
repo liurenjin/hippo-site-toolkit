@@ -72,6 +72,10 @@ public class ParametersInfoProcessorTest {
         @Parameter(name="12-comboBox")
         @DropDownList(value = {"value1", "value2", "value3"})
         String getDropDownValue();
+
+        @Parameter(name="13-linkpicker")
+        @JcrPath(isRelative = true, pickerConfiguration = "cms-pickers/documents")
+        String getDocumentPath();
     }
     @ParametersInfo(type=NewstyleInterface.class)
     static class NewstyleContainer {
@@ -81,7 +85,7 @@ public class ParametersInfoProcessorTest {
     public void additionalAnnotationBasedProcessing() {
         ParametersInfo parameterInfo = NewstyleContainer.class.getAnnotation(ParametersInfo.class);
         List<Property> properties = ParametersInfoProcessor.getProperties(parameterInfo);
-        assertEquals(13, properties.size());
+        assertEquals(14, properties.size());
 
         // sort properties alphabetically by name to ensure a deterministic order
         Collections.sort(properties, new PropertyComparator());
@@ -128,8 +132,11 @@ public class ParametersInfoProcessorTest {
         Property shortClassProperty = properties.get(11);
         assertEquals("numberfield", shortClassProperty.getType());
 
-        Property comboBox = properties.get(12);
-        assertEquals(comboBox.getDropDownListValues().length, 3);
+        final Property comboBox = properties.get(12);
+        assertEquals("combo", comboBox.getType());
+
+        final Property linkPicker = properties.get(13);
+        assertEquals("linkpicker", linkPicker.getType());
     }
 
     private static class PropertyComparator implements Comparator<Property> {

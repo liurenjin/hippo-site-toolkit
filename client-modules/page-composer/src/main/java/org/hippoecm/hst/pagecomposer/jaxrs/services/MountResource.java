@@ -98,6 +98,9 @@ public class MountResource extends AbstractConfigResource {
             log.error("Could not get the editing site to create the toolkit representation.");
             return error("Could not get the editing site to create the toolkit representation.");
         }
+
+        setCurrentMountCanonicalContentPath(servletRequest, editingMount.getCanonicalContentPath());
+
         ToolkitRepresentation toolkitRepresentation = new ToolkitRepresentation().represent(editingMount);
         return ok("Toolkit items loaded successfully", toolkitRepresentation.getComponents().toArray());
     }

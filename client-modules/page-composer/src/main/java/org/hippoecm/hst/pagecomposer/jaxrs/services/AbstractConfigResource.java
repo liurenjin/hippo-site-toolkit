@@ -22,6 +22,7 @@ import javax.jcr.LoginException;
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import javax.ws.rs.core.Response;
 
 import org.apache.commons.lang.ArrayUtils;
@@ -54,6 +55,8 @@ public class AbstractConfigResource {
     private MountDecorator mountDecorator;
     private List<Class<? extends HippoBean>> annotatedClasses;
     public static final String BEANS_ANNOTATED_CLASSES_CONF_PARAM = "hst-beans-annotated-classes";
+
+    private static final String CURRENT_MOUNT_CANONICAL_CONTENT_PATH = AbstractConfigResource.class.getName() + "-CurrentMountCanonicalContentPath";
 
     /**
      * @param mountDecorator the mountDecorator to set
@@ -96,6 +99,16 @@ public class AbstractConfigResource {
         return previewMount;
     }
 
+    protected void setCurrentMountCanonicalContentPath(HttpServletRequest servletRequest, String canonicalContentPath) {
+        HttpSession session = servletRequest.getSession(true);
+        session.setAttribute(CURRENT_MOUNT_CANONICAL_CONTENT_PATH, canonicalContentPath);
+    }
+
+    protected String getCurrentMountCanonicalContentPath(HttpServletRequest servletRequest) {
+        HttpSession session = servletRequest.getSession(true);
+        Object result = session.getAttribute(CURRENT_MOUNT_CANONICAL_CONTENT_PATH);
+        return result == null ? null : result.toString();
+    }
 
     protected Node getRequestConfigNode(HstRequestContext requestContext) {
         String id = (String)requestContext.getAttribute(CXFJaxrsHstConfigService.REQUEST_CONFIG_NODE_IDENTIFIER);

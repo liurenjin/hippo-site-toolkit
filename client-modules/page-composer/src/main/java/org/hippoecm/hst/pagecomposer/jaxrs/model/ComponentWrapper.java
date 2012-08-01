@@ -52,7 +52,7 @@ public class ComponentWrapper {
      * @throws RepositoryException    Thrown if the reposiotry exception occurred during reading of the properties.
      * @throws ClassNotFoundException thrown when this class can't instantiate the component class.
      */
-    public ComponentWrapper(Node node, Locale locale) throws RepositoryException, ClassNotFoundException {
+    public ComponentWrapper(Node node, Locale locale, String currentMountCanonicalContentPath) throws RepositoryException, ClassNotFoundException {
         properties = new ArrayList<Property>();
 
         //Get the parameter names and values from the component node.
@@ -76,7 +76,7 @@ public class ComponentWrapper {
             if (componentClass.isAnnotationPresent(ParametersInfo.class)) {
                 // parse new style ParametersInfo
                 ParametersInfo parametersInfo = (ParametersInfo) componentClass.getAnnotation(ParametersInfo.class);
-                properties = ParametersInfoProcessor.getProperties(parametersInfo, locale);
+                properties = ParametersInfoProcessor.getProperties(parametersInfo, locale, currentMountCanonicalContentPath);
             } else if (componentClass.isAnnotationPresent(org.hippoecm.hst.configuration.components.ParametersInfo.class)) {
                 // parse deprecated old style ParametersInfo
                 org.hippoecm.hst.configuration.components.ParametersInfo parameterInfo = (org.hippoecm.hst.configuration.components.ParametersInfo) componentClass.getAnnotation(org.hippoecm.hst.configuration.components.ParametersInfo.class);
@@ -125,6 +125,7 @@ public class ComponentWrapper {
         String COLOR = "COLOR";
         String DOCUMENT = "DOCUMENT";
         String DROPDOWNLIST = "DROPDOWNLIST";
+        String DOCUMENTPICKER = "DOCUMENTPICKER";
     }
     
     /**
@@ -143,6 +144,14 @@ public class ComponentWrapper {
         private String docType;
         private boolean allowCreation;
         private String docLocation;
+
+        private String pickerConfiguration;
+        private String pickerInitialPath;
+        private String pickerRootPath;
+
+        private boolean pickerPathIsRelative;
+        private boolean pickerRemembersLastVisited;
+        private String[] pickerSelectableNodeTypes;
 
         private String[] dropDownListValues;
         private String[] dropDownListDisplayValues;
@@ -193,6 +202,8 @@ public class ComponentWrapper {
                 this.type = "colorfield";
             } else if (ParameterType.DROPDOWNLIST.equals(type)) {
                 this.type = "combo";
+            } else if (ParameterType.DOCUMENTPICKER.equals(type)) {
+                this.type = "linkpicker";
             } else {
                 this.type = "textfield";
             }
@@ -268,6 +279,54 @@ public class ComponentWrapper {
 
         public void setDropDownListDisplayValues(String[] dropDownListDisplayValues) {
             this.dropDownListDisplayValues = dropDownListDisplayValues;
+        }
+
+        public String getPickerConfiguration() {
+            return pickerConfiguration;
+        }
+
+        public void setPickerConfiguration(final String pickerConfiguration) {
+            this.pickerConfiguration = pickerConfiguration;
+        }
+
+        public String getPickerInitialPath() {
+            return pickerInitialPath;
+        }
+
+        public void setPickerInitialPath(final String pickerInitialPath) {
+            this.pickerInitialPath = pickerInitialPath;
+        }
+
+        public String getPickerRootPath() {
+            return pickerRootPath;
+        }
+
+        public void setPickerRootPath(final String pickerRootPath) {
+            this.pickerRootPath = pickerRootPath;
+        }
+
+        public boolean isPickerPathIsRelative() {
+            return pickerPathIsRelative;
+        }
+
+        public void setPickerPathIsRelative(final boolean pickerPathIsRelative) {
+            this.pickerPathIsRelative = pickerPathIsRelative;
+        }
+
+        public boolean isPickerRemembersLastVisited() {
+            return pickerRemembersLastVisited;
+        }
+
+        public void setPickerRemembersLastVisited(final boolean pickerRemembersLastVisited) {
+            this.pickerRemembersLastVisited = pickerRemembersLastVisited;
+        }
+
+        public String[] getPickerSelectableNodeTypes() {
+            return pickerSelectableNodeTypes;
+        }
+
+        public void setPickerSelectableNodeTypes(final String[] pickerSelectableNodeTypes) {
+            this.pickerSelectableNodeTypes = pickerSelectableNodeTypes;
         }
 
     }
