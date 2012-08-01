@@ -57,7 +57,7 @@ public class OldParametersInfoProcessorTest {
 
         Property docLocProperty = properties.get(1);
         assertEquals("/content", docLocProperty.getDocLocation());
-        assertEquals("combo", docLocProperty.getType());
+        assertEquals("documentcombobox", docLocProperty.getType());
         assertEquals("hst:testdocument", docLocProperty.getDocType());
 
         Property startProperty = properties.get(2);

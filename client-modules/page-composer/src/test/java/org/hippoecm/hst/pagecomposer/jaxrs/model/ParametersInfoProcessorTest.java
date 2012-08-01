@@ -20,11 +20,7 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
-import org.hippoecm.hst.core.parameters.Color;
-import org.hippoecm.hst.core.parameters.DocumentLink;
-import org.hippoecm.hst.core.parameters.ImageSetPath;
-import org.hippoecm.hst.core.parameters.Parameter;
-import org.hippoecm.hst.core.parameters.ParametersInfo;
+import org.hippoecm.hst.core.parameters.*;
 import org.hippoecm.hst.pagecomposer.jaxrs.model.ComponentWrapper.Property;
 import org.hippoecm.hst.pagecomposer.jaxrs.model.utils.ParametersInfoProcessor;
 import org.junit.Test;
@@ -72,6 +68,10 @@ public class ParametersInfoProcessorTest {
 
         @Parameter(name="11-shortClass")
         Short getShortClass();
+
+        @Parameter(name="12-comboBox")
+        @DropDownList(value = {"value1", "value2", "value3"})
+        String getDropDownValue();
     }
     @ParametersInfo(type=NewstyleInterface.class)
     static class NewstyleContainer {
@@ -81,7 +81,7 @@ public class ParametersInfoProcessorTest {
     public void additionalAnnotationBasedProcessing() {
         ParametersInfo parameterInfo = NewstyleContainer.class.getAnnotation(ParametersInfo.class);
         List<Property> properties = ParametersInfoProcessor.getProperties(parameterInfo);
-        assertEquals(12, properties.size());
+        assertEquals(13, properties.size());
 
         // sort properties alphabetically by name to ensure a deterministic order
         Collections.sort(properties, new PropertyComparator());
@@ -93,7 +93,7 @@ public class ParametersInfoProcessorTest {
 
         Property docLocProperty = properties.get(1);
         assertEquals("/content", docLocProperty.getDocLocation());
-        assertEquals("combo", docLocProperty.getType());
+        assertEquals("documentcombobox", docLocProperty.getType());
         assertEquals("hst:testdocument", docLocProperty.getDocType());
 
         Property imageProperty = properties.get(2);
@@ -127,6 +127,9 @@ public class ParametersInfoProcessorTest {
 
         Property shortClassProperty = properties.get(11);
         assertEquals("numberfield", shortClassProperty.getType());
+
+        Property comboBox = properties.get(12);
+        assertEquals(comboBox.getDropDownListValues().length, 3);
     }
 
     private static class PropertyComparator implements Comparator<Property> {
