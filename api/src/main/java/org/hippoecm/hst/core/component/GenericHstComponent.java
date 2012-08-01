@@ -45,12 +45,13 @@ import org.hippoecm.hst.core.request.ComponentConfiguration;
  * @version $Id$
  */
 public class GenericHstComponent implements HstComponent {
-    
-    private ServletContext servletContext;
+
+    /** Configuration key for flag whether or not to allow resource path resolving by resourceID as fallback. */
+    public static final String RESOURCE_PATH_BY_RESOURCE_ID = "org.hippoecm.hst.core.component.serveResourcePathByResourceID";
+
     private ComponentConfiguration componentConfig;
 
     public void init(ServletContext servletContext, ComponentConfiguration componentConfig) throws HstComponentException {
-        this.servletContext = servletContext;
         this.componentConfig = componentConfig;
     }
     
@@ -69,9 +70,15 @@ public class GenericHstComponent implements HstComponent {
     public void doBeforeServeResource(HstRequest request, HstResponse response) throws HstComponentException {
         if (componentConfig.getServeResourcePath() == null) {
             String resourceID = request.getResourceID();
-            
-            if (resourceID != null && !"".equals(resourceID.trim())) {
-                response.setServeResourcePath(resourceID);
+
+            if (resourceID != null) {
+                if (request.getRequestContext().getContainerConfiguration().getBoolean(RESOURCE_PATH_BY_RESOURCE_ID, true)) {
+                    if (resourceID.endsWith(".jsp") || resourceID.endsWith(".ftl")) {
+                        response.setServeResourcePath(resourceID);
+                    } else {
+                        throw new HstComponentException("ResourceID for serveResourcePath as fallback is valid only when it is .jsp or .ftl.");
+                    }
+                }
             }
         }
     }
