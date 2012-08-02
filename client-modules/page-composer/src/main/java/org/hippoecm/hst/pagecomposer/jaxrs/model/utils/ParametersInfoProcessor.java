@@ -24,7 +24,12 @@ import java.util.Locale;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 
-import org.hippoecm.hst.core.parameters.*;
+import org.hippoecm.hst.core.parameters.Color;
+import org.hippoecm.hst.core.parameters.DocumentLink;
+import org.hippoecm.hst.core.parameters.DropDownList;
+import org.hippoecm.hst.core.parameters.JcrPath;
+import org.hippoecm.hst.core.parameters.Parameter;
+import org.hippoecm.hst.core.parameters.ParametersInfo;
 import org.hippoecm.hst.pagecomposer.jaxrs.model.ComponentWrapper;
 import org.hippoecm.hst.pagecomposer.jaxrs.model.ComponentWrapper.Property;
 import org.slf4j.Logger;
@@ -47,12 +52,15 @@ public class ParametersInfoProcessor {
         }
 
         ResourceBundle resourceBundle = null;
-        if (locale != null) {
-            try {
-                resourceBundle = ResourceBundle.getBundle(parameterInfo.type().getName(), locale);
-            } catch (MissingResourceException missingResourceException) {
-                log.debug("Could not find a resource bundle for class '{}', locale '{}'. The template composer properties panel will show displayName values instead of internationalised labels.", new Object[]{parameterInfo.type().getName(), locale});
+        final String typeName = parameterInfo.type().getName();
+        try {
+            if (locale != null) {
+                resourceBundle = ResourceBundle.getBundle(typeName, locale);
+            } else {
+                resourceBundle = ResourceBundle.getBundle(typeName);
             }
+        } catch (MissingResourceException missingResourceException) {
+            log.debug("Could not find a resource bundle for class '{}', locale '{}'. The template composer properties panel will show displayName values instead of internationalised labels.", new Object[]{typeName, locale});
         }
 
         for (Method method : classType.getMethods()) {
@@ -104,8 +112,9 @@ public class ParametersInfoProcessor {
                         final String[] displayValues = new String[values.length];
 
                         for (int i=0; i<values.length; i++) {
-                            if (resourceBundle != null && resourceBundle.containsKey(values[i])) {
-                                displayValues[i] = resourceBundle.getString(values[i]);
+                            final String resourceKey = propAnnotation.name() + "/" + values[i];
+                            if (resourceBundle != null && resourceBundle.containsKey(resourceKey)) {
+                                displayValues[i] = resourceBundle.getString(resourceKey);
                             } else {
                                 displayValues[i] = values[i];
                             }

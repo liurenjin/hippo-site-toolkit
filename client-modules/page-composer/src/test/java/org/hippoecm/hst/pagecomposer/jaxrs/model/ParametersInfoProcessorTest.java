@@ -29,54 +29,6 @@ import static junit.framework.Assert.assertEquals;
 
 public class ParametersInfoProcessorTest {
 
-    static interface NewstyleInterface {
-        @Parameter(name="00-color", defaultValue = "blue")
-        @Color
-        String getColor();
-
-        @Parameter(name="01-documentLocation")
-        @DocumentLink(docLocation = "/content", docType = "hst:testdocument")
-        String getDocumentLocation();
-
-        @Parameter(name="02-image", defaultValue = "/content/gallery/default.png")
-        @ImageSetPath
-        String getImage();
-
-        @Parameter(name="03-date")
-        Date getDate();
-
-        @Parameter(name="04-boolean")
-        boolean isBoolean();
-
-        @Parameter(name="05-booleanClass")
-        Boolean isBooleanClass();
-
-        @Parameter(name="06-int")
-        int getInt();
-
-        @Parameter(name="07-integerClass")
-        Integer getIntegerClass();
-
-        @Parameter(name="08-long")
-        long getLong();
-
-        @Parameter(name="09-longClass")
-        Long getLongClass();
-
-        @Parameter(name="10-short")
-        short getShort();
-
-        @Parameter(name="11-shortClass")
-        Short getShortClass();
-
-        @Parameter(name="12-comboBox")
-        @DropDownList(value = {"value1", "value2", "value3"})
-        String getDropDownValue();
-
-        @Parameter(name="13-linkpicker")
-        @JcrPath(isRelative = true, pickerConfiguration = "cms-pickers/documents")
-        String getDocumentPath();
-    }
     @ParametersInfo(type=NewstyleInterface.class)
     static class NewstyleContainer {
     }
@@ -134,6 +86,19 @@ public class ParametersInfoProcessorTest {
 
         final Property comboBox = properties.get(12);
         assertEquals("combo", comboBox.getType());
+        final String values[] = comboBox.getDropDownListValues();
+        assertEquals(values.length, 3);
+        assertEquals("value1", values[0]);
+        assertEquals("value2", values[1]);
+        assertEquals("value3", values[2]);
+
+        String[] displayValues = comboBox.getDropDownListDisplayValues();
+        assertEquals(3, displayValues.length);
+        assertEquals("Value 1", displayValues[0]);
+        assertEquals("Value 2", displayValues[1]);
+        // value 3 does not have a translation, so the display value should be the same as the underlying value
+        assertEquals("value3", displayValues[2]);
+
 
         final Property linkPicker = properties.get(13);
         assertEquals("linkpicker", linkPicker.getType());

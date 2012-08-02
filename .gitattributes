@@ -290,6 +290,8 @@ client-modules/page-composer/src/main/resources/org/hippoecm/hst/pagecomposer/bu
 client-modules/page-composer/src/main/resources/org/hippoecm/hst/pagecomposer/builtin/components/table.ftl -text
 client-modules/page-composer/src/main/resources/org/hippoecm/hst/pagecomposer/builtin/components/ul.ftl -text
 client-modules/page-composer/src/site/site.xml -text
+client-modules/page-composer/src/test/java/org/hippoecm/hst/pagecomposer/jaxrs/model/NewstyleInterface.java -text
+client-modules/page-composer/src/test/java/org/hippoecm/hst/pagecomposer/jaxrs/model/NewstyleInterface.properties -text
 client-modules/page-composer/src/test/java/org/hippoecm/hst/pagecomposer/jaxrs/model/OldParametersInfoProcessorTest.java -text
 client-modules/page-composer/src/test/java/org/hippoecm/hst/pagecomposer/jaxrs/model/ParametersInfoProcessorTest.java -text
 client-modules/pom.xml -text svneol=unset#text/plain
