@@ -94,11 +94,6 @@ public class ParametersInfoProcessorTest {
 
         String[] displayValues = comboBox.getDropDownListDisplayValues();
         assertEquals(3, displayValues.length);
-        assertEquals("Value 1", displayValues[0]);
-        assertEquals("Value 2", displayValues[1]);
-        // value 3 does not have a translation, so the display value should be the same as the underlying value
-        assertEquals("value3", displayValues[2]);
-
 
         final Property linkPicker = properties.get(13);
         assertEquals("linkpicker", linkPicker.getType());
