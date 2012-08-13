@@ -49,9 +49,11 @@ public class GenericHstComponent implements HstComponent {
     public static final String RESOURCE_PATH_BY_RESOURCE_ID = "org.hippoecm.hst.core.component.serveResourcePathByResourceID";
 
     private ComponentConfiguration componentConfig;
+    private ServletContext servletContext;
 
     public void init(ServletContext servletContext, ComponentConfiguration componentConfig) throws HstComponentException {
         this.componentConfig = componentConfig;
+        this.servletContext = servletContext;
     }
     
     public void destroy() throws HstComponentException {
