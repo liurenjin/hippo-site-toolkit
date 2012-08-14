@@ -44,6 +44,7 @@ public class ParamTag extends TagSupport {
                 findAncestorWithClass(this, ParamContainerTag.class);
 
         if (paramContainerTag == null) {
+            cleanup();
             throw new JspException("the 'param' Tag must have a ParamContainerTag as a parent");
         }
 
