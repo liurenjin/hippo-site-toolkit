@@ -86,9 +86,7 @@ public class CXFJaxrsService extends AbstractJaxrsService {
     }
 
     protected Bus createBus() {
-        BusFactory.setThreadDefaultBus(null);
-        Bus bus = BusFactory.getThreadDefaultBus(true);
-        
+        Bus bus = BusFactory.newInstance().createBus();
         if (inInterceptors != null && !inInterceptors.isEmpty()) {
             bus.getInInterceptors().addAll(inInterceptors);
         }
@@ -118,9 +116,7 @@ public class CXFJaxrsService extends AbstractJaxrsService {
             // guard against potential concurrency issue in cxf dynamic endpoint state management: HSTTWO-1663, CXF-2997
             controller.setDisableAddressUpdates(true);
 		}
-		else {
-			BusFactory.setThreadDefaultBus(defaultBus);
-		}
+	    BusFactory.setThreadDefaultBus(defaultBus);
 		return controller;
 	}
 	
