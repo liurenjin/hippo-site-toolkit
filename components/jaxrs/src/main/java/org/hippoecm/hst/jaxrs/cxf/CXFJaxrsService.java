@@ -84,9 +84,8 @@ public class CXFJaxrsService extends AbstractJaxrsService {
     }
 
     protected Bus createBus() {
-        BusFactory.setThreadDefaultBus(null);
-        Bus bus = BusFactory.getThreadDefaultBus(true);
-        
+        Bus bus = BusFactory.newInstance().createBus();
+
         if (inInterceptors != null && !inInterceptors.isEmpty()) {
             bus.getInInterceptors().addAll(inInterceptors);
         }
@@ -119,9 +118,7 @@ public class CXFJaxrsService extends AbstractJaxrsService {
 			servletContext.setAttribute(servletControllerAttributeName, controller);
 			servletContext.setAttribute(cxfBusAttributeName, bus);
 		}
-		else {
-			BusFactory.setThreadDefaultBus((Bus)servletContext.getAttribute(cxfBusAttributeName));
-		}
+		BusFactory.setThreadDefaultBus((Bus)servletContext.getAttribute(cxfBusAttributeName));
 		return controller;
 	}
 	
