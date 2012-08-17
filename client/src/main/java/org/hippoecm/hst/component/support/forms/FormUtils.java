@@ -31,6 +31,7 @@ import javax.jcr.Repository;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.Value;
+import javax.servlet.http.HttpServletRequest;
 
 import org.hippoecm.hst.core.component.HstComponentException;
 import org.hippoecm.hst.core.component.HstRequest;
@@ -58,16 +59,32 @@ public class FormUtils {
     public static final String HST_SEALED = "hst:sealed";
 
     private final static Object mutex = new Object();
+
+
+    /**
+     * Returns a populated FormaMap for some form data node if that node can be found with the u_u_i_d parameter
+     * on the <code>request</code>. If no such form data node can be found, an empty {@link FormMap} will be returned
+     * @param request the {@link HttpServletRequest}
+     * @return a populated {@link FormMap} for the formdata node belonging to the UUID from request parameter u_u_i_d
+     * If there is no formdata for the UUID or no u_u_i_d parameter, just an empty {@link FormMap} object will be returned
+     * @see {@link #populate(javax.servlet.http.HttpServletRequest, FormMap)}
+     */
+    public static FormMap getFormMap(HttpServletRequest request) {
+        FormMap formMap = new FormMap();
+        populate(request, formMap);
+        return formMap;
+    }
     
     /**
+     *
      * This method tries to repopulate an earlier posted form that was stored in the repository.
      *
-     * Only when there is a request parameter containing the correct uuid, you can re-populate it.
+     * Only when there is a request parameter containing the correct uuid, it can be re-populated.
      *
-     * @param request the current hstRequest
-     * @param formMap the formMap that will be populated
+     * @param request the {@link HttpServletRequest}
+     * @param formMap a not yet populated FormMap object (just new FormMap())
      */
-    public static void populate(HstRequest request, FormMap formMap) {
+    public static void populate(HttpServletRequest request, FormMap formMap) {
         if(formMap == null) {
             log.warn("FormMap is null so can not be populated");
             return;
@@ -132,8 +149,20 @@ public class FormUtils {
             log.debug("No uuid in request parameter. No form to populate");
         }
     }
-
-
+    
+    /**
+     * This method tries to repopulate an earlier posted form that was stored in the repository.
+     *
+     * Only when there is a request parameter containing the correct uuid, you can re-populate it.
+     *
+     * @param request the current hstRequest
+     * @param formMap the formMap that will be populated
+     * @see #populate(javax.servlet.http.HttpServletRequest, FormMap) rather use {@link #populate(javax.servlet.http.HttpServletRequest, FormMap)} instead
+     * of this method
+     */
+    public static void populate(HstRequest request, FormMap formMap) {
+        populate((HttpServletRequest)request, formMap);
+    }
 
     /**
      * Facility to temporarily store submitted form data which needs to be accessed in the rendering phase again. This method
