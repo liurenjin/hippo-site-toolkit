@@ -234,6 +234,12 @@ public interface HstRequestContext {
      * for the target Mount path and context path (if to be included).
      */
     boolean isEmbeddedRequest();
+
+    /**
+     * @return <code>true</code> when the request is from a cms context: This can be some REST call from the cms, or
+     * a channel preview request inside the cms or over the HOST of the cms
+     */
+    boolean isCmsRequest();
     
     /**
      * Returns the contextPath of the embedding application for an embedded request, otherwise null

@@ -41,6 +41,7 @@ import org.hippoecm.hst.core.component.HstParameterInfoProxyFactory;
 import org.hippoecm.hst.core.component.HstParameterInfoProxyFactoryImpl;
 import org.hippoecm.hst.core.component.HstURLFactory;
 import org.hippoecm.hst.core.container.ContainerConfiguration;
+import org.hippoecm.hst.core.container.ContainerConstants;
 import org.hippoecm.hst.core.container.HstContainerURL;
 import org.hippoecm.hst.core.container.HstContainerURLProvider;
 import org.hippoecm.hst.core.internal.HstMutableRequestContext;
@@ -540,5 +541,12 @@ public class HstRequestContextImpl implements HstMutableRequestContext {
     public String getRenderHost() {
         return renderHost;
     }
-    
+
+    @Override
+    public boolean isCmsRequest() {
+        if (servletRequest == null) {
+            return false;
+        }
+        return Boolean.TRUE.equals(servletRequest.getAttribute(ContainerConstants.REQUEST_COMES_FROM_CMS));
+    }
 }

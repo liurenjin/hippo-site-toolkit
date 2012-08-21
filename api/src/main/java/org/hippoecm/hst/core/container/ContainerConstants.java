@@ -159,4 +159,10 @@ public interface ContainerConstants {
      * from the template composer
      */ 
     String CMS_HOST_CONTEXT = "org.hippoecm.hst.container.sso_cms_context";
+
+    /**
+          * The attribute used on the request to indicate that the request is from a cms context : This can be a REST call, or
+          * a request for the preview website in a cms environment (host)
+          */
+         String REQUEST_COMES_FROM_CMS = "org.hippoecm.hst.container.request_comes_from_cms";
 }
