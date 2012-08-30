@@ -183,7 +183,7 @@ public class HstManagerImpl implements HstManager {
     }
     
     protected VirtualHosts buildSites() throws RepositoryNotAvailableException{
-        log.info("Start building in memory hst configuration model");
+        log.info("Start building in memory hst configuration model, current version is {}", buildSitesNumber);
         long start = System.currentTimeMillis();
         
         commonCatalog = null;
@@ -196,6 +196,7 @@ public class HstManagerImpl implements HstManager {
         // a virtualHosts that does not have the latest changes. However, in that case buildSitesNumber < invalidationCounter, resulting in a rebuild
         // of virtualHosts during the next request
         buildSitesNumber = invalidationCounter;
+        log.info("Building model with version {}", buildSitesNumber);
         try {
             if (this.credentials == null) {
                 session = this.repository.login();
@@ -289,7 +290,7 @@ public class HstManagerImpl implements HstManager {
             siteRootNodes.clear();
             virtualHostsNode = null;
 
-            log.info("Finished build in memory hst configuration model in " + (System.currentTimeMillis() - start) + " ms.");
+            log.info("Finished build in memory hst configuration model in " + (System.currentTimeMillis() - start) + " ms with version {}.", buildSitesNumber);
             return vhosts;
         } catch (ServiceException e) {
             throw new RepositoryNotAvailableException(e);
@@ -300,9 +301,9 @@ public class HstManagerImpl implements HstManager {
     
     // invalidate is not allowed to be synchronized, it can cause deadlocks, see HSTTWO-1904
     public void invalidate(String path) {
-        log.info("Invalidation event for hst configuration model caught. Rebuilding hst configuration model on next request.");
         virtualHosts = null;
         invalidationCounter++;
+        log.info("Invalidation event. Version set to {} .Rebuilding hst configuration model on next request.", invalidationCounter);
     }
     
     public Map<Set<String>, HstComponentsConfigurationService> getTmpHstComponentsConfigurationInstanceCache() {
