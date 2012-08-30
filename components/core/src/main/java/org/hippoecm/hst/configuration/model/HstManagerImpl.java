@@ -78,7 +78,19 @@ public class HstManagerImpl implements HstManager {
     /**
      * The root of the virtual hosts node. There should always be exactly one.
      */
-    private HstNode virtualHostsNode; 
+    private HstNode virtualHostsNode;
+
+
+    /**
+     * There are two parts in the HstManagerImpl that ideally should not happen at the same time: While the {@link #buildSites()} method
+     * is executed, there should be no {@link #invalidate(String)} invocation. However, because for the 7.6, the repository listeners are
+     * synchronized, making the {@link #invalidate(String)} method synchronized results in deadlocks (this is not the case for newer versions)
+     * of the repository any more. Since we now can have an {@link #invalidate(String)} invocation during {@link #buildSites()}, we also keep track
+     * of two volative counters {@link #invalidationCounter} and {@link #buildSitesNumber}. If {@link #buildSitesNumber} is less than {@link #invalidationCounter},
+     * then always the model needs to be rebuild, even if {@link #virtualHostsNode} is not <code>null</code>
+     */
+    private volatile long invalidationCounter;
+    private volatile long buildSitesNumber;
     
     /**
      * The common catalog node and <code>null</code> if there is no common catalog (hst:configurations/hst:catalog)
@@ -157,10 +169,10 @@ public class HstManagerImpl implements HstManager {
         // to synchronous observers in repository : If we make it the invalidate synchronized, it
         // can cause deadlocks, see HSTTWO-1904
         VirtualHosts currentHosts = virtualHosts;
-        if (currentHosts == null) {
+        if (currentHosts == null || (buildSitesNumber != invalidationCounter)) {
             synchronized(this) {
                 currentHosts = virtualHosts;
-                if (currentHosts == null) {
+                if (currentHosts == null || (buildSitesNumber != invalidationCounter)) {
                     currentHosts =  buildSites();
                     virtualHosts = currentHosts;
                 }
@@ -179,7 +191,11 @@ public class HstManagerImpl implements HstManager {
         siteRootNodes.clear();
         
         Session session = null;
-        
+        // during a rebuild, always set the buildSitesNumber equal to the invalidationCounter. If then during the execution below
+        // an invalidation events occurs setting virtualHosts to null (which is in this method then given a value again), we might have build
+        // a virtualHosts that does not have the latest changes. However, in that case buildSitesNumber < invalidationCounter, resulting in a rebuild
+        // of virtualHosts during the next request
+        buildSitesNumber = invalidationCounter;
         try {
             if (this.credentials == null) {
                 session = this.repository.login();
@@ -282,9 +298,11 @@ public class HstManagerImpl implements HstManager {
         }
     }
     
+    // invalidate is not allowed to be synchronized, it can cause deadlocks, see HSTTWO-1904
     public void invalidate(String path) {
         log.info("Invalidation event for hst configuration model caught. Rebuilding hst configuration model on next request.");
         virtualHosts = null;
+        invalidationCounter++;
     }
     
     public Map<Set<String>, HstComponentsConfigurationService> getTmpHstComponentsConfigurationInstanceCache() {
