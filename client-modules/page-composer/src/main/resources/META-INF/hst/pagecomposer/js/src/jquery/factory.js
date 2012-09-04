@@ -52,14 +52,14 @@ jQuery.noConflict();
                 }
 
                 var el = $(element);
-                var id = el.attr('hst:id');
+                var id = el.attr('uuid');
                 if (typeof id === 'undefined') {
-                    die('Attribute hst:id not found on element');
+                    die('Attribute uuid not found on element');
                 }
 
                 if (!element.id) {
                     if(Hippo.PageComposer.Main.isDebug()) {
-                        console.warn('No @id found on element, using value of hst:id instead.');
+                        console.warn('No @id found on element, using value of uuid instead.');
                     }
                     element.id = id;
                 }

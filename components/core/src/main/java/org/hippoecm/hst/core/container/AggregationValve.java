@@ -330,7 +330,7 @@ public class AggregationValve extends AbstractValve {
                     HstComponentConfiguration compConfig  = ((HstComponentConfiguration)window.getComponentInfo());
                     Element el = response.createElement("div");
                     el.setAttribute("class", "componentContentWrapper");
-                    el.setAttribute("hst:id", compConfig.getCanonicalIdentifier());
+                    el.setAttribute("uuid", compConfig.getCanonicalIdentifier());
                     el.setAttribute("hst:xtype", compConfig.getXType() == null ? "" : compConfig.getXType());
                     el.setAttribute("hst:type", compConfig.getComponentType().toString());
                     response.setWrapperElement(el);
@@ -347,18 +347,17 @@ public class AggregationValve extends AbstractValve {
     private void addHeadElements(HstRequest request, HstResponse response, Mount mount ) {
         addCssHeadElement(request, response, mount, "/hst/pagecomposer/sources/css/PageEditor.css");
 
-        addScriptHeadElement(request, response, mount, "/hst/pagecomposer/sources/js/lib/jquery/core/1.4.3/jquery-1.4.3.js");
-        addScriptHeadElement(request, response, mount, "/hst/pagecomposer/sources/js/lib/jquery/ui/1.8.5/jquery-ui-1.8.5.min.js");
-        addScriptHeadElement(request, response, mount, "/hst/pagecomposer/sources/js/lib/jquery/ui/1.8.5/custom/jquery.ui.sortable.js");
+        addScriptHeadElement(request, response, mount, "/hst/pagecomposer/sources/js/lib/jquery/core/jquery-1.6.2.js");
+        addScriptHeadElement(request, response, mount, "/hst/pagecomposer/sources/js/lib/jquery/ui/jquery-ui-1.8.16.js");
         addScriptHeadElement(request, response, mount, "/hst/pagecomposer/sources/js/lib/jquery/plugins/jquery.class.js");
         addScriptHeadElement(request, response, mount, "/hst/pagecomposer/sources/js/lib/jquery/plugins/jquery.namespace.js");
 
         addScriptHeadElement(request, response, mount, "/hst/pagecomposer/sources/js/src/globals.js");
-        addScriptHeadElement(request, response, mount, "/hst/pagecomposer/sources/js/src/jquery/util.min.js");
-        addScriptHeadElement(request, response, mount, "/hst/pagecomposer/sources/js/src/jquery/factory.min.js");
-        addScriptHeadElement(request, response, mount, "/hst/pagecomposer/sources/js/src/jquery/manager.min.js");
-        addScriptHeadElement(request, response, mount, "/hst/pagecomposer/sources/js/src/jquery/widgets.min.js");
-        addScriptHeadElement(request, response, mount, "/hst/pagecomposer/sources/js/src/jquery/main.min.js");
+        addScriptHeadElement(request, response, mount, "/hst/pagecomposer/sources/js/src/jquery/util.js");
+        addScriptHeadElement(request, response, mount, "/hst/pagecomposer/sources/js/src/jquery/factory.js");
+        addScriptHeadElement(request, response, mount, "/hst/pagecomposer/sources/js/src/jquery/manager.js");
+        addScriptHeadElement(request, response, mount, "/hst/pagecomposer/sources/js/src/jquery/widgets.js");
+        addScriptHeadElement(request, response, mount, "/hst/pagecomposer/sources/js/src/jquery/main.js");
     }
     
     private void addCssHeadElement(HstRequest request, HstResponse response, Mount mount, String href) {

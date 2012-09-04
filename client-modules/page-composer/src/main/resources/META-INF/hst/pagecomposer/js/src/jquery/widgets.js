@@ -76,28 +76,33 @@ jQuery.noConflict();
             }
             this.parent = parent;
 
-            var parentOverlay = $.isFunction(parent.getOverlay) ? parent.getOverlay() : document.body;
-            var overlay = $('<div/>').addClass(this.cls.overlay.base).appendTo(parentOverlay);
-            if(this.cls.overlay.mark != null) {
+            var overlay = $('<div />');
+            overlay.attr('id', this.overlayId);
+            overlay.attr('uuid', this.id);
+
+            overlay.addClass(this.cls.overlay.base);
+            if (this.cls.overlay.mark != null) {
                 overlay.addClass(this.cls.overlay.mark);
             }
-            if(this.cls.overlay.custom != null) {
+            if (this.cls.overlay.custom != null) {
                 overlay.addClass(this.cls.overlay.custom);
             }
+
             overlay.css('position', 'absolute');
-            overlay.attr('hst:id', this.id);
-            overlay.attr('id', this.overlayId);
+
+            var parentOverlay = $.isFunction(parent.getOverlay) ? parent.getOverlay() : $(document.body);
+            parentOverlay.append(overlay);
 
             var self = this;
-            overlay.hover(function() {
+            this.overlay = overlay;
+            this.overlay.hover(function() {
                 self.onMouseOver(this);
             }, function() {
                 self.onMouseOut(this);
             });
-            overlay.click(function() {
+            this.overlay.click(function() {
                 self.onClick();
             });
-            this.overlay = overlay;
             this._syncOverlay();
 
             this.onRender();
@@ -308,7 +313,8 @@ jQuery.noConflict();
 
         _createSortable : function() {
             //instantiate jquery.UI sortable
-            $(this.sel.sortable).sortable({
+
+            var options = {
                 //revert: 100,
                 items: this.sel.sort.itemsRel,
                 connectWith: '.' + this.cls.overlay.base,
@@ -321,11 +327,13 @@ jQuery.noConflict();
                 over    : $.proxy(this.ddOnOver, this),
                 change  : $.proxy(this.ddOnChange, this),
                 tolerance : this.ddTolerance
-            }).disableSelection();
+            };
+
+            this.overlay.sortable(options).disableSelection();
         },
 
         _destroySortable : function() {
-            $(this.sel.sortable).sortable('destroy');
+            $(this.overlay).sortable('destroy');
         },
 
         beforeDrag : function() {
@@ -368,7 +376,7 @@ jQuery.noConflict();
             var self = this;
             $(this.sel.sort.items).each(function(index) {
                 var itemId = $(this).attr(HST.ATTR.ID);
-                if(itemId == id) {
+                if (itemId == id) {
                     item.onDragStop(event, ui);
                     item.destroy();
                     self.add(item.element, index);
@@ -503,7 +511,7 @@ jQuery.noConflict();
         add : function(element, index) {
             var item = this._insertNewItem(element, false, index);
             this._renderItem(item);
-            $(this.sel.sortable).sortable('refresh');
+            this.overlay.sortable('refresh');
 
             this.state.checkEmpty = true;
         },

@@ -44,12 +44,12 @@ public class ExtApp extends PathDependency {
                 new ExtBaseGrid("1.0.0"),
                 new ExtColorField("1.0.0"),
 
-                new JsDependency("src/globals.js", "src/globals-debug.js"),
+                new JsDependency("src/globals.js", "src/globals.js"),
                 new PathDependency("src/ext",
-                        new JsDependency("Util.js","Util-debug.js"),
-                        new JsDependency("PropertiesPanel.js","PropertiesPanel-debug.js"),
-                        new JsDependency("PageModel.js","PageModel-debug.js"),
-                        new JsDependency("PageEditor.js","PageEditor-debug.js")
+                        new JsDependency("Util.js","Util.js"),
+                        new JsDependency("PropertiesPanel.js","PropertiesPanel.js"),
+                        new JsDependency("PageModel.js","PageModel.js"),
+                        new JsDependency("PageEditor.js","PageEditor.js")
                 )
         ));
         addDependency(new PathDependency("css",

@@ -89,14 +89,14 @@ jQuery.noConflict();
         },
 
         remove : function(element) {
-            //if (!element.hasAttribute('hst:id')) {
-            if (!element.getAttribute('hst:id', 2)) {
+            //if (!element.hasAttribute('uuid')) {
+            if (!element.getAttribute('uuid', 2)) {
                 element = $(element).parents('.componentContentWrapper')[0];
             }
 
             var d = Hippo.PageComposer.UI.Factory.verify(element);
             if (d.type == HST.CONTAINERITEM) {
-                var containerId = $(element).parents('.componentContentWrapper').attr('hst:id');
+                var containerId = $(element).parents('.componentContentWrapper').attr('uuid');
                 var container = this.containers[containerId];
                 if(!!container && container.removeItem(d.id)) {
                     Hippo.PageComposer.UI.Factory.deleteObjectRef(d.id);
