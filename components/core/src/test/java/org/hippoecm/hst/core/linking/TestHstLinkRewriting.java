@@ -66,16 +66,9 @@ public class TestHstLinkRewriting extends AbstractBeanTestCase {
             this.siteMapMatcher = getComponent(HstSiteMapMatcher.class.getName());
             this.hstURLFactory = getComponent(HstURLFactory.class.getName());
             this.objectConverter = getObjectConverter();
-            this.linkCreator = getComponent(HstLinkCreator.class.getName());;
-        }
-        
-        @After
-        public void tearDown() throws Exception {
-            super.tearDown();
-            
+            this.linkCreator = getComponent(HstLinkCreator.class.getName());
         }
 
-        
         @Test
         public void testSimpleHstLinkForBean() throws Exception {
             HstRequestContext requestContext = getRequestContextWithResolvedSiteMapItemAndContainerURL("localhost","/home");
