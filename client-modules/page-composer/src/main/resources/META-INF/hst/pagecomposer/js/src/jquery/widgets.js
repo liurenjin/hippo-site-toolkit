@@ -694,7 +694,7 @@ jQuery.noConflict();
 
             this.menu = $('<div/>').addClass('hst-overlay-menu'); //.appendTo(document.body);
 
-            var data = {element: this.element};
+            var data = {id: this.id};
             var deleteButton = $('<div/>').addClass('hst-overlay-menu-button').html('X');
             deleteButton.click(function(e) {
                 e.stopPropagation();

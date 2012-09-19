@@ -525,9 +525,10 @@ Hippo.App.PageEditor = Ext.extend(Ext.App, {
         });
     },
 
-    removeByElement : function(element) {
-        var store = this.stores.pageModel;
-        var index = store.findExact('id', Ext.fly(element).getAttribute('uuid'));
+    removeByElement : function(id) {
+        var store, index;
+        store = this.stores.pageModel;
+        index = store.findExact('id', id);
         this.removeByRecord(store.getAt(index))
     },
 
@@ -545,7 +546,7 @@ Hippo.App.PageEditor = Ext.extend(Ext.App, {
             } else if (msg.tag == 'receiveditem') {
                 this.handleReceivedItem(msg.data.id, msg.data.element);
             } else if (msg.tag == 'remove') {
-                this.removeByElement(msg.data.element);
+                this.removeByElement(msg.data.id);
             } else if (msg.tag == 'onappload') {
                 this.onIframeAppLoaded(msg.data);
             } else if (msg.tag == 'refresh') {
