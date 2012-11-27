@@ -39,6 +39,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.hippoecm.hst.cache.HstCache;
+import org.hippoecm.hst.configuration.HstNodeTypes;
 import org.hippoecm.hst.container.HstFilter;
 import org.hippoecm.hst.core.container.ComponentManager;
 import org.hippoecm.hst.core.linking.HstLinkCreator;
@@ -359,6 +360,13 @@ public class BinariesServlet extends HttpServlet {
 
         Node resourceNode = ResourceUtils.lookUpResource(session, page.getResourcePath(), prefix2ResourceContainer,
                 allResourceContainers);
+
+        if (isResourceNodeEmbeddedInPreviewDocument(resourceNode)) {
+            log.info("Resource Node '{}' is an embedded resource in a preview document. Binaries servlet only serves live " +
+                    "resources. Rewriting to live resource node.", page.getResourcePath());
+            resourceNode = rewritePreviewToLiveEmbeddedResource(resourceNode);
+        }
+        
         if (resourceNode == null) {
             page.setStatus(HttpServletResponse.SC_NOT_FOUND);
             return;
@@ -387,11 +395,61 @@ public class BinariesServlet extends HttpServlet {
         page.setLength(ResourceUtils.getDataLength(resourceNode, binaryDataPropName));
 
         if (binariesCache.isBinaryDataCacheable(page)) {
-            storeBinaryPageToCache(page, resourceNode);
+            storeResourceOnBinaryPage(page, resourceNode);
         }
     }
 
-    protected void storeBinaryPageToCache(BinaryPage page, Node resourceNode) {
+    private boolean isResourceNodeEmbeddedInPreviewDocument(final Node resourceNode) throws RepositoryException {
+        Node current = resourceNode.getParent();
+        Node root = resourceNode.getSession().getRootNode();
+        while (!current.isSame(root)) {
+            if (current.isNodeType(HstNodeTypes.NODETYPE_HST_SITE)) {
+                if (current.getName().endsWith("-preview")) {
+                   return true;
+                } else {
+                    return false;
+                }
+            }
+            current = current.getParent();
+        }
+        return false;
+    }
+
+    /**
+     * @param resourceNode the preview document embedded resource
+     * @return the live document embedded resource and <code>null</code> if live is missing
+     */
+    private Node rewritePreviewToLiveEmbeddedResource(final Node resourceNode) throws RepositoryException {
+        Node current = resourceNode.getParent();
+        Session session = resourceNode.getSession();
+        Node root = session.getRootNode();
+        while (!current.isSame(root)) {
+            if (current.isNodeType(HstNodeTypes.NODETYPE_HST_SITE)) {
+                String nodeName = current.getName();
+                if (nodeName.endsWith("-preview")) {
+                    String previewPath = resourceNode.getPath();
+                    String hstSitesPath = current.getParent().getPath();
+                    String previewSitePath = hstSitesPath + "/" + current.getName();
+                    String liveSiteName = current.getName().substring(0, (nodeName.length() - "-preview".length()));
+                    String pathAfterSiteName = StringUtils.substringAfter(previewPath, previewSitePath);
+                    String liveResoucePath = hstSitesPath + "/" + liveSiteName + pathAfterSiteName;
+                    if (session.nodeExists(liveResoucePath)) {
+                        return session.getNode(liveResoucePath);
+                    } else {
+                        log.info("No live version of the resource is available at '{}'. Return null", liveResoucePath);
+                    }
+                } else {
+                    log.info("resourceNode '{}' was already a live resource.", resourceNode.getPath());
+                    return resourceNode;
+                }
+            }
+            current = current.getParent();
+        }
+        log.info("resourceNode '{}' was already a live resource.", resourceNode.getPath());
+        return resourceNode;
+    }
+
+    protected void storeResourceOnBinaryPage(BinaryPage page, Node resourceNode) {
         try {
             InputStream input = resourceNode.getProperty(binaryDataPropName).getBinary().getStream();
             page.loadDataFromStream(input);
