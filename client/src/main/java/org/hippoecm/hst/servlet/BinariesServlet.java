@@ -173,6 +173,11 @@ public class BinariesServlet extends HttpServlet {
 
     private String binaryLastModifiedPropName = ResourceUtils.DEFAULT_BINARY_LAST_MODIFIED_PROP_NAME;
 
+    /**
+     * by default, we only load live embedded resources
+     */
+    private boolean loadPreviewEmbeddedResource = false;
+
     /** FIXME: BinariesCache is not serializable. */
     private BinariesCache binariesCache;
 
@@ -256,6 +261,11 @@ public class BinariesServlet extends HttpServlet {
                 session = SessionUtils.getBinariesSession(request);
                 input = getRepositoryResourceStream(session, page);
             }
+            if(input == null) {
+                log.warn("Could not find binary for uri '{}'", request.getRequestURI());
+                page.setStatus(HttpServletResponse.SC_NOT_FOUND);
+                return;
+            }
             output = response.getOutputStream();
             IOUtils.copy(input, output);
             output.flush();
@@ -281,10 +291,20 @@ public class BinariesServlet extends HttpServlet {
         }
     }
 
+    /**
+     * Return the input stream for a looked up binary for {@link BinaryPage#getResourcePath()} and return <code>null</code> if
+     * there is not found a binary
+     * @param session
+     * @param page
+     * @return
+     * @throws RepositoryException
+     */
     protected InputStream getRepositoryResourceStream(Session session, BinaryPage page) throws RepositoryException {
-        Node resourceNode = ResourceUtils.lookUpResource(session, page.getResourcePath(), prefix2ResourceContainer,
-                allResourceContainers);
-        return resourceNode.getProperty(binaryDataPropName).getStream();
+        if (!session.nodeExists(page.getRepositoryPath())) {
+            return null;
+        }
+        Node resourceNode = session.getNode(page.getRepositoryPath());
+        return resourceNode.getProperty(binaryDataPropName).getBinary().getStream();
     }
 
     protected BinaryPage getPageFromCacheOrLoadPage(HttpServletRequest request) {
@@ -293,8 +313,13 @@ public class BinariesServlet extends HttpServlet {
         if (page != null) {
             page = getValidatedPageFromCache(request, page);
         } else {
-            page = getBinaryPage(request, resourcePath);
-            binariesCache.putPage(page);
+            try {
+                page = getBinaryPage(request, resourcePath);
+                binariesCache.putPage(page);
+            } catch (RuntimeException e) {
+                binariesCache.clearBlockingLock(resourcePath);
+                throw e;
+            }
         }
         return page;
     }
@@ -317,8 +342,14 @@ public class BinariesServlet extends HttpServlet {
         Session session = null;
         try {
             session = SessionUtils.getBinariesSession(request);
-            Node resourceNode = ResourceUtils.lookUpResource(session, resourcePath, prefix2ResourceContainer,
+            Node resourceNode;
+            if (loadPreviewEmbeddedResource) {
+                resourceNode = ResourceUtils.lookUpResource(session, resourcePath, prefix2ResourceContainer,
                     allResourceContainers);
+            } else {
+                resourceNode = ResourceUtils.lookUpLiveResource(session, resourcePath, prefix2ResourceContainer,
+                        allResourceContainers);
+            }
             return ResourceUtils.getLastModifiedDate(resourceNode, binaryLastModifiedPropName);
         } catch (RepositoryException e) {
             if (log.isDebugEnabled()) {
@@ -358,19 +389,20 @@ public class BinariesServlet extends HttpServlet {
             return;
         }
 
-        Node resourceNode = ResourceUtils.lookUpResource(session, page.getResourcePath(), prefix2ResourceContainer,
-                allResourceContainers);
-
-        if (isResourceNodeEmbeddedInPreviewDocument(resourceNode)) {
-            log.info("Resource Node '{}' is an embedded resource in a preview document. Binaries servlet only serves live " +
-                    "resources. Rewriting to live resource node.", page.getResourcePath());
-            resourceNode = rewritePreviewToLiveEmbeddedResource(resourceNode);
+        Node resourceNode;
+        if (loadPreviewEmbeddedResource) {
+            resourceNode = ResourceUtils.lookUpResource(session, page.getResourcePath(), prefix2ResourceContainer,
+                    allResourceContainers);
+        } else {
+            resourceNode = ResourceUtils.lookUpLiveResource(session, page.getResourcePath(), prefix2ResourceContainer,
+                    allResourceContainers);
         }
-        
         if (resourceNode == null) {
             page.setStatus(HttpServletResponse.SC_NOT_FOUND);
             return;
         }
+
+        page.setRepositoryPath(resourceNode.getPath());
 
         if (!ResourceUtils.hasValideType(resourceNode, binaryResourceNodeType)) {
             page.setStatus(HttpServletResponse.SC_UNSUPPORTED_MEDIA_TYPE);
@@ -397,56 +429,6 @@ public class BinariesServlet extends HttpServlet {
         if (binariesCache.isBinaryDataCacheable(page)) {
             storeResourceOnBinaryPage(page, resourceNode);
         }
-    }
-
-    private boolean isResourceNodeEmbeddedInPreviewDocument(final Node resourceNode) throws RepositoryException {
-        Node current = resourceNode.getParent();
-        Node root = resourceNode.getSession().getRootNode();
-        while (!current.isSame(root)) {
-            if (current.isNodeType(HstNodeTypes.NODETYPE_HST_SITE)) {
-                if (current.getName().endsWith("-preview")) {
-                   return true;
-                } else {
-                    return false;
-                }
-            }
-            current = current.getParent();
-        }
-        return false;
-    }
-
-    /**
-     * @param resourceNode the preview document embedded resource
-     * @return the live document embedded resource and <code>null</code> if live is missing
-     */
-    private Node rewritePreviewToLiveEmbeddedResource(final Node resourceNode) throws RepositoryException {
-        Node current = resourceNode.getParent();
-        Session session = resourceNode.getSession();
-        Node root = session.getRootNode();
-        while (!current.isSame(root)) {
-            if (current.isNodeType(HstNodeTypes.NODETYPE_HST_SITE)) {
-                String nodeName = current.getName();
-                if (nodeName.endsWith("-preview")) {
-                    String previewPath = resourceNode.getPath();
-                    String hstSitesPath = current.getParent().getPath();
-                    String previewSitePath = hstSitesPath + "/" + current.getName();
-                    String liveSiteName = current.getName().substring(0, (nodeName.length() - "-preview".length()));
-                    String pathAfterSiteName = StringUtils.substringAfter(previewPath, previewSitePath);
-                    String liveResoucePath = hstSitesPath + "/" + liveSiteName + pathAfterSiteName;
-                    if (session.nodeExists(liveResoucePath)) {
-                        return session.getNode(liveResoucePath);
-                    } else {
-                        log.info("No live version of the resource is available at '{}'. Return null", liveResoucePath);
-                    }
-                } else {
-                    log.info("resourceNode '{}' was already a live resource.", resourceNode.getPath());
-                    return resourceNode;
-                }
-            }
-            current = current.getParent();
-        }
-        log.info("resourceNode '{}' was already a live resource.", resourceNode.getPath());
-        return resourceNode;
     }
 
     protected void storeResourceOnBinaryPage(BinaryPage page, Node resourceNode) {

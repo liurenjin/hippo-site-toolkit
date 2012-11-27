@@ -26,6 +26,8 @@ import javax.jcr.Session;
 import javax.jcr.ValueFormatException;
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang.StringUtils;
+import org.hippoecm.hst.configuration.HstNodeTypes;
 import org.hippoecm.hst.core.component.HstRequest;
 import org.hippoecm.hst.core.linking.ResourceContainer;
 import org.hippoecm.hst.util.HstRequestUtils;
@@ -136,9 +138,27 @@ public final class ResourceUtils {
         return path;
     }
 
-    public static Node lookUpResource(Session session, String resourcePath,
-            Map<String, List<ResourceContainer>> prefix2ResourceContainer, List<ResourceContainer> allResourceContainers) {
-        Node resourceNode = null;
+    public static Node lookUpLiveResource(final Session session,
+                                          final String resourcePath,
+                                          final Map<String, List<ResourceContainer>> prefix2ResourceContainer,
+                                          final List<ResourceContainer> allResourceContainers) throws RepositoryException {
+        Node resourceNode = lookUpResource(session, resourcePath, prefix2ResourceContainer, allResourceContainers);
+        if (resourceNode == null) {
+            return null;
+        }
+        if (isResourceNodeEmbeddedInPreviewDocument(resourceNode)) {
+            log.info("Resource Node '{}' is an embedded resource in a preview document. Binaries servlet only serves live " +
+                    "resources. Rewriting to live resource node.", resourcePath);
+            return rewritePreviewToLiveEmbeddedResource(resourceNode);
+        }
+        return resourceNode;
+    }
+    
+    public static Node lookUpResource(final Session session,
+                                      final String resourcePath,
+                                      final Map<String, List<ResourceContainer>> prefix2ResourceContainer,
+                                      final List<ResourceContainer> allResourceContainers) {
+        Node resourceNode;
 
         // find the correct item
         String[] elems = resourcePath.substring(1).split("/");
@@ -173,6 +193,56 @@ public final class ResourceUtils {
         }
         log.warn("Node at path '{}' cannot be found.", resourcePath);
         return null;
+    }
+
+    private static boolean isResourceNodeEmbeddedInPreviewDocument(final Node resourceNode) throws RepositoryException {
+        Node current = resourceNode.getParent();
+        Node root = resourceNode.getSession().getRootNode();
+        while (!current.isSame(root)) {
+            if (current.isNodeType(HstNodeTypes.NODETYPE_HST_SITE)) {
+                if (current.getName().endsWith("-preview")) {
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+            current = current.getParent();
+        }
+        return false;
+    }
+
+    /**
+     * @param resourceNode the preview document embedded resource
+     * @return the live document embedded resource and <code>null</code> if live is missing
+     */
+    private static Node rewritePreviewToLiveEmbeddedResource(final Node resourceNode) throws RepositoryException {
+        Node current = resourceNode.getParent();
+        Session session = resourceNode.getSession();
+        Node root = session.getRootNode();
+        while (!current.isSame(root)) {
+            if (current.isNodeType(HstNodeTypes.NODETYPE_HST_SITE)) {
+                String nodeName = current.getName();
+                if (nodeName.endsWith("-preview")) {
+                    String previewPath = resourceNode.getPath();
+                    String hstSitesPath = current.getParent().getPath();
+                    String previewSitePath = hstSitesPath + "/" + current.getName();
+                    String liveSiteName = current.getName().substring(0, (nodeName.length() - "-preview".length()));
+                    String pathAfterSiteName = StringUtils.substringAfter(previewPath, previewSitePath);
+                    String liveResoucePath = hstSitesPath + "/" + liveSiteName + pathAfterSiteName;
+                    if (session.nodeExists(liveResoucePath)) {
+                        return session.getNode(liveResoucePath);
+                    } else {
+                        log.info("No live version of the resource is available at '{}'. Return null", liveResoucePath);
+                    }
+                } else {
+                    log.info("resourceNode '{}' was already a live resource.", resourceNode.getPath());
+                    return resourceNode;
+                }
+            }
+            current = current.getParent();
+        }
+        log.info("resourceNode '{}' was already a live resource.", resourceNode.getPath());
+        return resourceNode;
     }
 
     public static boolean isValidResourcePath(String path) {
