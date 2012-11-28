@@ -201,7 +201,7 @@ public class BinaryPage implements Serializable {
 
     /**
      * Set the (un-encoded) file name for the Content-Disposition header.
-     * @param mimeType
+     * @param fileName
      */
     public void setFileName(String fileName) {
         this.fileName = fileName;
@@ -243,6 +243,7 @@ public class BinaryPage implements Serializable {
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("path=").append(getResourcePath());
+        sb.append("repositoryPath=").append(getRepositoryPath());
         sb.append(" status=").append(getStatus());
         sb.append(" mimetype=").append(getMimeType());
         sb.append(" filename=").append(getFileName());
