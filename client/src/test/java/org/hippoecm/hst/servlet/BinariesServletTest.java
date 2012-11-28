@@ -59,6 +59,7 @@ public class BinariesServletTest {
         expect(servletConfig.getInitParameter("binaryMimeTypePropName")).andReturn("my:type");
         expect(servletConfig.getInitParameter("binaryLastModifiedPropName")).andReturn("my:lastmod");
         expect(servletConfig.getInitParameter("contentDispositionFilenameEncoding")).andReturn("user-agent-specific");
+        expect(servletConfig.getInitParameter("loadPreviewEmbeddedResources")).andReturn("false");
 
         expect(servletConfig.getInitParameter("set-expires-headers")).andReturn("false");
         expect(servletConfig.getInitParameter("set-content-length-header")).andReturn("false");
@@ -85,6 +86,7 @@ public class BinariesServletTest {
         expect(servletConfig.getInitParameter("binaryMimeTypePropName")).andReturn(null);
         expect(servletConfig.getInitParameter("binaryLastModifiedPropName")).andReturn(null);
         expect(servletConfig.getInitParameter("contentDispositionFilenameEncoding")).andReturn(null);
+        expect(servletConfig.getInitParameter("loadPreviewEmbeddedResources")).andReturn("false");
 
         expect(servletConfig.getInitParameter("set-expires-headers")).andReturn(null);
         expect(servletConfig.getInitParameter("set-content-length-header")).andReturn(null);
