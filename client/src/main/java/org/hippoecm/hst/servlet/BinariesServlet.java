@@ -35,13 +35,14 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.hippoecm.hst.cache.HstCache;
-import org.hippoecm.hst.configuration.HstNodeTypes;
 import org.hippoecm.hst.container.HstFilter;
 import org.hippoecm.hst.core.container.ComponentManager;
+import org.hippoecm.hst.core.container.ContainerConstants;
 import org.hippoecm.hst.core.linking.HstLinkCreator;
 import org.hippoecm.hst.core.linking.LocationResolver;
 import org.hippoecm.hst.core.linking.ResourceContainer;
@@ -178,7 +179,7 @@ public class BinariesServlet extends HttpServlet {
     /**
      * by default, we only load live embedded resources
      */
-    private boolean loadPreviewEmbeddedResource = false;
+    private boolean loadPreviewEmbeddedResourcesEnabled = false;
 
     /** FIXME: BinariesCache is not serializable. */
     private BinariesCache binariesCache;
@@ -318,7 +319,11 @@ public class BinariesServlet extends HttpServlet {
         } else {
             try {
                 page = getBinaryPage(request, resourcePath);
-                binariesCache.putPage(page);
+                if (page.isCacheable()) {
+                    binariesCache.putPage(page);
+                } else {
+                    binariesCache.clearBlockingLock(resourcePath);
+                }
             } catch (RuntimeException e) {
                 binariesCache.clearBlockingLock(resourcePath);
                 throw e;
@@ -345,14 +350,8 @@ public class BinariesServlet extends HttpServlet {
         Session session = null;
         try {
             session = SessionUtils.getBinariesSession(request);
-            Node resourceNode;
-            if (loadPreviewEmbeddedResource) {
-                resourceNode = ResourceUtils.lookUpResource(session, resourcePath, prefix2ResourceContainer,
-                    allResourceContainers);
-            } else {
-                resourceNode = ResourceUtils.lookUpLiveResource(session, resourcePath, prefix2ResourceContainer,
+            Node resourceNode = ResourceUtils.lookUpResource(session, resourcePath, prefix2ResourceContainer,
                         allResourceContainers);
-            }
             return ResourceUtils.getLastModifiedDate(resourceNode, binaryLastModifiedPropName);
         } catch (RepositoryException e) {
             if (log.isDebugEnabled()) {
@@ -370,8 +369,9 @@ public class BinariesServlet extends HttpServlet {
         BinaryPage page = new BinaryPage(resourcePath);
         Session session = null;
         try {
+            final boolean cmsSSOAuthenticated = isCmsSSOAuthenticated(request);
             session = SessionUtils.getBinariesSession(request);
-            initBinaryPageValues(session, page);
+            initBinaryPageValues(session, page, cmsSSOAuthenticated);
             log.info("Page loaded: {}", page);
         } catch (RepositoryException e) {
             page.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
@@ -386,25 +386,34 @@ public class BinariesServlet extends HttpServlet {
         return page;
     }
 
-    protected void initBinaryPageValues(Session session, BinaryPage page) throws RepositoryException {
+    protected void initBinaryPageValues(Session session, BinaryPage page, boolean cmsSSOAuthenticated) throws RepositoryException {
         if (!ResourceUtils.isValidResourcePath(page.getResourcePath())) {
             page.setStatus(HttpServletResponse.SC_NOT_FOUND);
             return;
         }
 
-        Node resourceNode;
-        if (loadPreviewEmbeddedResource) {
-            resourceNode = ResourceUtils.lookUpResource(session, page.getResourcePath(), prefix2ResourceContainer,
+        Node resourceNode = ResourceUtils.lookUpResource(session, page.getResourcePath(), prefix2ResourceContainer,
                     allResourceContainers);
-        } else {
-            resourceNode = ResourceUtils.lookUpLiveResource(session, page.getResourcePath(), prefix2ResourceContainer,
-                    allResourceContainers);
-        }
+
         if (resourceNode == null) {
             page.setStatus(HttpServletResponse.SC_NOT_FOUND);
             return;
         }
 
+        if (ResourceUtils.isResourceNodeEmbeddedInPreviewDocument(resourceNode)) {
+            if (cmsSSOAuthenticated) {
+                log.debug("Resource Node '{}' is an embedded resource in a preview document but request has a cms SSO handshake." +
+                        " Binary will be served but not cached.", page.getResourcePath());
+                page.markUncacheable();
+            }
+            else if (!loadPreviewEmbeddedResourcesEnabled) {
+                log.debug("Resource Node '{}' is an embedded resource in a preview document. Binaries servlet is configured " +
+                        "to only serve live resources. Return 404", page.getResourcePath());
+                page.setStatus(HttpServletResponse.SC_NOT_FOUND);
+                page.markUncacheable();
+                return;
+            }
+        }
         page.setRepositoryPath(resourceNode.getPath());
 
         if (!ResourceUtils.hasValideType(resourceNode, binaryResourceNodeType)) {
@@ -524,7 +533,7 @@ public class BinariesServlet extends HttpServlet {
         binaryMimeTypePropName = getInitParameter(BINARY_MIME_TYPE_PROP_NAME_INIT_PARAM, binaryMimeTypePropName);
         binaryLastModifiedPropName = getInitParameter(BINARY_LAST_MODIFIED_PROP_NAME_INIT_PARAM,
                 binaryLastModifiedPropName);
-        loadPreviewEmbeddedResource = getBooleanInitParameter(LOAD_PREVIEW_EMBEDDED_RESOURCES_INIT_PARAM, loadPreviewEmbeddedResource);
+        loadPreviewEmbeddedResourcesEnabled = getBooleanInitParameter(LOAD_PREVIEW_EMBEDDED_RESOURCES_INIT_PARAM, loadPreviewEmbeddedResourcesEnabled);
     }
 
     private void initContentDispostion() throws ServletException {
@@ -605,4 +614,12 @@ public class BinariesServlet extends HttpServlet {
         return defaultValue;
     }
 
+
+    private boolean isCmsSSOAuthenticated(final HttpServletRequest request) {
+        HttpSession httpSession = request.getSession(false);
+        if (httpSession == null) {
+            return false;
+        }
+        return Boolean.TRUE.equals(httpSession.getAttribute(ContainerConstants.CMS_SSO_AUTHENTICATED));
+    }
 }

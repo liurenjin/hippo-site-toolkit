@@ -36,6 +36,7 @@ public class BinaryPage implements Serializable {
 
     private final String path;
     private String repositoryPath;
+    private boolean cacheable = true;
     private int status = HttpServletResponse.SC_NOT_FOUND;
     private String mimeType = null;
     private String fileName = null;
@@ -237,6 +238,14 @@ public class BinaryPage implements Serializable {
      */
     private void setCreatedNow() {
         this.creationTime = System.currentTimeMillis();
+    }
+
+    public void markUncacheable() {
+        this.cacheable = false;
+    }
+
+    public boolean isCacheable() {
+        return cacheable;
     }
 
     @Override
