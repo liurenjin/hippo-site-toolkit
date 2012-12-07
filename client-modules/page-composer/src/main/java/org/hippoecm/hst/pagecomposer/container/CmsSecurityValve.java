@@ -133,6 +133,7 @@ public class CmsSecurityValve extends AbstractValve {
         try {
             LazySession lazySession = (LazySession) repository.login(credentials);
             httpSession.setAttribute(SSO_BASED_SESSION_ATTR_NAME, lazySession);
+            httpSession.setAttribute(ContainerConstants.CMS_SSO_AUTHENTICATED, true);
         } catch (Exception e) {
             throw new ContainerException("Failed to create session based on subject.", e);
         }

@@ -125,5 +125,10 @@ public interface ContainerConstants {
      * 'composermode template view' attr type name
      */
     String COMPOSERMODE_TEMPLATE_VIEW_ATTR_NAME = "org.hippoecm.hst.composermode-template-view";
+
+    /**
+     * http session attribute to indicate a single sign on session is created through the cms
+     */
+    String CMS_SSO_AUTHENTICATED = "org.hippoecm.hst.container.sso_cms_authenticated";
     
 }

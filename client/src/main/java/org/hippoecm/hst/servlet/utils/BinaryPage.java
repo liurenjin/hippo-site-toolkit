@@ -23,6 +23,7 @@ import java.io.Serializable;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.ArrayUtils;
 
 /**
  * A {@link Serializable} representation of a resource from the repository as a html page.
@@ -35,6 +36,7 @@ public class BinaryPage implements Serializable {
 
     private final String path;
     private String repositoryPath;
+    private boolean cacheable = true;
     private int status = HttpServletResponse.SC_NOT_FOUND;
     private String mimeType = null;
     private String fileName = null;
@@ -42,7 +44,7 @@ public class BinaryPage implements Serializable {
     private long nextValidityCheckTimeStamp = -1L;
     private long creationTime;
     private long length;
-    private byte[] data = {};
+    private byte[] data = ArrayUtils.EMPTY_BYTE_ARRAY;
 
     /** 
      * Create a new binary page. This will just create the page holder. The fields have to
@@ -200,7 +202,7 @@ public class BinaryPage implements Serializable {
 
     /**
      * Set the (un-encoded) file name for the Content-Disposition header.
-     * @param mimeType
+     * @param fileName
      */
     public void setFileName(String fileName) {
         this.fileName = fileName;
@@ -238,11 +240,21 @@ public class BinaryPage implements Serializable {
         this.creationTime = System.currentTimeMillis();
     }
 
+    public void markUncacheable() {
+        this.cacheable = false;
+    }
+
+    public boolean isCacheable() {
+        return cacheable;
+    }
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("path=").append(getResourcePath());
+        sb.append("repositoryPath=").append(getRepositoryPath());
         sb.append(" status=").append(getStatus());
+        sb.append(" cacheable=").append(isCacheable());
         sb.append(" mimetype=").append(getMimeType());
         sb.append(" filename=").append(getFileName());
         sb.append(" etag=").append(getETag());
