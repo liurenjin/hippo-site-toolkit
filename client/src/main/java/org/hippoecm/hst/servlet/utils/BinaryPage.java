@@ -254,6 +254,7 @@ public class BinaryPage implements Serializable {
         sb.append("path=").append(getResourcePath());
         sb.append("repositoryPath=").append(getRepositoryPath());
         sb.append(" status=").append(getStatus());
+        sb.append(" cacheable=").append(isCacheable());
         sb.append(" mimetype=").append(getMimeType());
         sb.append(" filename=").append(getFileName());
         sb.append(" etag=").append(getETag());
