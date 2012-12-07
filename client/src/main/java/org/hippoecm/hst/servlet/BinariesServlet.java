@@ -229,8 +229,16 @@ public class BinariesServlet extends HttpServlet {
         }
 
         HeaderUtils.setLastModifiedHeaders(response, page);
-        if (setExpiresNeeded) {
-            HeaderUtils.setExpiresHeaders(response, page);
+
+        if (page.isCacheable()) {
+            if (setExpiresNeeded) {
+                HeaderUtils.setExpiresHeaders(response, page);
+            }
+        } else {
+           // page is uncacheable (for example preview). Add headers for no caching:
+            response.setDateHeader("Expires", -1);
+            response.setHeader("Cache-Control", "no-cache");
+            response.setHeader("Pragma", "no-cache");
         }
         
         if(setContentLength) {
