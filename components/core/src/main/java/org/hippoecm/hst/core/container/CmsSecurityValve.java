@@ -66,7 +66,7 @@ public class CmsSecurityValve extends AbstractValve {
          * 1) The renderHost == null AND
          * 2) ContainerConstants.CMS_HOST_CONTEXT attribute is not TRUE
          */
-        if(requestContext.getRenderHost() == null && !Boolean.TRUE.equals(servletRequest.getAttribute(ContainerConstants.CMS_HOST_CONTEXT))) {
+        if(requestContext.getRenderHost() == null && !requestContext.isCmsRequest()) {
             String ignoredPrefix = requestContext.getResolvedMount().getMatchingIgnoredPrefix();
             if(!StringUtils.isEmpty(ignoredPrefix) && ignoredPrefix.equals(requestContext.getResolvedMount().getResolvedVirtualHost().getVirtualHost().getVirtualHosts().getCmsPreviewPrefix())) {
                 // When the ignoredPrefix is not equal cmsPreviewPrefix the request is only allowed in the CMS CONTEXT
@@ -160,7 +160,7 @@ public class CmsSecurityValve extends AbstractValve {
 
         // we need to synchronize on a http session as a jcr session which is tied to it is not thread safe. Also, virtual states will be lost
         // if another thread flushes this session. 
-        if(Boolean.TRUE.equals(servletRequest.getAttribute(ContainerConstants.CMS_HOST_CONTEXT))) {
+        if(requestContext.isCmsRequest()) {
             // we are in a request for the REST template composer 
             synchronized (session) {
                 LazySession lazySession = null;

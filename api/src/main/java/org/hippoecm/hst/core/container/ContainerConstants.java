@@ -161,8 +161,12 @@ public interface ContainerConstants {
     String CMS_HOST_CONTEXT = "org.hippoecm.hst.container.sso_cms_context";
 
     /**
-      * The attribute used on the request to indicate that the request is from a cms context : This can be a REST call, or
-      * a request for the preview website in a cms environment (host)
-      */
+     * The attribute used on the request to indicate that the request is from a cms context : This can be a REST call,
+     * or a request for the preview website in a cms environment (host)
+     *
+     * @deprecated since 2.24.11 / 2.26.01 : use directly {@link org.hippoecm.hst.core.request.HstRequestContext#isCmsRequest()}
+     *             and {@link org.hippoecm.hst.core.internal.HstMutableRequestContext#setCmsRequest(boolean)}
+     */
+    @Deprecated
      String REQUEST_COMES_FROM_CMS = "org.hippoecm.hst.container.request_comes_from_cms";
 }

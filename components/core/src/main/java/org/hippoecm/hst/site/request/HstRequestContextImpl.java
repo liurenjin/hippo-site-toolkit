@@ -94,6 +94,9 @@ public class HstRequestContextImpl implements HstMutableRequestContext {
     protected Set<String> componentFilterTags;
     protected boolean fullyQualifiedURLs;
     protected String renderHost;
+    // default a request is considered to be not from a cms. If cmsRequest is true, this means the
+    // request is done from a cms context. This can influence for example how a link is created
+    protected boolean cmsRequest;
     
     private Map<String, Object> unmodifiableAttributes;
     
@@ -544,9 +547,11 @@ public class HstRequestContextImpl implements HstMutableRequestContext {
 
     @Override
     public boolean isCmsRequest() {
-        if (servletRequest == null) {
-            return false;
-        }
-        return Boolean.TRUE.equals(servletRequest.getAttribute(ContainerConstants.REQUEST_COMES_FROM_CMS));
+       return cmsRequest;
+    }
+
+    @Override
+    public void setCmsRequest(final boolean cmsRequest) {
+        this.cmsRequest = cmsRequest;
     }
 }
