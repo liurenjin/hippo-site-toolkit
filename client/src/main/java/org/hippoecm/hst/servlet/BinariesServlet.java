@@ -144,6 +144,8 @@ public class BinariesServlet extends HttpServlet {
 
     public static final String BINARY_LAST_MODIFIED_PROP_NAME_INIT_PARAM = "binaryLastModifiedPropName";
 
+    public static final String LOAD_PREVIEW_EMBEDDED_RESOURCES_INIT_PARAM = "loadPreviewEmbeddedResources";
+
     private static final boolean DEFAULT_SET_EXPIRES_HEADERS = true;
     
     private static final boolean DEFAULT_SET_CONTENT_LENGTH_HEADERS = true;
@@ -220,6 +222,7 @@ public class BinariesServlet extends HttpServlet {
             return;
         }
         
+        response.setStatus(page.getStatus());
         boolean setExpiresNeeded = setExpires;
         
         if (ContentDispositionUtils.isContentDispositionType(page.getMimeType(), contentDispositionContentTypes)) {
@@ -235,7 +238,7 @@ public class BinariesServlet extends HttpServlet {
                 HeaderUtils.setExpiresHeaders(response, page);
             }
         } else {
-           // page is uncacheable (for example preview). Add headers for no caching:
+            // page is uncacheable (for example preview). Add headers for no caching:
             response.setDateHeader("Expires", -1);
             response.setHeader("Cache-Control", "no-cache");
             response.setHeader("Pragma", "no-cache");
@@ -538,6 +541,7 @@ public class BinariesServlet extends HttpServlet {
         binaryMimeTypePropName = getInitParameter(BINARY_MIME_TYPE_PROP_NAME_INIT_PARAM, binaryMimeTypePropName);
         binaryLastModifiedPropName = getInitParameter(BINARY_LAST_MODIFIED_PROP_NAME_INIT_PARAM,
                 binaryLastModifiedPropName);
+        loadPreviewEmbeddedResourcesEnabled = getBooleanInitParameter(LOAD_PREVIEW_EMBEDDED_RESOURCES_INIT_PARAM, loadPreviewEmbeddedResourcesEnabled);
     }
 
     private void initContentDispostion() throws ServletException {
