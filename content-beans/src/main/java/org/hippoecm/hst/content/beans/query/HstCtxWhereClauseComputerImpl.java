@@ -135,7 +135,7 @@ public class HstCtxWhereClauseComputerImpl implements HstCtxWhereClauseComputer{
             }
             
             if (this.length == o.length) {
-                return 1;
+                return 0;
             }
             
             if (this.length > o.length) {
