@@ -156,12 +156,12 @@ public class CmsSecurityValve extends AbstractValve {
                     throw new ContainerException(se);
                 }
             } 
-        } 
+        }
 
-        // we need to synchronize on a http session as a jcr session which is tied to it is not thread safe. Also, virtual states will be lost
-        // if another thread flushes this session. 
-        if(requestContext.isCmsRequest()) {
-            // we are in a request for the REST template composer 
+        if(isCmsRestRequestContext(servletRequest)) {
+            // we are in a request for the REST template composer
+            // we need to synchronize on a http session as a jcr session which is tied to it is not thread safe. Also, virtual states will be lost
+            // if another thread flushes this session.
             synchronized (session) {
                 LazySession lazySession = null;
                 try {
@@ -183,6 +183,10 @@ public class CmsSecurityValve extends AbstractValve {
         } else {
             context.invokeNext();
         }
+    }
+
+    private boolean isCmsRestRequestContext(final HttpServletRequest servletRequest) {
+        return Boolean.TRUE.equals(servletRequest.getAttribute(ContainerConstants.CMS_HOST_CONTEXT));
     }
 
     /**
