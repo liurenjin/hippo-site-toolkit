@@ -15,7 +15,9 @@
  */
 package org.hippoecm.hst.configuration.model;
 
+import org.hippoecm.hst.configuration.hosting.MutableVirtualHosts;
 import org.hippoecm.hst.configuration.hosting.VirtualHosts;
+import org.hippoecm.hst.core.container.ContainerException;
 import org.hippoecm.hst.core.container.RepositoryNotAvailableException;
 
 /**
@@ -30,7 +32,17 @@ public interface HstConfigurationAugmenter {
     /**
      * Implementations that are 
      * @param manager
-     * @throws RepositoryNotAvailableException 
+     * @throws RepositoryNotAvailableException
+     * @deprecated since 2.24.13 use {@link #augment(org.hippoecm.hst.configuration.hosting.MutableVirtualHosts)} instead
      */
+    @Deprecated
     void augment(HstManager manager) throws RepositoryNotAvailableException;
+
+    /**
+     * Implementations that are
+     * @param hosts the MutableVirtualHosts to augment
+     * @throws org.hippoecm.hst.core.container.ContainerException
+     */
+    void augment(MutableVirtualHosts hosts) throws ContainerException;
+
 }

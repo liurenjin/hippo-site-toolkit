@@ -37,11 +37,11 @@ import org.hippoecm.hst.configuration.HstNodeTypes;
 import org.hippoecm.hst.configuration.StringPool;
 import org.hippoecm.hst.configuration.channel.MutableChannelManager;
 import org.hippoecm.hst.configuration.components.HstComponentsConfigurationService;
+import org.hippoecm.hst.configuration.hosting.MutableVirtualHosts;
 import org.hippoecm.hst.configuration.hosting.VirtualHosts;
 import org.hippoecm.hst.configuration.hosting.VirtualHostsService;
-import org.hippoecm.hst.configuration.model.HstNode;
-import org.hippoecm.hst.configuration.model.HstManagerImpl.HstEvent;
 import org.hippoecm.hst.core.component.HstURLFactory;
+import org.hippoecm.hst.core.container.ContainerException;
 import org.hippoecm.hst.core.container.HstComponentRegistry;
 import org.hippoecm.hst.core.container.RepositoryNotAvailableException;
 import org.hippoecm.hst.core.linking.HstLinkCreator;
@@ -587,12 +587,14 @@ public class HstManagerImpl implements HstManager {
             siteMapItemHandlerRegistry.unregisterAllSiteMapItemHandlers();
             enhancedConfigurationRootNodes = enhanceHstConfigurationNodes(configurationRootNodes);
             this.virtualHosts = new VirtualHostsService(virtualHostsNode, this);
-            
+
             for(HstConfigurationAugmenter configurationAugmenter : hstConfigurationAugmenters ) {
-                configurationAugmenter.augment(this);
+                configurationAugmenter.augment((MutableVirtualHosts)virtualHosts);
             }
             log.info("Finished build in memory hst configuration model in " + (System.currentTimeMillis() - start) + " ms.");
         } catch (ServiceException e) {
+            throw new RepositoryNotAvailableException(e);
+        }  catch (ContainerException e) {
             throw new RepositoryNotAvailableException(e);
         } finally {
             // clear the StringPool as it is not needed any more

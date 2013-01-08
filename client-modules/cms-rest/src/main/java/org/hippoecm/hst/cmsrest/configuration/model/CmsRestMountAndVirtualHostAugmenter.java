@@ -82,17 +82,16 @@ public class CmsRestMountAndVirtualHostAugmenter implements HstConfigurationAugm
 
     @Override
     public void augment(HstManager manager) throws RepositoryNotAvailableException {
+        augment((MutableVirtualHosts)manager.getVirtualHosts());
+    }
+
+    @Override
+    public void augment(MutableVirtualHosts hosts) throws RepositoryNotAvailableException {
         try {
-           if(!(manager.getVirtualHosts() instanceof MutableVirtualHosts )) {
-               log.error("{} can only work when the hosts is an instanceof MutableVirtualHosts. The VIEW / GOTO button in cms will not work", this.getClass().getName());
-               return;
-           } 
            if(StringUtils.isEmpty(cmsRestHostName)) {
                log.error("{} can only work when the cmsRestHostName is not null or empty. The VIEW / GOTO button in cms will not work", this.getClass().getName());
                return;
            }
-           MutableVirtualHosts hosts = (MutableVirtualHosts) manager.getVirtualHosts();
-            
            // get the host segments in reversed order. For example 127.0.0.1 --> {"1", "0", "0", "127"}
            String[] hostSegments = cmsRestHostName.split("\\.");
            ArrayUtils.reverse(hostSegments);
@@ -122,7 +121,7 @@ public class CmsRestMountAndVirtualHostAugmenter implements HstConfigurationAugm
           
            if (cmsHost == null) {
                // add the cmsRestHostName + mount
-               MutableVirtualHost cmsVirtualHost = new CmsRestVirtualHost(manager.getVirtualHosts(), hostSegments, 0);
+               MutableVirtualHost cmsVirtualHost = new CmsRestVirtualHost(hosts, hostSegments, 0);
                hosts.addVirtualHost(cmsVirtualHost);
            } else if (cmsHost instanceof MutableVirtualHost){
                // only add the needed portMount / hst:root mount / _cmsrest mount

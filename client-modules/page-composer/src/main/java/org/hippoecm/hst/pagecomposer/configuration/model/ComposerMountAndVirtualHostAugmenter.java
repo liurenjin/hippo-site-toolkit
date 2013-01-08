@@ -83,20 +83,17 @@ public class ComposerMountAndVirtualHostAugmenter implements HstConfigurationAug
         this.noopPipeline = noopPipeline;
     }
 
-   
+    @Override
+    public void augment(HstManager manager) throws RepositoryNotAvailableException {
+        augment((MutableVirtualHosts)manager.getVirtualHosts());
+    }
     /**
      * Every virtual hostgroup that has a hst:cmslocation property defined we try to add the correct composerMount for.
      * If there is no hst:cmslocation defined on the virtual hostgroup, then we check whether there is cmslocation define by
      * ContainerConfiguration#getString(ContainerConstants.CMS_LOCATION)  : This is a deprecated way to configure the cmslocation
      */
     @Override
-    public void augment(HstManager manager) throws RepositoryNotAvailableException {
-            if(!(manager.getVirtualHosts() instanceof MutableVirtualHosts )) {
-                log.error("{} can only work when the hosts is an instanceof MutableVirtualHosts. The VIEW / GOTO button in cms will not work", this.getClass().getName());
-                return;
-            }   
-            MutableVirtualHosts hosts = (MutableVirtualHosts) manager.getVirtualHosts();
-            
+    public void augment(MutableVirtualHosts hosts) throws RepositoryNotAvailableException {
             // first we try to find all the cmsLocations that need to be added.
             // for every host group, we fetch just virtualhost and ask for its cmsLocation: Although it is configured 
             // on the hst:virtualhostgroup node, it is inherited in every virtualhost
