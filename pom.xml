@@ -18,10 +18,10 @@
 
   <name>Hippo Site Toolkit</name>
   <description>The Hippo Site Toolkit (HST) is an engine that serves content from the Hippo repository (2) on webpages, dynamically.
-    The HST produces a complete, dynamic website for an organization, or several complete, dynamic websites for several suborganizations 
+    The HST produces a complete, dynamic website for an organization, or several complete, dynamic websites for several suborganizations
     that have all their content managed in one Hippo repository.
     The functionality, views and markup of the website(s) are to be defined by the web developers with Java classes, JSP and CSS, respectively.
-    The HST provides a framework of predefined Java classes, abstract Java classes and interfaces and JSP tags 
+    The HST provides a framework of predefined Java classes, abstract Java classes and interfaces and JSP tags
     for the web developers to work with and build on.
   </description>
   <url>http://www.onehippo.org/site-toolkit/</url>
@@ -90,10 +90,10 @@
 
     <hippoecm.version>2.16.08</hippoecm.version>
     <hst-configuration-editor.version>1.04.04</hst-configuration-editor.version>
-    
+
     <jdo.version>2.0</jdo.version>
     <htmlcleaner.version>2.1</htmlcleaner.version>
-    
+
     <yui.sources.version>1.01.07</yui.sources.version>
     <spring.js.version>2.0.5.RELEASE</spring.js.version>
 
@@ -106,8 +106,8 @@
   </properties>
 
   <!--
-     Software configuration management (scm): where to find and how to get acces to the source repository 
-     This is used by normal plugins, but also to autogenerate documentation in .../target/site/source-repository.html 
+     Software configuration management (scm): where to find and how to get acces to the source repository
+     This is used by normal plugins, but also to autogenerate documentation in .../target/site/source-repository.html
   -->
   <scm>
     <connection>scm:svn:http://svn.hippocms.org/repos/hippo/ecm/site-toolkit/branches/Branch-HSTTWO-v2_05_xx</connection>
@@ -115,22 +115,22 @@
     <url>http://svn.hippocms.org/repos/hippo/ecm/site-toolkit/branches/Branch-HSTTWO-v2_05_xx</url>
   </scm>
 
-
-   <distributionManagement>
+  <!-- Note: 7.4 maintenance is enterprise -->
+  <distributionManagement>
     <repository>
-      <name>Hippo Maven 2 Repository</name>
-      <id>hippo-maven2</id>
-      <url>https://maven.onehippo.com/content/repositories/releases/</url>
+      <name>Hippo Maven 2 Enterprise Repository</name>
+      <id>hippo-maven2-enterprise</id>
+      <url>https://maven.onehippo.com/content/repositories/enterprise-releases/</url>
       <uniqueVersion>false</uniqueVersion>
     </repository>
     <snapshotRepository>
-      <id>hippo-maven2-snapshots</id>
-      <name>Hippo Maven 2 Snapshots Repository</name>
-      <url>https://maven.onehippo.com/content/repositories/snapshots/</url>
+      <id>hippo-maven2-enterprise-snapshots</id>
+      <name>Hippo Maven 2 Enterprise Snapshots Repository</name>
+      <url>https://maven.onehippo.com/content/repositories/enterprise-snapshots/</url>
       <uniqueVersion>false</uniqueVersion>
     </snapshotRepository>
   </distributionManagement>
- 
+
   <developers>
     <developer>
       <name>Woonsan Ko</name>
@@ -234,7 +234,7 @@
         <updatePolicy>never</updatePolicy>
       </releases>
     </repository>
-    <!-- DISABLED repositories which are often "transitively" pulled in 
+    <!-- DISABLED repositories which are often "transitively" pulled in
         and/or were used in the past
     -->
     <repository>
@@ -347,27 +347,27 @@
       </releases>
     </pluginRepository>
   </pluginRepositories>
-  
+
   <organization>
     <name>Hippo</name>
     <url>http://www.onehippo.com</url>
   </organization>
 
   <dependencyManagement>
-  
+
     <dependencies>
 
       <!-- Servlet API dependencies -->
-      
+
       <dependency>
         <groupId>javax.servlet</groupId>
         <artifactId>servlet-api</artifactId>
         <version>${servlet-api.version}</version>
         <scope>provided</scope>
       </dependency>
-      
+
       <!-- JTA Spec -->
-          
+
       <dependency>
         <groupId>org.apache.geronimo.specs</groupId>
         <artifactId>geronimo-jta_1.1_spec</artifactId>
@@ -376,7 +376,7 @@
       </dependency>
 
       <!-- JCR API and Hippo ECM API dependency -->
-      
+
       <dependency>
         <groupId>javax.jcr</groupId>
         <artifactId>jcr</artifactId>
@@ -390,22 +390,22 @@
       </dependency>
 
       <!-- Java Mail dependencies for site example -->
-      
+
       <dependency>
         <groupId>javax.mail</groupId>
         <artifactId>mail</artifactId>
         <version>${javax.mail.version}</version>
       </dependency>
-      
+
       <!-- JSP-related API dependencies -->
-      
+
       <dependency>
         <groupId>javax.servlet.jsp</groupId>
         <artifactId>jsp-api</artifactId>
         <version>${jsp-api.version}</version>
         <scope>provided</scope>
       </dependency>
-      
+
       <dependency>
         <groupId>javax.portlet</groupId>
         <artifactId>portlet-api</artifactId>
@@ -424,16 +424,16 @@
         <artifactId>standard</artifactId>
         <version>${taglibs.version}</version>
       </dependency>
-      
+
       <!-- XML Parser and XSLT Processor. JSTL XML Tag requires all the followings. -->
-      
+
       <dependency>
         <groupId>xml-apis</groupId>
         <artifactId>xml-apis</artifactId>
         <version>${xml-apis.version}</version>
         <scope>runtime</scope>
       </dependency>
-      
+
       <dependency>
         <groupId>xerces</groupId>
         <artifactId>xercesImpl</artifactId>
@@ -447,34 +447,34 @@
         <version>${xerces.version}</version>
         <scope>runtime</scope>
       </dependency>
-      
+
       <dependency>
         <groupId>xalan</groupId>
         <artifactId>xalan</artifactId>
         <version>${xalan.version}</version>
         <scope>runtime</scope>
       </dependency>
-      
+
       <!-- Apache Commons -->
-      
+
       <dependency>
         <groupId>commons-lang</groupId>
         <artifactId>commons-lang</artifactId>
         <version>${commons-lang.version}</version>
       </dependency>
-      
+
       <dependency>
         <groupId>commons-collections</groupId>
         <artifactId>commons-collections</artifactId>
         <version>${commons-collections.version}</version>
       </dependency>
-    
+
       <dependency>
         <groupId>commons-pool</groupId>
         <artifactId>commons-pool</artifactId>
         <version>${commons-pool.version}</version>
       </dependency>
-      
+
       <dependency>
         <groupId>commons-beanutils</groupId>
         <artifactId>commons-beanutils</artifactId>
@@ -504,7 +504,7 @@
         <artifactId>commons-io</artifactId>
         <version>${commons-io.version}</version>
       </dependency>
-      
+
       <dependency>
         <groupId>commons-jexl</groupId>
         <artifactId>commons-jexl</artifactId>
@@ -516,7 +516,7 @@
           </exclusion>
         </exclusions>
       </dependency>
-      
+
       <dependency>
         <groupId>commons-configuration</groupId>
         <artifactId>commons-configuration</artifactId>
@@ -528,13 +528,13 @@
           </exclusion>
         </exclusions>
       </dependency>
-      
+
       <dependency>
         <groupId>org.apache.commons</groupId>
         <artifactId>commons-proxy</artifactId>
         <version>${commons-proxy.version}</version>
       </dependency>
-      
+
       <dependency>
         <groupId>commons-digester</groupId>
         <artifactId>commons-digester</artifactId>
@@ -546,38 +546,38 @@
           </exclusion>
         </exclusions>
       </dependency>
-      
+
       <dependency>
         <groupId>net.sf.ehcache</groupId>
         <artifactId>ehcache-core</artifactId>
         <version>${ehcache-core.version}</version>
       </dependency>
-      
+
       <dependency>
         <groupId>net.sf.ehcache</groupId>
         <artifactId>ehcache-web</artifactId>
         <version>${ehcache-web.version}</version>
       </dependency>
       <!-- Logging -->
-      
+
       <dependency>
         <groupId>org.slf4j</groupId>
         <artifactId>slf4j-api</artifactId>
         <version>${slf4j.version}</version>
       </dependency>
-      
+
       <dependency>
         <groupId>org.slf4j</groupId>
         <artifactId>slf4j-ext</artifactId>
         <version>${slf4j.version}</version>
       </dependency>
-      
+
       <dependency>
         <groupId>org.slf4j</groupId>
         <artifactId>slf4j-log4j12</artifactId>
         <version>${slf4j.version}</version>
       </dependency>
-    
+
       <dependency>
         <groupId>org.slf4j</groupId>
         <artifactId>jcl-over-slf4j</artifactId>
@@ -597,17 +597,17 @@
         <artifactId>log4j</artifactId>
         <version>${log4j.version}</version>
       </dependency>
-      
+
       <!-- AspectJ -->
-      
+
       <dependency>
         <groupId>org.aspectj</groupId>
         <artifactId>aspectjweaver</artifactId>
         <version>${aspectj.version}</version>
       </dependency>
-      
+
       <!-- Spring Framework -->
-      
+
       <dependency>
         <groupId>org.springframework</groupId>
         <artifactId>spring-core</artifactId>
@@ -619,7 +619,7 @@
           </exclusion>
         </exclusions>
       </dependency>
-    
+
       <dependency>
         <groupId>org.springframework</groupId>
         <artifactId>spring-beans</artifactId>
@@ -631,7 +631,7 @@
           </exclusion>
         </exclusions>
       </dependency>
-    
+
       <dependency>
         <groupId>org.springframework</groupId>
         <artifactId>spring-context</artifactId>
@@ -643,7 +643,7 @@
           </exclusion>
         </exclusions>
       </dependency>
-    
+
       <dependency>
         <groupId>org.springframework</groupId>
         <artifactId>spring-web</artifactId>
@@ -667,7 +667,7 @@
           </exclusion>
         </exclusions>
       </dependency>
-      
+
       <dependency>
         <groupId>org.springframework</groupId>
         <artifactId>spring-aop</artifactId>
@@ -679,7 +679,7 @@
           </exclusion>
         </exclusions>
       </dependency>
-      
+
       <dependency>
         <groupId>org.springframework</groupId>
         <artifactId>spring-test</artifactId>
@@ -692,9 +692,9 @@
           </exclusion>
         </exclusions>
       </dependency>
-      
+
       <!-- Hippo ECM Depedencies -->
-    
+
       <dependency>
         <groupId>org.hippoecm</groupId>
         <artifactId>hippo-ecm-repository-connector</artifactId>
@@ -706,26 +706,26 @@
           </exclusion>
         </exclusions>
       </dependency>
-      
+
       <dependency>
         <groupId>org.hippoecm</groupId>
         <artifactId>hippo-ecm-addon-builtin-common</artifactId>
         <version>${hippoecm.version}</version>
       </dependency>
-      
+
       <dependency>
         <groupId>org.hippoecm</groupId>
         <artifactId>hippo-ecm-addon-reviewed-action-common</artifactId>
         <version>${hippoecm.version}</version>
       </dependency>
-      
+
       <dependency>
         <groupId>org.hippoecm</groupId>
         <artifactId>hippo-ecm-package-war</artifactId>
         <version>${hippoecm.version}</version>
         <type>war</type>
       </dependency>
-      
+
       <!-- JDO for Hippo Repository Workflow APIs -->
       <dependency>
         <groupId>javax.jdo</groupId>
@@ -740,27 +740,27 @@
       </dependency>
 
       <!-- Jackrabbit -->
-            
+
       <dependency>
         <groupId>org.apache.jackrabbit</groupId>
         <artifactId>jackrabbit-jcr-commons</artifactId>
         <version>${jackrabbit.version}</version>
       </dependency>
-      
+
       <dependency>
         <groupId>org.apache.jackrabbit</groupId>
         <artifactId>jackrabbit-ocm</artifactId>
         <version>${jackrabbit.version}</version>
       </dependency>
-      
+
       <!-- HTML Cleaner -->
-      
+
       <dependency>
         <groupId>net.sourceforge.htmlcleaner</groupId>
         <artifactId>htmlcleaner</artifactId>
         <version>${htmlcleaner.version}</version>
       </dependency>
-      
+
       <!-- SpringFramework WebFlow SpringFramework JS -->
       <dependency>
         <groupId>org.springframework.webflow</groupId>
@@ -773,7 +773,7 @@
           </exclusion>
         </exclusions>
       </dependency>
-      
+
       <!-- YUI -->
       <dependency>
         <groupId>org.onehippo.yui</groupId>
@@ -786,7 +786,7 @@
           </exclusion>
         </exclusions>
       </dependency>
-      
+
       <dependency>
         <groupId>org.apache.cxf</groupId>
         <artifactId>cxf-rt-frontend-jaxrs</artifactId>
@@ -814,7 +814,7 @@
           </exclusion>
         </exclusions>
       </dependency>
-      
+
       <!-- Jackson JSON -->
       <dependency>
         <groupId>org.codehaus.jackson</groupId>
@@ -822,14 +822,14 @@
         <version>${jackson.version}</version>
         <scope>runtime</scope>
       </dependency>
-      
+
       <dependency>
         <groupId>org.codehaus.jackson</groupId>
         <artifactId>jackson-xc</artifactId>
         <version>${jackson.version}</version>
         <scope>runtime</scope>
       </dependency>
-      
+
       <dependency>
         <groupId>org.apache.james</groupId>
         <artifactId>apache-mime4j</artifactId>
@@ -841,23 +841,23 @@
           </exclusion>
         </exclusions>
       </dependency>
-      
+
       <!-- Test dependencies -->
-    
+
       <dependency>
         <groupId>junit</groupId>
         <artifactId>junit</artifactId>
         <version>${junit.version}</version>
         <scope>test</scope>
       </dependency>
-      
+
       <dependency>
         <groupId>org.easymock</groupId>
         <artifactId>easymock</artifactId>
         <version>${easymock.version}</version>
         <scope>test</scope>
       </dependency>
-      
+
       <!--
       <dependency>
         <groupId>org.hippoecm</groupId>
@@ -866,9 +866,9 @@
         <scope>test</scope>
       </dependency>
       -->
-      
+
     </dependencies>
-    
+
   </dependencyManagement>
 
   <build>
@@ -1002,13 +1002,13 @@
         <module>demosuite</module>
       </modules>
     </profile>
-    
+
     <profile>
       <id>website</id>
       <!-- For building website documentation, there's no need to include modules. -->
       <modules />
     </profile>
-    
+
   </profiles>
 
 </project>
