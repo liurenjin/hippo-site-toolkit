@@ -28,7 +28,7 @@
   <groupId>org.onehippo.ecm.hst.demosuite</groupId>
   <artifactId>hst-demosuite-site</artifactId>
   <packaging>war</packaging>
-  
+
   <properties>
     <site.log.dir.name>${site.webapp.root}/WEB-INF/logs</site.log.dir.name>
   </properties>
@@ -135,7 +135,7 @@
       <artifactId>freemarker</artifactId>
       <version>2.3.15</version>
     </dependency>
-    
+
     <dependency>
       <groupId>org.onehippo.ecm.hst.testsuite.sandbox</groupId>
       <artifactId>hst-jaxrs</artifactId>
@@ -169,7 +169,7 @@
         </exclusion>
       </exclusions>
     </dependency>
-    
+
   </dependencies>
 
   <build>
@@ -229,18 +229,18 @@
         </configuration>
       </plugin>
     </plugins>
-    
+
     <resources>
       <resource>
         <directory>src/main/resources</directory>
         <filtering>true</filtering>
       </resource>
     </resources>
-    
+
   </build>
-  
+
   <profiles>
-    
+
     <profile>
       <id>default</id>
       <activation>
@@ -272,7 +272,7 @@
         </dependency>
       </dependencies>
     </profile>
-    
+
     <profile>
       <id>tomcat</id>
       <dependencies>
@@ -735,7 +735,7 @@ Add the following servlet definition in /jetspeed/WEB-INF/web.xml
     </init-param>
     <load-on-startup>101</load-on-startup>
   </servlet>
-  
+
 Restart your Jetspeed and visit the following page:
 
 http://localhost:8080/jetspeed/portal/
@@ -762,7 +762,7 @@ And, click `HST-2 Demo' menu!
         </plugins>
       </build>
     </profile>
-    
+
   </profiles>
 
 
