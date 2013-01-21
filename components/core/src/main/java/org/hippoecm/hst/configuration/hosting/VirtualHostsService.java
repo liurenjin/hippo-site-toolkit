@@ -46,8 +46,6 @@ public class VirtualHostsService implements MutableVirtualHosts {
 
     private final static String WILDCARD = "_default_";
     
-    public final static String DEFAULT_SCHEME = "http";
-
     private HstManagerImpl hstManager;
     private Map<String, Map<String, MutableVirtualHost>> rootVirtualHostsByGroup = new DuplicateKeyNotAllowedHashMap<String, Map<String, MutableVirtualHost>>();
 
@@ -529,7 +527,7 @@ public class VirtualHostsService implements MutableVirtualHosts {
     /**
      * @return a HashMap<String, VirtualHostService> that throws an exception when you put in the same key twice
      */
-    public final static HashMap<String, MutableVirtualHost> virtualHostHashMap(){
+    public static HashMap<String, MutableVirtualHost> virtualHostHashMap(){
         return new DuplicateKeyNotAllowedHashMap<String, MutableVirtualHost>();
     }
     
