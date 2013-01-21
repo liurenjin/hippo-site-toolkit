@@ -1,5 +1,5 @@
 /*
- *  Copyright 2010 Hippo.
+ *  Copyright 2010-2013 Hippo.
  * 
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -70,6 +70,18 @@ public class HstManagerImpl implements HstManager {
     private Credentials credentials;
 
     private volatile VirtualHosts virtualHosts;
+    private volatile BuilderState state = BuilderState.UNDEFINED;
+
+    enum BuilderState {
+        UNDEFINED,
+        UP2DATE,
+        STALE,
+        SCHEDULED,
+        RUNNING,
+    }
+
+    private boolean staleConfigurationSupported = false;
+
     private HstURLFactory urlFactory;
     private HstSiteMapMatcher siteMapMatcher;
     private HstSiteMapItemHandlerFactory siteMapItemHandlerFactory;
@@ -242,21 +254,87 @@ public class HstManagerImpl implements HstManager {
     public void setHstLinkCreator(HstLinkCreator hstLinkCreator) {
         this.hstLinkCreator = hstLinkCreator;
     }
-    
+
+    public void setStaleConfigurationSupported(boolean staleConfigurationSupported) {
+        this.staleConfigurationSupported = staleConfigurationSupported;
+    }
+
+    private void asynchronousBuild() {
+        synchronized (MUTEX) {
+            if (state == BuilderState.UP2DATE) {
+                // other thread already built the model
+                return;
+            }
+            if (state == BuilderState.SCHEDULED) {
+                // already scheduled
+                return;
+            }
+            if (state == BuilderState.RUNNING) {
+                log.error("BuilderState should not be possible to be in RUNNING state at this point. Return");
+                return;
+            }
+            state = BuilderState.SCHEDULED;
+            Thread scheduled = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        synchronousBuild();
+                    } catch (ContainerException e) {
+                        log.warn("Exception during building virtualhosts model. ", e);
+                    }
+                }
+            });
+            scheduled.setUncaughtExceptionHandler(new Thread.UncaughtExceptionHandler() {
+                @Override
+                public void uncaughtException(final Thread t, final Throwable e) {
+                    log.warn("Runtime exception "+e.getClass().getName()+" during building asynchronous " +
+                            "HST model. Reason : " + e.getMessage(), e);
+                }
+            });
+            scheduled.start();
+        }
+    }
+
+    @Override
+    public VirtualHosts getVirtualHosts(boolean allowStale) throws RepositoryNotAvailableException {
+        if (state == BuilderState.UP2DATE) {
+            return virtualHosts;
+        }
+        if (state == BuilderState.UNDEFINED) {
+            return synchronousBuild();
+        }
+        if (allowStale && staleConfigurationSupported) {
+            asynchronousBuild();
+            return virtualHosts;
+        }
+        return synchronousBuild();
+    }
+
+    @Override
     public VirtualHosts getVirtualHosts() throws RepositoryNotAvailableException {
- 
-        VirtualHosts currentHosts = virtualHosts;
-        if (currentHosts == null) {
+        return getVirtualHosts(false);
+
+    }
+
+    private VirtualHosts synchronousBuild() throws RepositoryNotAvailableException {
+
+        if (state != BuilderState.UP2DATE) {
             synchronized(MUTEX) {
-                if (virtualHosts == null) {
-                    buildSites(); 
+                if (state == BuilderState.UP2DATE) {
+                    return virtualHosts;
+                }
+                try {
+                    state = BuilderState.RUNNING;
+                    buildSites();
                     if(virtualHosts == null) {
                         throw new IllegalStateException("The HST configuration model could not be loaded. Cannot process request");
                     }
                     this.channelManager.load(virtualHosts);
+                } finally {
+                    // whether there were exceptions or not, the model is up2date (though the virtualHosts object might
+                    // be from a previous run in case it could not be loaded)
+                    state = BuilderState.UP2DATE;
                 }
-                currentHosts = virtualHosts;
-
                 if (fullBlownReloadNeeded) {
                     log.warn("Due to incorrect loading of the HST model during previous request, during next request a full blown " +
                             "reload will be done. If the incorrect loading was the result of broken hst configuration, please fix this because " +
@@ -267,8 +345,7 @@ public class HstManagerImpl implements HstManager {
                 }
             }
         }
-        
-        return currentHosts;
+        return virtualHosts;
     }
 
     private void buildSites() throws RepositoryNotAvailableException {
@@ -844,9 +921,6 @@ public class HstManagerImpl implements HstManager {
     }
     
     private void addNodePathIfAbsentForPropertyToMap(Map<String, HstEvent> idPathMapOfChangedAddedOrMovedNodes, Event ev) throws RepositoryException {
-        if (propertyEventCanBeIgnored(ev.getPath())) {
-            return;
-        }
         if (idPathMapOfChangedAddedOrMovedNodes.containsKey(ev.getIdentifier())) {
             return;
         } else {
@@ -855,16 +929,6 @@ public class HstManagerImpl implements HstManager {
             idPathMapOfChangedAddedOrMovedNodes.put(ev.getIdentifier(), new HstEvent(nodePath, HstEvent.EventType.PROP_EVENT, ev.getType()));
         }
     }
-
-    private boolean propertyEventCanBeIgnored(final String propEventPath) {
-        String propName = StringUtils.substringAfterLast(propEventPath, "/");
-        if (StringUtils.equals(HstNodeTypes.GENERAL_PROPERTY_LOCKED_BY, propName) || StringUtils.equals(HstNodeTypes.GENERAL_PROPERTY_LOCKED_ON, propName)) {
-            log.debug("Property event for path '{}' can be ignored as won't affect the hst model", propEventPath);
-            return true;
-        }
-        return false;
-    }
-
 
     @Override
     public void invalidateAll() {
@@ -877,7 +941,9 @@ public class HstManagerImpl implements HstManager {
     private final void invalidateVirtualHosts() {
         synchronized(MUTEX) {
             log.info("In memory hst configuration model is invalidated. It will be reloaded on the next request.");
-            virtualHosts = null;
+            if (state != BuilderState.UNDEFINED) {
+                state = BuilderState.STALE;
+            }
             if (channelManager != null) {
                 channelManager.invalidate();
             }

@@ -1,5 +1,5 @@
 /*
- *  Copyright 2010 Hippo.
+ *  Copyright 2010-2013 Hippo.
  * 
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -32,6 +32,14 @@ public interface HstManager {
      * @return the <code>VirtualHosts</code> 
      */
     VirtualHosts getVirtualHosts() throws RepositoryNotAvailableException;
+
+    /**
+     * When <code>allowStale</code> is <code>true</code> a stale {@link VirtualHosts} might be returned. This might be favoured
+     * over {@link #getVirtualHosts()} when the model is very large and thus might take longer to reload.
+     * @return the <code>VirtualHosts</code> object and possibly a stale version of it when <code>allowStale</code> is
+     * <code>true</code>
+     */
+    VirtualHosts getVirtualHosts(boolean allowStale) throws RepositoryNotAvailableException;
 
     /**
      * @return the HstURLFactory
