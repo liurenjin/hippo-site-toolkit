@@ -49,7 +49,7 @@ public interface HstNodeTypes {
     public final static String NODETYPE_HST_BLUEPRINT = "hst:blueprint";
     public final static String NODETYPE_HST_BLUEPRINTS = "hst:blueprints";
 
-	  public final static String GENERAL_PROPERTY_LOCKED_BY = "hst:lockedby";
+	public final static String GENERAL_PROPERTY_LOCKED_BY = "hst:lockedby";
     public final static String GENERAL_PROPERTY_LOCKED_ON = "hst:lockedon";
     
     public final static String GENERAL_PROPERTY_INHERITS_FROM = "hst:inheritsfrom";
@@ -98,7 +98,7 @@ public interface HstNodeTypes {
     public final static String SITEMAPITEM_PROPERTY_NAMEDPIPELINE = "hst:namedpipeline";
     public final static String SITEMAPITEM_PROPERTY_SITEMAPITEMHANDLERIDS =  "hst:sitemapitemhandlerids";
     public final static String SITEMAPITEM_PROPERTY_EXCLUDEDFORLINKREWRITING = "hst:excludedforlinkrewriting";
-    String SITEMAPITEM_PROPERTY_SCHEME = "hst:scheme";
+    public final static String SITEMAPITEM_PROPERTY_SCHEME = "hst:scheme";
     
     public final static String SITEMENUITEM_PROPERTY_REFERENCESITEMAPITEM =  "hst:referencesitemapitem";
     public final static String SITEMENUITEM_PROPERTY_EXTERNALLINK =  "hst:externallink";
