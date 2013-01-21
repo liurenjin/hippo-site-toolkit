@@ -650,6 +650,7 @@ components/core/src/test/resources/META-INF/hst-assembly/addon/org.example.analy
 components/core/src/test/resources/META-INF/hst-assembly/addon/org.example.failing/base.xml -text
 components/core/src/test/resources/log4j.xml -text
 components/core/src/test/resources/org/hippoecm/hst/cache/ehcache/TestHstCache.xml -text
+components/core/src/test/resources/org/hippoecm/hst/configuration/ConcurrentChannelManagerAndHstManagerLoadTest.xml -text
 components/core/src/test/resources/org/hippoecm/hst/configuration/TestMatchHostAndURL.xml svneol=native#text/plain
 components/core/src/test/resources/org/hippoecm/hst/configuration/TestSharedHstComponentsConfigurationModels.xml -text svneol=unset#text/plain
 components/core/src/test/resources/org/hippoecm/hst/configuration/TestSiteMapItemHandler.xml -text svneol=unset#text/plain
