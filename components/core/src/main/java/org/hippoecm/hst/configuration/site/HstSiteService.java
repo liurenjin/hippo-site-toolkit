@@ -134,10 +134,14 @@ public class HstSiteService implements HstSite {
                     configurationNode = hstManager.getEnhancedConfigurationRootNodes().get(livePath);
                     if (configurationNode != null) {
                         return livePath;
-                    } 
+                    } else {
+                        throw new ServiceException(
+                                "There is no configuration found at preview path '"+path+"' or livepath '"+livePath+"'. " +
+                                        "Cannot load a configuration for it. Cannot load a configuration for it");
+                    }
                 }
                 throw new ServiceException(
-                        "There is no preview configuration available for '"+path+"'. Also it is not ending with the convention -preview. Cannot load a configuration for it");
+                        "There is no configuration found at '"+path+"'. Cannot load a configuration for it. Cannot load a configuration for it");
             }
         } else if (site.getValueProvider().getPath().equals(mount.getPreviewMountPoint())) {
             path = hstManager.getRootPath() + "/hst:configurations/" + site.getValueProvider().getName();
