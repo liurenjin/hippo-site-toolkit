@@ -242,9 +242,9 @@ public class VirtualHostService implements MutableVirtualHost {
                     attachPortMountToHost.portMounts.put(portMount.getPortNumber(), portMount);
                 } catch (ServiceException e) {
                     log.error("Skipping incorrect mount or port mount for mount node '"+mountNode.getValueProvider().getPath()+"'" ,e);
-                    // if we are in fine grained reloading mode, we will try next request a full blown reload (reload all HstNode instances)
-                    // as something went wrong.
-                    if (hstManager.isFineGrainedReloading()) {
+                    // if we are in fine grained reloading mode OR stale configurations are supported, we will try next request a full blown
+                    // reload (reload all HstNode instances) as something went wrong.
+                    if (hstManager.isFineGrainedReloading() || hstManager.isStaleConfigurationSupported()) {
                         hstManager.setFineGrainedReloading(false);
                         hstManager.setFullBlownReloadNeeded(true);
                     }
@@ -261,9 +261,9 @@ public class VirtualHostService implements MutableVirtualHost {
                     attachPortMountToHost.childVirtualHosts.put(childHost.name, childHost);
                 } catch (ServiceException e) {
                     log.error("Skipping incorrect virtual host for node '"+child.getValueProvider().getPath()+"'" ,e);
-                    // if we are in fine grained reloading mode, we will try next request a full blown reload (reload all HstNode instances)
-                    // as something went wrong.
-                    if (hstManager.isFineGrainedReloading()) {
+                    // if we are in fine grained reloading mode OR stale configurations are supported, we will try next request a full blown
+                    // reload (reload all HstNode instances) as something went wrong.
+                    if (hstManager.isFineGrainedReloading() || hstManager.isStaleConfigurationSupported()) {
                         hstManager.setFineGrainedReloading(false);
                         hstManager.setFullBlownReloadNeeded(true);
                     }
@@ -275,9 +275,9 @@ public class VirtualHostService implements MutableVirtualHost {
                 attachPortMountToHost.portMounts.put(portMount.getPortNumber(), portMount);
                 } catch (ServiceException e) {
                     log.error("Skipping incorrect port mount for node '"+child.getValueProvider().getPath()+"'" ,e);
-                    // if we are in fine grained reloading mode, we will try next request a full blown reload (reload all HstNode instances)
-                    // as something went wrong.
-                    if (hstManager.isFineGrainedReloading()) {
+                    // if we are in fine grained reloading mode OR stale configurations are supported, we will try next request a full blown
+                    // reload (reload all HstNode instances) as something went wrong.
+                    if (hstManager.isFineGrainedReloading() || hstManager.isStaleConfigurationSupported()) {
                         hstManager.setFineGrainedReloading(false);
                         hstManager.setFullBlownReloadNeeded(true);
                     }

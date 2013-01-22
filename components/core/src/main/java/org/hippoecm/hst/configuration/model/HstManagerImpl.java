@@ -978,6 +978,10 @@ public class HstManagerImpl implements HstManager {
         return fineGrainedReloading;
     }
 
+    public boolean isStaleConfigurationSupported() {
+        return staleConfigurationSupported;
+    }
+
     public synchronized void setFineGrainedReloading(final boolean fineGrainedReloading) {
         this.fineGrainedReloading = fineGrainedReloading;
     }

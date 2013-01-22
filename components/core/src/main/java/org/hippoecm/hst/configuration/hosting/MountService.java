@@ -552,9 +552,9 @@ public class MountService implements ContextualizableMount, MutableMount {
                     }
                 } catch (ServiceException e) {
                     log.error("Skipping incorrect configured child mount '"+childMount.getValueProvider().getName()+"' for '"+childMount.getParent()+"'", e);
-                    // if we are in fine grained reloading mode, we will try next request a full blown reload (reload all HstNode instances)
-                    // as something went wrong.
-                    if (hstManager.isFineGrainedReloading()) {
+                    // if we are in fine grained reloading mode OR stale configurations are supported, we will try next request a full blown
+                    // reload (reload all HstNode instances) as something went wrong.
+                    if (hstManager.isFineGrainedReloading() || hstManager.isStaleConfigurationSupported()) {
                         hstManager.setFineGrainedReloading(false);
                         hstManager.setFullBlownReloadNeeded(true);
                     }
