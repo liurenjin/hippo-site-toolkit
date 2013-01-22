@@ -69,12 +69,14 @@ public class HstManagerImpl implements HstManager {
     private Repository repository;
     private Credentials credentials;
 
+    private volatile VirtualHosts prevVirtualHosts;
     private volatile VirtualHosts virtualHosts;
     private volatile BuilderState state = BuilderState.UNDEFINED;
 
     enum BuilderState {
         UNDEFINED,
         UP2DATE,
+        FAILED,
         STALE,
         SCHEDULED,
         RUNNING,
@@ -305,7 +307,7 @@ public class HstManagerImpl implements HstManager {
         }
         if (allowStale && staleConfigurationSupported) {
             asynchronousBuild();
-            return virtualHosts;
+            return prevVirtualHosts;
         }
         return synchronousBuild();
     }
@@ -330,11 +332,14 @@ public class HstManagerImpl implements HstManager {
                         throw new IllegalStateException("The HST configuration model could not be loaded. Cannot process request");
                     }
                     this.channelManager.load(virtualHosts);
-                } finally {
-                    // whether there were exceptions or not, the model is up2date (though the virtualHosts object might
-                    // be from a previous run in case it could not be loaded)
                     state = BuilderState.UP2DATE;
+                } finally {
+                    if (state == BuilderState.RUNNING) {
+                        log.warn("Model failed to built. Serve old virtualHosts model.");
+                        state = BuilderState.FAILED;
+                    }
                 }
+
                 if (fullBlownReloadNeeded) {
                     log.warn("Due to incorrect loading of the HST model during previous request, during next request a full blown " +
                             "reload will be done. If the incorrect loading was the result of broken hst configuration, please fix this because " +
@@ -342,6 +347,13 @@ public class HstManagerImpl implements HstManager {
                     fullBlownReloadNeeded = false;
                     fineGrainedReloading = false;
                     invalidateAll();
+                    state = BuilderState.FAILED;
+                }
+                if (state == BuilderState.UP2DATE) {
+                    prevVirtualHosts = virtualHosts;
+                }
+                if (state == BuilderState.FAILED) {
+                    return prevVirtualHosts;
                 }
             }
         }
