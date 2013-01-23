@@ -526,17 +526,9 @@ public class MountService implements ContextualizableMount, MutableMount {
                 previewCanonicalContentPath = canonicalContentPath;
                 previewContentPath = contentPath;
             } else {
-                try {
-                    previewHstSite = new HstSiteService(previewHstSiteNodeForMount, this, hstManager);
-                    previewCanonicalContentPath = previewHstSiteNodeForMount.getCanonicalContentPath();;
-                    previewContentPath = previewHstSiteNodeForMount.getContentPath();;
-                } catch (ServiceException e) {
-                   if(log.isDebugEnabled()) {
-                       log.warn("Cannot create a preview version for mount '"+mount.getValueProvider().getPath()+"'", e);
-                   } else {
-                       log.warn("Cannot create a preview version for mount '{}' : '{}'", mount.getValueProvider().getPath(), e.toString());
-                   }
-                }
+                previewHstSite = new HstSiteService(previewHstSiteNodeForMount, this, hstManager);
+                previewCanonicalContentPath = previewHstSiteNodeForMount.getCanonicalContentPath();;
+                previewContentPath = previewHstSiteNodeForMount.getContentPath();
             }
         }
 
@@ -552,12 +544,8 @@ public class MountService implements ContextualizableMount, MutableMount {
                     }
                 } catch (ServiceException e) {
                     log.error("Skipping incorrect configured child mount '"+childMount.getValueProvider().getName()+"' for '"+childMount.getParent()+"'", e);
-                    // if we are in fine grained reloading mode OR stale configurations are supported, we will try next request a full blown
-                    // reload (reload all HstNode instances) as something went wrong.
-                    if (hstManager.isFineGrainedReloading() || hstManager.isStaleConfigurationSupported()) {
-                        hstManager.setFineGrainedReloading(false);
-                        hstManager.setFullBlownReloadNeeded(true);
-                    }
+                    // in case of an error, we always perform a fullblown reload
+                    hstManager.setFullBlownReloadNeeded(true);
                 }
             }
         }

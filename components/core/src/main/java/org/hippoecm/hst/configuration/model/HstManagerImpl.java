@@ -22,17 +22,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.jcr.Credentials;
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
 import javax.jcr.PathNotFoundException;
 import javax.jcr.Repository;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
+import javax.jcr.SimpleCredentials;
 import javax.jcr.observation.Event;
 import javax.jcr.observation.EventIterator;
 
-import org.apache.commons.lang.StringUtils;
 import org.hippoecm.hst.configuration.HstNodeTypes;
 import org.hippoecm.hst.configuration.StringPool;
 import org.hippoecm.hst.configuration.channel.MutableChannelManager;
@@ -67,11 +66,12 @@ public class HstManagerImpl implements HstManager {
     public static final Object MUTEX = new Object();
     
     private Repository repository;
-    private Credentials credentials;
 
     private volatile VirtualHosts prevVirtualHosts;
     private volatile VirtualHosts virtualHosts;
     private volatile BuilderState state = BuilderState.UNDEFINED;
+    private String username;
+    private String password;
 
     enum BuilderState {
         UNDEFINED,
@@ -81,6 +81,8 @@ public class HstManagerImpl implements HstManager {
         SCHEDULED,
         RUNNING,
     }
+
+    private volatile int consecutiveBuildFailCounter = 0;
 
     private boolean staleConfigurationSupported = false;
 
@@ -160,10 +162,6 @@ public class HstManagerImpl implements HstManager {
     // this member is only accessed in synchronized blocks so does not need to be volatile
     private boolean clearAll = false;
 
-    // flag to indicate that fineGrainedReloading is used.
-    // this member is only accessed in synchronized blocks so does not need to be volatile
-    private boolean fineGrainedReloading = false;
-
     // flag to indicate that a full blown reload is needed
     // this member is only accessed in synchronized blocks so does not need to be volatile
     private boolean fullBlownReloadNeeded = false;
@@ -174,9 +172,13 @@ public class HstManagerImpl implements HstManager {
     public synchronized void setRepository(Repository repository) {
         this.repository = repository;
     }
-    
-    public synchronized void setCredentials(Credentials credentials) {
-        this.credentials = credentials;
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
     
     public synchronized void setRootPath(String rootPath) {
@@ -280,9 +282,15 @@ public class HstManagerImpl implements HstManager {
                 @Override
                 public void run() {
                     try {
+                        long dontSweatDelayInCaseOfConsecutiveFailuers = computeReloadDelay(consecutiveBuildFailCounter);
+                        if (dontSweatDelayInCaseOfConsecutiveFailuers > 0) {
+                            Thread.sleep(dontSweatDelayInCaseOfConsecutiveFailuers);
+                        }
                         synchronousBuild();
                     } catch (ContainerException e) {
                         log.warn("Exception during building virtualhosts model. ", e);
+                    } catch (InterruptedException e) {
+                        log.error("InterruptedException ", e);
                     }
                 }
             });
@@ -323,6 +331,7 @@ public class HstManagerImpl implements HstManager {
         if (state != BuilderState.UP2DATE) {
             synchronized(MUTEX) {
                 if (state == BuilderState.UP2DATE) {
+                    consecutiveBuildFailCounter = 0;
                     return virtualHosts;
                 }
                 try {
@@ -345,7 +354,6 @@ public class HstManagerImpl implements HstManager {
                             "reload will be done. If the incorrect loading was the result of broken hst configuration, please fix this because " +
                             "it is expensive to do a full blown reload.");
                     fullBlownReloadNeeded = false;
-                    fineGrainedReloading = false;
                     invalidateAll();
                     state = BuilderState.FAILED;
                 }
@@ -353,11 +361,30 @@ public class HstManagerImpl implements HstManager {
                     prevVirtualHosts = virtualHosts;
                 }
                 if (state == BuilderState.FAILED) {
+                    consecutiveBuildFailCounter++;
+                    if (consecutiveBuildFailCounter > 1) {
+                        log.warn("Reload of model failed for the '{}' time in a row. Next reload will be delayed for '{}' ms to avoid congestion.",
+                                consecutiveBuildFailCounter, computeReloadDelay(consecutiveBuildFailCounter));
+                    }
                     return prevVirtualHosts;
                 }
+
+                consecutiveBuildFailCounter = 0;
             }
         }
         return virtualHosts;
+    }
+
+    private long computeReloadDelay(final int consecutiveBuildFailCounter) {
+        switch (consecutiveBuildFailCounter) {
+            case 0 : return 0L;
+            case 1 : return 0L;
+            case 2 : return 100L;
+            case 3 : return 1000L;
+            case 4 : return 10000L;
+            case 5 : return 30000L;
+            default : return 60000L;
+        }
     }
 
     private void buildSites() throws RepositoryNotAvailableException {
@@ -375,15 +402,8 @@ public class HstManagerImpl implements HstManager {
         Session session = null;
            
         try {
-            if (this.credentials == null) {
-                session = this.repository.login();
-            } else {
-                session = this.repository.login(this.credentials);
-            }
-            
-            // session can come from a pooled event based pool so always refresh before building configuration:
-            session.refresh(false);
-            
+            session = this.repository.login(new SimpleCredentials(username, password.toCharArray()));
+
             // get all the root hst virtualhosts node: there is only allowed to be exactly ONE
             {   
                 if(virtualHostsNode == null) {
@@ -391,8 +411,6 @@ public class HstManagerImpl implements HstManager {
                     virtualHostsNode = new HstNodeImpl(virtualHostsJcrNode, null, true);
                 } else {
                     // do finegrained reloading, removing and loading of previously loaded nodes that changed.
-                    
-                    fineGrainedReloading = true;
 
                     Set<String> loadNodes = new HashSet<String>();
                     int pathLengthHstHostNode = (rootPath + "/hst:hosts").length();
@@ -736,7 +754,9 @@ public class HstManagerImpl implements HstManager {
                 JCRValueProvider provider = new JCRValueProviderImpl(session.getNode(nodePath), false);
                 node.setJCRValueProvider(provider);
             } else {
-                log.error("Unable to reload an HstNode as it has been deleted. Should not be possible at this place: \"{}\"", nodePath);
+                fullBlownReloadNeeded = true;
+                log.warn("Unable to reload an HstNode as it has been deleted. Model might not be loaded correctly. Full blown " +
+                        "reload will be done on next request: \"{}\"", nodePath);
             }
         }
 
@@ -972,18 +992,6 @@ public class HstManagerImpl implements HstManager {
     
     public HstNode getCommonCatalog(){
         return commonCatalog;
-    }
-
-    public synchronized boolean isFineGrainedReloading() {
-        return fineGrainedReloading;
-    }
-
-    public boolean isStaleConfigurationSupported() {
-        return staleConfigurationSupported;
-    }
-
-    public synchronized void setFineGrainedReloading(final boolean fineGrainedReloading) {
-        this.fineGrainedReloading = fineGrainedReloading;
     }
 
     public synchronized void setFullBlownReloadNeeded(final boolean fullBlownReloadNeeded) {
