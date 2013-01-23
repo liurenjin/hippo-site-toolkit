@@ -260,6 +260,7 @@ public class HstManagerImpl implements HstManager {
     }
 
     public void setStaleConfigurationSupported(boolean staleConfigurationSupported) {
+        log.info("Is stale configuraion for HST model supported : '{}'", staleConfigurationSupported);
         this.staleConfigurationSupported = staleConfigurationSupported;
     }
 
@@ -278,6 +279,7 @@ public class HstManagerImpl implements HstManager {
                 return;
             }
             state = BuilderState.SCHEDULED;
+            log.info("Asynchronous hst model build will be scheduled");
             Thread scheduled = new Thread(new Runnable() {
                 @Override
                 public void run() {
