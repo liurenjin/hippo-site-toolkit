@@ -36,7 +36,7 @@ import org.hippoecm.hst.core.component.HstRequest;
 import org.hippoecm.hst.core.container.ContainerConstants;
 import org.hippoecm.hst.core.request.HstRequestContext;
 import org.hippoecm.hst.util.HstRequestUtils;
-import org.hippoecm.hst.utils.EncodingUtils;
+import org.hippoecm.hst.util.EncodingUtils;
 import org.hippoecm.repository.api.HippoNode;
 import org.hippoecm.repository.api.HippoNodeType;
 import org.slf4j.Logger;
