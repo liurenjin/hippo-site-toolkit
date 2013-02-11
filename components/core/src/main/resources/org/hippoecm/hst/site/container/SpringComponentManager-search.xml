@@ -32,6 +32,7 @@
     <bean id="org.hippoecm.hst.core.search.HstQueryManagerFactory" 
           class="org.hippoecm.hst.core.search.HstQueryManagerFactoryImpl">
           <property name="hstCtxWhereClauseComputer" ref="org.hippoecm.hst.content.beans.query.HstCtxWhereClauseComputer" />
+         <property name="defaultQueryDateRangeResolution" value="${default.query.date.range.resolution}"/>
     </bean>
     
 </beans>

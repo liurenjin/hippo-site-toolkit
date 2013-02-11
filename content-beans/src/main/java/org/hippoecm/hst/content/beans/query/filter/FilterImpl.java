@@ -1,5 +1,5 @@
 /*
- *  Copyright 2008 Hippo.
+ *  Copyright 2008-2013 Hippo.
  * 
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -29,8 +29,9 @@ import org.hippoecm.hst.content.beans.query.exceptions.FilterException;
 import org.hippoecm.hst.site.HstServices;
 import org.hippoecm.hst.util.ForkedISO8601;
 import org.hippoecm.hst.util.SearchInputParsingUtils;
+import org.hippoecm.repository.util.DateTools;
 
-public class FilterImpl implements Filter{
+public class FilterImpl implements Filter {
 
     private static final String FQCN = FilterImpl.class.getName();
     
@@ -39,11 +40,11 @@ public class FilterImpl implements Filter{
     private boolean negated = false;
     
     private Session session;
-    
+    private final DateTools.Resolution defaultResolution;
+
     /**
      * AND and OR filters are evaluated at the end when #getJcrExpression is called.
      * This allows us to change those filters even after those are added to filter
-     * @see #processChildFilters()
      * @see #getJcrExpression()
      */
     private List<FilterTypeWrapper> childFilters = new ArrayList<FilterTypeWrapper>();
@@ -59,13 +60,32 @@ public class FilterImpl implements Filter{
      */
     @Deprecated
     public FilterImpl(){
+        this(null,null);
+        HstServices.getLogger(FQCN, FQCN).warn("Use HstQuery#createFilter() or FilterImpl(Session, Resolution)  instead of this deprecated constructor. Fast Date Range " +
+                 "Searches are not supported with this constructor");
     }
-    
-    public FilterImpl(Session session ){
-        // note,the session can be null as long as HSTTWO-1600 is not done
+
+    /**
+     * @deprecated since 2.24.13 / 2.26.01 : Use {@link #FilterImpl(javax.jcr.Session, org.hippoecm.hst.content.beans.query.filter.Filter.Resolution)}
+     * instead
+     */
+    @Deprecated
+    public FilterImpl(Session session){
+        this(session, Resolution.EXPENSIVE_PRECISE);
+        HstServices.getLogger(FQCN, FQCN).warn("Use HstQuery#createFilter() instead of this deprecated constructor. Fast Date Range " +
+                "Searches are not supported with this constructor");
+    }
+
+    public FilterImpl(final Session session, final Resolution resolution) {
         this.session = session;
+        if (resolution == null) {
+            defaultResolution = DateTools.Resolution.MILLISECOND;
+        } else {
+            defaultResolution = getDateToolsResolution(resolution);
+        }
     }
-    
+
+
 
     public Filter negate(){
         this.negated = !negated;
@@ -117,16 +137,31 @@ public class FilterImpl implements Filter{
     public void addNotContains(String scope, String fullTextSearch) throws FilterException{
         addContains(scope, fullTextSearch, true);
     }
-   
+
     private void addBetween(String fieldAttributeName, Object value1, Object value2, boolean isNot) throws FilterException {
         if(value1 == null || value2 == null) {
             throw new FilterException("Not allowed to search on 'null'.");
         }
+        if (session != null) {
+            if ((value1 instanceof Calendar && value2 instanceof Calendar)) {
+                addBetween(fieldAttributeName, (Calendar)value1, (Calendar)value2, defaultResolution, isNot);
+                return;
+            }
+            if ((value1 instanceof Date && value2 instanceof Date)) {
+                Calendar start = new GregorianCalendar();
+                start.setTime((Date)value1);
+                Calendar end = new GregorianCalendar();
+                end.setTime((Date)value2);
+                addBetween(fieldAttributeName, start, end, defaultResolution, isNot);
+                return;
+            }
+        }
+
         fieldAttributeName = toXPathProperty(fieldAttributeName, true, "addBetween");
         String jcrExpression = "( " + fieldAttributeName + " >= "
-        + this.getStringValue(value1)
-        + " and " + fieldAttributeName + " <= "
-        + this.getStringValue(value2) + ")";
+                + this.getStringValue(value1)
+                + " and " + fieldAttributeName + " <= "
+                + this.getStringValue(value2) + ")";
 
         if(isNot) {
             addNotExpression(jcrExpression);
@@ -135,73 +170,159 @@ public class FilterImpl implements Filter{
         }
     }
 
+    private void addBetween(final String fieldAttributeName,final Calendar start,final Calendar end, final DateTools.Resolution resolution, final boolean isNot) throws FilterException {
+        if (session == null) {
+            // fallback to non efficient date range queries
+            addBetween(fieldAttributeName,start,end, isNot);
+            return;
+        }
+        if(start == null || end == null) {
+            throw new FilterException("Not allowed to search on 'null'.");
+        }
+        final String jcrExpression;
+        if (resolution == DateTools.Resolution.MILLISECOND) {
+            // EXACT RANGE
+            final String xpathProperty= toXPathProperty(fieldAttributeName, true, "addBetween");
+            jcrExpression = "( " + xpathProperty + " >= "
+                    + DateTools.createXPathConstraint(session, start)
+                    + " and " + xpathProperty + " <= "
+                    + DateTools.createXPathConstraint(session, end) + ")";
+        } else {
+            final String xpathProperty= toXPathProperty(fieldAttributeName, true, "addBetween");
+            final String xpathPropertyForResolution = DateTools.getPropertyForResolution(xpathProperty, resolution);
+            jcrExpression = "( " + xpathPropertyForResolution + " >= "
+                    + DateTools.createXPathConstraint(session, start, resolution)
+                    + " and " + xpathPropertyForResolution + " <= "
+                    + DateTools.createXPathConstraint(session, end, resolution) + ")";
+        }
+        if(isNot) {
+            addNotExpression(jcrExpression);
+        } else {
+            addExpression(jcrExpression);
+        }
+    }
+
+
     public void addBetween(String fieldAttributeName, Object value1, Object value2) throws FilterException {
         addBetween(fieldAttributeName, value1, value2,false);
     }
-    
+
+    @Override
+    public void addBetween(final String fieldAttributeName, final Calendar start, final Calendar end, final Resolution resolution) throws FilterException {
+        addBetween(fieldAttributeName, start, end, getDateToolsResolution(resolution), false);
+    }
+
     public void addNotBetween(String fieldAttributeName, Object value1, Object value2) throws FilterException {
         addBetween(fieldAttributeName, value1, value2,true);
     }
 
+    @Override
+    public void addNotBetween(final String fieldAttributeName, final Calendar start, final Calendar end, final Resolution resolution) throws FilterException {
+        addBetween(fieldAttributeName, start, end, getDateToolsResolution(resolution), true);
+    }
+
+    private void addConstraintWithOperator(final String fieldAttributeName,final Object value, final String operator, boolean isRangeConstraint) throws FilterException{
+        if(value == null ) {
+            throw new FilterException("Not allowed to search on 'null'.");
+        }
+        if (isRangeConstraint && session != null) {
+            // only for range queries we used defaultResolution, not for equals/notEquals
+            if (value instanceof Calendar) {
+                addConstraintWithOperator(fieldAttributeName, (Calendar)value, defaultResolution, operator);
+                return;
+            }
+            if (value instanceof Date) {
+                Calendar cal = new GregorianCalendar();
+                cal.setTime((Date)value);
+                addConstraintWithOperator(fieldAttributeName, cal, defaultResolution, operator);
+                return;
+            }
+        }
+        final String xpathProperty = toXPathProperty(fieldAttributeName, true, "operator : " + operator);
+        final String jcrExpression = xpathProperty + operator + getStringValue(value);
+        addExpression(jcrExpression);
+    }
+
+    private void addConstraintWithOperator(final String fieldAttributeName, final Calendar calendar, final DateTools.Resolution resolution, final String operator) throws FilterException{
+        if (session == null) {
+            // fallback to non efficient date range queries
+            addConstraintWithOperator(fieldAttributeName, calendar, operator, false);
+            return;
+        }
+        if(calendar == null ) {
+            throw new FilterException("Not allowed to search on 'null'.");
+        }
+
+        final String jcrExpression;
+        if (resolution == DateTools.Resolution.MILLISECOND) {
+            final String xpathProperty = toXPathProperty(fieldAttributeName, true, "equal");
+            jcrExpression = xpathProperty + operator + DateTools.createXPathConstraint(session, calendar);
+        } else {
+            final String xpathProperty = toXPathProperty(fieldAttributeName, true, "equal");
+            final String xpathPropertyForResolution = DateTools.getPropertyForResolution(xpathProperty, resolution);
+            jcrExpression = xpathPropertyForResolution + operator + DateTools.createXPathConstraint(session, calendar, resolution);
+        }
+        addExpression(jcrExpression);
+    }
+
+    @Override
     public void addEqualTo(String fieldAttributeName, Object value) throws FilterException{
-        if(value == null ) {
-            throw new FilterException("Not allowed to search on 'null'.");
-        }
-        fieldAttributeName = toXPathProperty(fieldAttributeName, true, "addEqualTo");
-        String jcrExpression = fieldAttributeName + " = "
-        + this.getStringValue(value);
-        addExpression(jcrExpression);
+        addConstraintWithOperator(fieldAttributeName, value, " = ", false);
     }
 
+    @Override
+    public void addEqualTo(final String fieldAttributeName, final Calendar calendar, final Resolution resolution) throws FilterException {
+        addConstraintWithOperator(fieldAttributeName, calendar, getDateToolsResolution(resolution), " = ");
+    }
+
+    @Override
     public void addNotEqualTo(String fieldAttributeName, Object value) throws FilterException{
-        if(value == null ) {
-            throw new FilterException("Not allowed to search on 'null'.");
-        }
-        fieldAttributeName = toXPathProperty(fieldAttributeName, true, "addNotEqualTo");
-        String jcrExpression = fieldAttributeName + " != "
-        + this.getStringValue(value);
-        addExpression(jcrExpression);
+        addConstraintWithOperator(fieldAttributeName, value, " != ", false);
     }
-    
+
+    @Override
+    public void addNotEqualTo(final String fieldAttributeName, final Calendar calendar, final Resolution resolution) throws FilterException {
+        addConstraintWithOperator(fieldAttributeName, calendar, getDateToolsResolution(resolution), " != ");
+    }
+
+    @Override
     public void addGreaterOrEqualThan(String fieldAttributeName, Object value) throws FilterException{
-        if(value == null ) {
-            throw new FilterException("Not allowed to search on 'null'.");
-        }
-        fieldAttributeName = toXPathProperty(fieldAttributeName, true, "addGreaterOrEqualThan");
-        String jcrExpression = fieldAttributeName + " >= "
-        + this.getStringValue(value);
-        addExpression(jcrExpression);
+        addConstraintWithOperator(fieldAttributeName, value, " >= ", true);
     }
 
+    @Override
+    public void addGreaterOrEqualThan(final String fieldAttributeName, final Calendar calendar, final Resolution resolution) throws FilterException {
+        addConstraintWithOperator(fieldAttributeName, calendar, getDateToolsResolution(resolution), " >= ");
+    }
+
+    @Override
     public void addGreaterThan(String fieldAttributeName, Object value) throws FilterException{
-        if(value == null ) {
-            throw new FilterException("Not allowed to search on 'null'.");
-        }
-        fieldAttributeName = toXPathProperty(fieldAttributeName, true, "addGreaterThan");
-        String jcrExpression =  fieldAttributeName + " > "
-        + this.getStringValue(value);
-        addExpression(jcrExpression);
-    }
-    
-    public void addLessOrEqualThan(String fieldAttributeName, Object value) throws FilterException{
-        if(value == null ) {
-            throw new FilterException("Not allowed to search on 'null'.");
-        }
-        fieldAttributeName = toXPathProperty(fieldAttributeName, true, "addLessOrEqualThan");
-        String jcrExpression = fieldAttributeName + " <= "
-        + this.getStringValue(value);
-        
-        addExpression(jcrExpression);
+        addConstraintWithOperator(fieldAttributeName, value, " > ", true);
     }
 
+    @Override
+    public void addGreaterThan(final String fieldAttributeName, final Calendar calendar, final Resolution resolution) throws FilterException {
+        addConstraintWithOperator(fieldAttributeName, calendar, getDateToolsResolution(resolution), " > ");
+    }
+
+    @Override
+    public void addLessOrEqualThan(String fieldAttributeName, Object value) throws FilterException{
+        addConstraintWithOperator(fieldAttributeName, value, " <= ", true);
+    }
+
+    @Override
+    public void addLessOrEqualThan(final String fieldAttributeName, final Calendar calendar, final Resolution resolution) throws FilterException {
+        addConstraintWithOperator(fieldAttributeName, calendar, getDateToolsResolution(resolution), " <= ");
+    }
+
+    @Override
     public void addLessThan(String fieldAttributeName, Object value) throws FilterException{
-        if(value == null ) {
-            throw new FilterException("Not allowed to search on 'null'.");
-        }
-        fieldAttributeName = toXPathProperty(fieldAttributeName, true, "addLessThan");
-        String jcrExpression = fieldAttributeName + " < "
-        + this.getStringValue(value);
-        addExpression(jcrExpression);
+        addConstraintWithOperator(fieldAttributeName, value, " < ", true);
+    }
+
+    @Override
+    public void addLessThan(final String fieldAttributeName, final Calendar calendar, final Resolution resolution) throws FilterException {
+        addConstraintWithOperator(fieldAttributeName, calendar, getDateToolsResolution(resolution), " < ");
     }
 
     private void addLike(String fieldAttributeName, Object value, boolean isNot) throws FilterException{
@@ -221,32 +342,37 @@ public class FilterImpl implements Filter{
         }
     }
 
+    @Override
     public void addLike(String fieldAttributeName, Object value) throws FilterException{
         
         addLike(fieldAttributeName, value, false);
     }
-    
+
+    @Override
     public void addNotLike(String fieldAttributeName, Object value) throws FilterException{
         addLike(fieldAttributeName, value, true);
     }
-    
 
+    @Override
     public void addNotNull(String fieldAttributeName) throws FilterException{
         fieldAttributeName = toXPathProperty(fieldAttributeName, true, "addNotNull");
         String jcrExpression = fieldAttributeName;
         addExpression(jcrExpression);
     }
-    
+
+    @Override
     public void addIsNull(String fieldAttributeName) throws FilterException{
         fieldAttributeName = toXPathProperty(fieldAttributeName, true, "addIsNull");
         String jcrExpression = "not(" + fieldAttributeName + ")";
         addExpression(jcrExpression);
     }
 
+    @Override
     public void addJCRExpression(String jcrExpression) {
         addExpression(jcrExpression);
     }
 
+    @Override
     public Filter addOrFilter(BaseFilter filter) {
         if(firstAddedType == null) {
             firstAddedType = ChildFilterType.OR;
@@ -268,6 +394,7 @@ public class FilterImpl implements Filter{
         }
     }
 
+    @Override
     public Filter addAndFilter(BaseFilter filter) {
        if(firstAddedType == null) {
            firstAddedType = ChildFilterType.AND;
@@ -307,6 +434,7 @@ public class FilterImpl implements Filter{
         }
     }
 
+    @Override
     public String getJcrExpression() {
         // if we have AND or OR filters, we'll always have expression:
         
@@ -369,7 +497,7 @@ public class FilterImpl implements Filter{
         } else if(value instanceof Long || value instanceof Double) {
             return value.toString();
         } else if(value instanceof Calendar){
-            return getCalendarWhereXPath((Calendar)value);
+            return getCalendarWhereXPath((Calendar) value);
         } else if(value instanceof Date){
             Calendar cal = new GregorianCalendar();
             cal.setTime((Date)value);
@@ -474,4 +602,18 @@ public class FilterImpl implements Filter{
         }
     }
 
+    private DateTools.Resolution getDateToolsResolution(final Resolution resolution) {
+        if (resolution == null) {
+            HstServices.getLogger(FQCN, FQCN).warn("Resolution is null, return default exact expensive resolution on milliseconds");
+            return DateTools.Resolution.MILLISECOND;
+        }
+        switch (resolution) {
+            case YEAR: return DateTools.Resolution.YEAR;
+            case MONTH: return DateTools.Resolution.MONTH;
+            case DAY: return DateTools.Resolution.DAY;
+            case HOUR: return DateTools.Resolution.HOUR;
+            case EXPENSIVE_PRECISE: return DateTools.Resolution.MILLISECOND;
+        }
+        throw new IllegalStateException("Resolution must be of supported type");
+    }
 }

@@ -21,6 +21,7 @@ import org.hippoecm.hst.content.beans.manager.ObjectConverter;
 import org.hippoecm.hst.content.beans.query.HstCtxWhereClauseComputerImpl;
 import org.hippoecm.hst.content.beans.query.HstQueryManager;
 import org.hippoecm.hst.content.beans.query.HstQueryManagerImpl;
+import org.hippoecm.hst.content.beans.query.filter.Filter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,7 +30,13 @@ public class HstQueryManagerFactoryImpl implements HstQueryManagerFactory{
     private static final Logger log = LoggerFactory.getLogger(HstQueryManagerFactoryImpl.class);
     
     private volatile org.hippoecm.hst.content.beans.query.HstCtxWhereClauseComputer hstCtxWhereClauseComputer;
-    
+
+    private String defaultQueryDateRangeResolution;
+
+    public void setDefaultQueryDateRangeResolution(String defaultQueryDateRangeResolution) {
+        this.defaultQueryDateRangeResolution = defaultQueryDateRangeResolution;
+    }
+
     public org.hippoecm.hst.content.beans.query.HstCtxWhereClauseComputer getHstCtxWhereClauseComputer() {
         if(this.hstCtxWhereClauseComputer == null) {
             // if hstCtxWhereClauseComputer not set through dependency injection, we use the default impl
@@ -55,8 +62,12 @@ public class HstQueryManagerFactoryImpl implements HstQueryManagerFactory{
 
     @Override
     public HstQueryManager createQueryManager(Session session, ObjectConverter objectConverter) {
-        HstQueryManager mngr = new HstQueryManagerImpl(session, objectConverter, this.getHstCtxWhereClauseComputer());
+        Filter.Resolution resolution = Filter.Resolution.fromString(defaultQueryDateRangeResolution);
+        log.info("Default query date range resolution is : {}", resolution);
+        HstQueryManager mngr = new HstQueryManagerImpl(session, objectConverter, this.getHstCtxWhereClauseComputer(), resolution);
         return mngr;
     }
+
+
 
 }
