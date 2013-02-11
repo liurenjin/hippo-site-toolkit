@@ -284,9 +284,11 @@ public class HstManagerImpl implements HstManager {
                 @Override
                 public void run() {
                     try {
-                        long dontSweatDelayInCaseOfConsecutiveFailuers = computeReloadDelay(consecutiveBuildFailCounter);
-                        if (dontSweatDelayInCaseOfConsecutiveFailuers > 0) {
-                            Thread.sleep(dontSweatDelayInCaseOfConsecutiveFailuers);
+                        long reloadDelay = computeReloadDelay(consecutiveBuildFailCounter);
+                        if (reloadDelay > 0) {
+                            log.warn("Since model did not load correctly for '{}' times in a row, we schedule a background reload in '{}' ms.",
+                                    String.valueOf(consecutiveBuildFailCounter), String.valueOf(computeReloadDelay(consecutiveBuildFailCounter)));
+                            Thread.sleep(reloadDelay);
                         }
                         synchronousBuild();
                     } catch (ContainerException e) {
@@ -304,6 +306,7 @@ public class HstManagerImpl implements HstManager {
                 }
             });
             scheduled.start();
+            return;
         }
     }
 
@@ -319,7 +322,15 @@ public class HstManagerImpl implements HstManager {
             asynchronousBuild();
             return prevVirtualHosts;
         }
-        return synchronousBuild();
+        synchronized(MUTEX) {
+            // if synchronousBuild fails, consecutiveBuildFailCounter must be increased by one before another thread can try it
+            if (consecutiveBuildFailCounter > 1 && !(state == BuilderState.STALE)) {
+                // if the state = STALE due to a jcr event at #invalidate then we still want a synchronous build.
+                asynchronousBuild();
+                return prevVirtualHosts;
+            }
+            return synchronousBuild();
+        }
     }
 
     @Override
@@ -368,6 +379,10 @@ public class HstManagerImpl implements HstManager {
                         log.warn("Reload of model failed for the '{}' time in a row. Next reload will be delayed for '{}' ms to avoid congestion.",
                                 consecutiveBuildFailCounter, computeReloadDelay(consecutiveBuildFailCounter));
                     }
+                    if (prevVirtualHosts == null) {
+                        // model has not yet been loaded correctly before, hence, still set previous model to the currently loaded one
+                        prevVirtualHosts = virtualHosts;
+                    }
                     return prevVirtualHosts;
                 }
 
@@ -379,13 +394,15 @@ public class HstManagerImpl implements HstManager {
 
     private long computeReloadDelay(final int consecutiveBuildFailCounter) {
         switch (consecutiveBuildFailCounter) {
-            case 0 : return 0L;
-            case 1 : return 0L;
-            case 2 : return 100L;
-            case 3 : return 1000L;
-            case 4 : return 10000L;
-            case 5 : return 30000L;
-            default : return 60000L;
+            case 0 : return      0L;
+            case 1 : return      0L;
+            case 2 : return    100L;
+            case 3 : return   1000L;
+            case 4 : return  10000L;
+            case 5 : return  30000L;
+            case 6 : return  60000L;
+            case 7 : return 300000L;
+            default: return 600000L;
         }
     }
 
