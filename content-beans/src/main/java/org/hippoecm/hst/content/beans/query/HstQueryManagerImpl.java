@@ -23,11 +23,11 @@ import javax.jcr.Session;
 
 import org.hippoecm.hst.content.beans.manager.ObjectConverter;
 import org.hippoecm.hst.content.beans.query.exceptions.QueryException;
-import org.hippoecm.hst.content.beans.query.filter.Filter;
 import org.hippoecm.hst.content.beans.query.filter.IsNodeTypeFilter;
 import org.hippoecm.hst.content.beans.query.filter.NodeTypeFilter;
 import org.hippoecm.hst.content.beans.query.filter.PrimaryNodeTypeFilterImpl;
 import org.hippoecm.hst.content.beans.standard.HippoBean;
+import org.hippoecm.repository.util.DateTools;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,7 +39,7 @@ public class HstQueryManagerImpl implements HstQueryManager{
     private ObjectConverter objectConverter;
     private HstCtxWhereClauseComputer hstCtxWhereClauseComputer;
     private Session session;
-    private final Filter.Resolution defaultResolution;
+    private final DateTools.Resolution defaultResolution;
 
     /**
      * 
@@ -49,18 +49,18 @@ public class HstQueryManagerImpl implements HstQueryManager{
      */
     @Deprecated
     public HstQueryManagerImpl(ObjectConverter objectConverter, HstCtxWhereClauseComputer hstCtxWhereClauseComputer) {
-        this(null, objectConverter, hstCtxWhereClauseComputer, Filter.Resolution.EXPENSIVE_PRECISE);
+        this(null, objectConverter, hstCtxWhereClauseComputer, DateTools.Resolution.MILLISECOND);
         log.warn("Using deprecated HstQueryManagerImpl constructor. No Filter.Resolution is specified. Use default" +
                 " Filter.Resolution.EXPENSIVE_PRECISE");
     }
 
     /**
-     * @deprecated since 2.24.13  Use {@link #HstQueryManagerImpl(Session, ObjectConverter, HstCtxWhereClauseComputer, Filter.Resolution)}
+     * @deprecated since 2.24.13  Use {@link #HstQueryManagerImpl(Session, ObjectConverter, HstCtxWhereClauseComputer, DateTools.Resolution)}
      * instead
      */
     @Deprecated
     public HstQueryManagerImpl(Session session, ObjectConverter objectConverter, HstCtxWhereClauseComputer hstCtxWhereClauseComputer) {
-        this(session, objectConverter, hstCtxWhereClauseComputer, Filter.Resolution.EXPENSIVE_PRECISE);
+        this(session, objectConverter, hstCtxWhereClauseComputer, DateTools.Resolution.MILLISECOND);
         log.warn("Using deprecated HstQueryManagerImpl constructor. No Filter.Resolution is specified. Use default" +
                 " Filter.Resolution.EXPENSIVE_PRECISE");
     }
@@ -68,7 +68,7 @@ public class HstQueryManagerImpl implements HstQueryManager{
     public HstQueryManagerImpl(final Session session,
                                final ObjectConverter objectConverter,
                                final HstCtxWhereClauseComputer hstCtxWhereClauseComputer,
-                               final Filter.Resolution resolution) {
+                               final DateTools.Resolution resolution) {
         this.session = session;
         this.objectConverter = objectConverter;
         this.hstCtxWhereClauseComputer = hstCtxWhereClauseComputer;

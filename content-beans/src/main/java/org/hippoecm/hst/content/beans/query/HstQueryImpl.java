@@ -39,6 +39,7 @@ import org.hippoecm.hst.content.beans.standard.HippoBean;
 import org.hippoecm.repository.api.HippoNode;
 import org.hippoecm.repository.api.HippoNodeType;
 import org.hippoecm.repository.api.HippoQuery;
+import org.hippoecm.repository.util.DateTools;
 import org.slf4j.LoggerFactory;
 
 public class HstQueryImpl implements HstQuery {
@@ -58,7 +59,7 @@ public class HstQueryImpl implements HstQuery {
     private NodeTypeFilter nodeTypeFilter;
     private IsNodeTypeFilter isNodeTypeFilter;
     private Session session;
-    private Filter.Resolution defaultResolution;
+    private DateTools.Resolution defaultResolution;
 
     /**
      * 
@@ -96,7 +97,7 @@ public class HstQueryImpl implements HstQuery {
         this.isNodeTypeFilter = isNodeTypeFilter; 
     }
 
-    public void setDefaultResolution(final Filter.Resolution defaultResolution) {
+    public void setDefaultResolution(final DateTools.Resolution defaultResolution) {
         this.defaultResolution = defaultResolution;
     }
 
