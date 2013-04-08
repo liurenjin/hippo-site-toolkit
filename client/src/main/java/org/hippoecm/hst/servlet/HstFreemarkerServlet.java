@@ -72,24 +72,7 @@ public class HstFreemarkerServlet extends FreemarkerServlet {
     @Override
     public void init() throws ServletException {
         super.init();
-        /*
-         * we here need to inject our own template loader. We cannot do this in createConfiguration() as we would like,
-         * because the FreemarkerServlet sets the template loader in the init() *after* createConfiguration() again, to the default
-         * WebappTemplateLoader
-         */
-
-        // default continueRenderingAfterException = false. For 2.26.01 and higher, default is set to true
-        continueRenderingAfterException = Boolean.parseBoolean(getConfigOrContextInitParameter(CONTINUE_RENDERING_AFTER_EXCEPTION, "false"));
-
         Configuration conf = super.getConfiguration();
-
-        if (continueRenderingAfterException) {
-            log.info("FreeMarker servlet will log and *continue* rendering in case of template exceptions");
-            conf.setTemplateExceptionHandler(TemplateExceptionHandler.IGNORE_HANDLER);
-        } else {
-            log.info("FreeMarker servlet will log and *stop* rendering in case of template exceptions");
-            conf.setTemplateExceptionHandler(TemplateExceptionHandler.RETHROW_HANDLER);
-        }
 
         TemplateLoader classTemplateLoader =  new HstClassTemplateLoader(getClass());
         TemplateLoader defaultLoader = conf.getTemplateLoader();
