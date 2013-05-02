@@ -107,6 +107,7 @@ public class ResolvedSiteMapItemImpl implements ResolvedSiteMapItem {
         return this.hstComponentConfiguration;
     }
 
+    @Deprecated
     public HstComponentConfiguration getPortletHstComponentConfiguration() {
         if (isComponentResolved) {
             return portletHstComponentConfiguration;

@@ -21,8 +21,9 @@ import org.hippoecm.hst.core.request.HstPortalRequestContext;
 
 /**
  * @version $Id$
- *
+ * @deprecated portlet support will be removed after 2.26.xx
  */
+@Deprecated
 public interface HstPortalContextProvider {
 
 	boolean isEmbeddedRequest(PortletRequest request);

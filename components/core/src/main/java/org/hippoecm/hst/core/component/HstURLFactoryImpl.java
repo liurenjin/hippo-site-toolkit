@@ -47,7 +47,9 @@ public class HstURLFactoryImpl implements HstURLFactory {
     public void setNavigationalStateCodec(HstNavigationalStateCodec navigationalStateCodec) {
         this.navigationalStateCodec = navigationalStateCodec;
     }
-    
+
+    /** @deprecated portlet support will be removed after 2.26.xx */
+    @Deprecated
     public void setPortletResourceURLEnabled(boolean portletResourceURLEnabled) {
         this.portletResourceURLEnabled = portletResourceURLEnabled;
     }

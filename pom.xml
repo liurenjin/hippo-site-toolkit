@@ -58,9 +58,12 @@
     <jsp-api.version>2.0</jsp-api.version>
     <jstl.version>1.1.2</jstl.version>
     <taglibs.version>1.1.2</taglibs.version>
+
+    <!-- deprecated, portlet support will be removed after 2.26.xx -->
     <portlet-api.version>2.0</portlet-api.version>
     <portals-bridges-common.version>2.0</portals-bridges-common.version>
-    
+    <!-- end deprecated -->
+
     <geronimo-annotation_1.1_spec.version>1.0.1</geronimo-annotation_1.1_spec.version>
 
     <junit.version>4.5</junit.version>

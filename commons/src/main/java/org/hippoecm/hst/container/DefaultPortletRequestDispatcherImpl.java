@@ -41,7 +41,9 @@ import org.hippoecm.hst.util.PortletConfigUtils;
  * DefaultPortletRequestDispatcherImpl
  * 
  * @version $Id$
+ * @deprecated portlet support will be removed after 2.26.xx
  */
+@Deprecated
 public class DefaultPortletRequestDispatcherImpl implements HstPortletRequestDispatcherPathProvider {
 
     private static final String SERVLET_PATH_ATTRIBUTE_NAMES = "hstPortletRequestDispatcherPathProvider.servletPath.attributeNames";

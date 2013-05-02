@@ -23,7 +23,9 @@ import javax.portlet.PortletRequest;
  * Path provider interface for <CODE>HstContainerPortlet</CODE>.
  * 
  * @version $Id$
+ * @deprecated portlet support will be removed after 2.26.xx
  */
+@Deprecated
 public interface HstPortletRequestDispatcherPathProvider {
     
     void init(PortletConfig config) throws PortletException;

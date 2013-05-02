@@ -105,7 +105,9 @@ public interface HstSiteMapItem {
      * the portlet component configuration the will handle the request processing. This component configuration can be
      * the root of a component configuration tree, see {@link HstComponentConfiguration}.
      * @return the portletComponentConfigurationId for this <code>SiteMapItem</code> or <code>null</code>
+     * @deprecated portlet support will be removed after 2.26.xx
      */
+    @Deprecated
     String getPortletComponentConfigurationId();
     
     /**

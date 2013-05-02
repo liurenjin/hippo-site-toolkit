@@ -357,6 +357,7 @@ public class HstRequestContextImpl implements HstMutableRequestContext {
     	return this.resolvedEmbeddingMount;
     }
 
+    @Deprecated
     public boolean isPortletContext() {
         return false;
     }

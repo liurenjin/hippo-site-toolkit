@@ -21,8 +21,9 @@ import org.hippoecm.hst.core.request.ResolvedMount;
 
 /**
  * @version $Id$
- *
+ * @deprecated portlet support will be removed after 2.26.xx
  */
+@Deprecated
 public class HstPortalRequestContextImpl implements HstPortalRequestContext
 {
     private ResolvedSiteMapItem resolvedSiteMapItem;

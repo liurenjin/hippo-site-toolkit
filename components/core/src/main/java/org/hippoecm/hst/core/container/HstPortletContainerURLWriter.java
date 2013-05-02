@@ -32,7 +32,9 @@ import org.hippoecm.hst.core.request.HstRequestContext;
  * HstContainerURLProviderPortletImpl
  * 
  * @version $Id$
+ * @deprecated portlet support will be removed after 2.26
  */
+@Deprecated
 public class HstPortletContainerURLWriter {
     
     public String toURLString(HstContainerURLProviderImpl urlProvider, HstContainerURL containerURL, HstRequestContext requestContext) throws UnsupportedEncodingException, ContainerException {

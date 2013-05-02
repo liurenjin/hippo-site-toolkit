@@ -370,7 +370,9 @@ public interface Mount {
     /**
      * for embedded delegation of sites a mountpath needs to point to the delegated {@link Mount}. This is only relevant for portal environment
      * @return the embedded {@link Mount} path and <code>null</code> if not present
+     * @deprecated portlet support will be removed after 2.26.xx
      */
+    @Deprecated
     String getEmbeddedMountPath();
     
     /**

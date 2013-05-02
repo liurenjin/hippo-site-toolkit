@@ -42,6 +42,8 @@ import org.hippoecm.hst.core.request.ResolvedSiteMapItem;
 import org.hippoecm.hst.site.HstServices;
 import org.hippoecm.hst.util.PortletConfigUtils;
 
+/** @deprecated portlet support will be removed after 2.26.xx */
+@Deprecated
 public class HstComponentPortlet extends GenericPortlet {
 
     //private static final String LOGGER_CATEGORY_NAME = HstComponentPortlet.class.getName();

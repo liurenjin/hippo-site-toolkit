@@ -23,7 +23,9 @@ import javax.portlet.PortletResponse;
  * HstPortletRequestContext extends HstRequestContext to support porlet specific configuration and context.
  * 
  * @version $Id$
+ * @deprecated portlet support will be removed after 2.26.xx
  */
+@Deprecated
 public interface HstPortletRequestContext extends HstRequestContext {
     
     /**

@@ -26,8 +26,9 @@ import org.hippoecm.hst.core.request.HstPortletRequestContext;
  * This is an INTERNAL USAGE ONLY API. Clients should not cast to these interfaces as they should never be used from client code
  * 
  * @version $Id$
- *
+ * @deprecated portlet support will be removed after 2.26.xx
  */
+@Deprecated
 public interface HstMutablePortletRequestContext extends HstMutableRequestContext, HstPortletRequestContext {
 
 	public void setPortletConfig(PortletConfig portletConfig);

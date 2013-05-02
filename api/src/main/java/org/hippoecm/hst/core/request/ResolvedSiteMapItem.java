@@ -133,7 +133,9 @@ public interface ResolvedSiteMapItem {
     
     /**
      * @return the <code>HstComponentConfiguration</code> for portlet that is found through {@link #getHstSiteMapItem()}
+     * @deprecated portlet support will be removed after 2.26.xx
      */
+    @Deprecated
     HstComponentConfiguration getPortletHstComponentConfiguration();
     
 }

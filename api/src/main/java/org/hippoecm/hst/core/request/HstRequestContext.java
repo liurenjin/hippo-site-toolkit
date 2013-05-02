@@ -261,7 +261,9 @@ public interface HstRequestContext {
     /**
      * Returns true if invoked from a Portlet.
      * If true, this instance will also implement HstPortletRequestContext.
+     * @deprecated portlet support will be removed after 2.26.xx
      */
+    @Deprecated
     boolean isPortletContext();
     
     /**

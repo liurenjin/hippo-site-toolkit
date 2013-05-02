@@ -30,7 +30,9 @@ import org.w3c.dom.Element;
 
 /**
  * Temporarily holds the current state of a HST response
+ * @deprecated portlet support will be removed after 2.26.xx
  */
+@Deprecated
 public class HstPortletResponseState extends AbstractHstResponseState {
     
     protected PortletResponse response;

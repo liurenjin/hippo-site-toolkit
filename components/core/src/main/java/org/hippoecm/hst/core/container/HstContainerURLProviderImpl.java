@@ -69,11 +69,15 @@ public class HstContainerURLProviderImpl implements HstContainerURLProvider {
     
     protected HstPortletContainerURLWriter portletContainerURLWriter;
     protected HstEmbeddedPortletContainerURLWriter embeddedPortletContainerURLWriter;
-    
+
+    /** @deprecated portlet support will be removed after 2.26.xx */
+    @Deprecated
     public void setPortletResourceURLEnabled(boolean portletResourceURLEnabled) {
         this.portletResourceURLEnabled = portletResourceURLEnabled;
     }
-    
+
+    /** @deprecated portlet support will be removed after 2.26.xx */
+    @Deprecated
     public boolean isPortletResourceURLEnabled() {
     	return portletResourceURLEnabled;
     }
@@ -309,14 +313,18 @@ public class HstContainerURLProviderImpl implements HstContainerURLProvider {
         url.append(pathInfo);
         return url.toString();
     }
-    
+
+    /** @deprecated portlet support will be removed after 2.26.xx */
+    @Deprecated
     protected HstPortletContainerURLWriter getPortletContainerURLWriter() {
     	if (this.portletContainerURLWriter == null) {
     		this.portletContainerURLWriter = new HstPortletContainerURLWriter();
     	}
     	return this.portletContainerURLWriter;
     }
-    
+
+    /** @deprecated portlet support will be removed after 2.26.xx */
+    @Deprecated
     protected HstEmbeddedPortletContainerURLWriter getEmbeddedPortletContainerURLWriter() {
     	if (this.embeddedPortletContainerURLWriter == null) {
     		this.embeddedPortletContainerURLWriter = new HstEmbeddedPortletContainerURLWriter();

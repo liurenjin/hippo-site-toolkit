@@ -267,10 +267,12 @@ public class MockHstRequestContext implements HstRequestContext {
         this.embeddedRequest = embeddedRequest;
     }
 
+    @Deprecated
     public boolean isPortletContext() {
         return portletRequest;
     }
-    
+
+    @Deprecated
     public void setPortletContext(boolean portletRequest) {
         this.portletRequest = portletRequest;
     }

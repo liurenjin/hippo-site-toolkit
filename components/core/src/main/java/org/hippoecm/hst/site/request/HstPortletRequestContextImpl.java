@@ -25,8 +25,9 @@ import org.hippoecm.hst.core.request.ContextCredentialsProvider;
 
 /**
  * @version $Id$
- *
+ * @deprecated portlet support will be removed after 2.26
  */
+@Deprecated
 public class HstPortletRequestContextImpl extends HstRequestContextImpl implements HstMutablePortletRequestContext {
     
     protected PortletConfig portletConfig;

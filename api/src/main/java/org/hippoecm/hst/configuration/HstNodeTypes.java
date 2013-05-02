@@ -97,6 +97,9 @@ public interface HstNodeTypes {
 
     static final String SITEMAPITEM_PROPERTY_COMPONENT_CONFIG_MAPPING_NAMES = "hst:componentconfigurationmappingnames";
     static final String SITEMAPITEM_PROPERTY_COMPONENT_CONFIG_MAPPING_VALUES = "hst:componentconfigurationmappingvalues";
+
+    /** @deprecated portlet support will be removed after 2.26.xx */
+    @Deprecated
     static final String SITEMAPITEM_PROPERTY_PORTLETCOMPONENTCONFIGURATIONID =  "hst:portletcomponentconfigurationid";
     static final String SITEMAPITEM_PROPERTY_NAMEDPIPELINE = "hst:namedpipeline";
     static final String SITEMAPITEM_PROPERTY_SITEMAPITEMHANDLERIDS =  "hst:sitemapitemhandlerids";

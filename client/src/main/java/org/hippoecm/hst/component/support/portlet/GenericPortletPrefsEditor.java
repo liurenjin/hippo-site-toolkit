@@ -29,6 +29,8 @@ import org.hippoecm.hst.core.sitemenu.HstSiteMenu;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/** @deprecated portlet support will be removed after 2.26.xx */
+@Deprecated
 public class GenericPortletPrefsEditor extends GenericHstComponent {
     
     private static final String HST_PREFS_EDITOR_PAGE = "hstPrefsEditorPage";

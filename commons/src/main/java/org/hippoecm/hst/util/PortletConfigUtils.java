@@ -22,7 +22,9 @@ import javax.portlet.PortletContext;
  * PortletConfigUtils
  * 
  * @version $Id$
+ * @deprecated portlet support will be removed after 2.26.xx
  */
+@Deprecated
 public class PortletConfigUtils {
     
     private PortletConfigUtils() {

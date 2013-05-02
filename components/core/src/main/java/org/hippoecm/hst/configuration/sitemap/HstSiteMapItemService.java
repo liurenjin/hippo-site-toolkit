@@ -405,6 +405,7 @@ public class HstSiteMapItemService implements HstSiteMapItem {
         return componentConfigurationIdMappings;
     }
 
+    @Deprecated
     public String getPortletComponentConfigurationId() {
         return this.portletComponentConfigurationId;
     }

@@ -161,10 +161,12 @@ public class MockResolvedSiteMapItem implements ResolvedSiteMapItem {
         this.hstComponentConfiguration = hstComponentConfiguration;
     }
 
+    @Deprecated
     public HstComponentConfiguration getPortletHstComponentConfiguration() {
         return portletHstComponentConfiguration;
     }
 
+    @Deprecated
     public void setPortletHstComponentConfiguration(HstComponentConfiguration portletHstComponentConfiguration) {
         this.portletHstComponentConfiguration = portletHstComponentConfiguration;
     }

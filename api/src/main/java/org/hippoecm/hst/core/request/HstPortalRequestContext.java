@@ -17,8 +17,9 @@ package org.hippoecm.hst.core.request;
 
 /**
  * @version $Id$
- *
+ * @deprecated portlet support will be removed after 2.26.xx
  */
+@Deprecated
 public interface HstPortalRequestContext {
     ResolvedSiteMapItem getResolvedSiteMapItem();
     ResolvedMount getResolvedEmbeddingMount();
