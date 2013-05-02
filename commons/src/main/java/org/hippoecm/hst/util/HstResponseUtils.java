@@ -137,8 +137,10 @@ public class HstResponseUtils {
      * 
      * @param request the HstRequest
      * @param response the HstResponse
-     * @param path the sitemap path you want to redirect to 
+     * @param path the sitemap path you want to redirect to
+     * @deprecated use {@link #sendRedirect(HstRequest, HstResponse, String)} if not within a portletContext; portlet support will be removed after 2.26.xx
      */
+    @Deprecated
     public static void sendRedirectOrForward(HstRequest request, HstResponse response, String path) {
         sendRedirectOrForward(request, response, path, null, null);
     }
@@ -161,7 +163,9 @@ public class HstResponseUtils {
      * @param response the HstResponse
      * @param path the sitemap path you want to redirect to 
      * @param queryParams query parameters to append to the redirection url
+     * @deprecated use {@link #sendRedirect(HstRequest, HstResponse, String,Map)} if not within a portletContext; portlet support will be removed after 2.26.xx
      */
+    @Deprecated
     public static void sendRedirectOrForward(HstRequest request, HstResponse response, String path, Map<String, String []> queryParams) {
         sendRedirectOrForward(request, response, path, queryParams, null);
     }
@@ -185,7 +189,9 @@ public class HstResponseUtils {
      * @param path the sitemap path you want to redirect to 
      * @param queryParams query parameters to append to the redirection url
      * @param characterEncoding character encoding for query parameters
+     * @deprecated use {@link #sendRedirect(HstRequest,HstResponse,String,Map,String)} if not within a portletContext; portlet support will be removed after 2.26.xx
      */
+    @Deprecated
     public static void sendRedirectOrForward(HstRequest request, HstResponse response, String path, Map<String, String []> queryParams, String characterEncoding) {
         if (HstRequest.ACTION_PHASE.equals(request.getLifecyclePhase()) || !request.getRequestContext().isPortletContext()) {
             sendRedirect(request, response, path, queryParams, characterEncoding);
