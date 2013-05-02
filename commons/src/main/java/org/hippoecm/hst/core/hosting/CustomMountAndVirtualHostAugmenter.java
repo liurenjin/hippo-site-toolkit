@@ -609,6 +609,7 @@ public class CustomMountAndVirtualHostAugmenter implements HstConfigurationAugme
         }
 
         @Override
+        @Deprecated
         public String getEmbeddedMountPath() {
             return fakeNonExistingPath;
         }

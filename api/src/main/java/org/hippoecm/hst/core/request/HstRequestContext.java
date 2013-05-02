@@ -236,7 +236,9 @@ public interface HstRequestContext {
     /**
      * Returns true if this request is embedded and link rewriting needs to use the {@link #getResolvedEmbeddingMount()}
      * for the target Mount path and context path (if to be included).
+     * @deprecated portlet support will be removed after 2.26.xx
      */
+    @Deprecated
     boolean isEmbeddedRequest();
     
     /**
@@ -249,13 +251,17 @@ public interface HstRequestContext {
     /**
      * Returns the contextPath of the embedding application for an embedded request, otherwise null
      * @see HstRequestContext#isEmbeddedRequest()
+     * @deprecated portlet support will be removed after 2.26.xx
      */
+    @Deprecated
     String getEmbeddingContextPath();
     
     /**
      * Returns the {@link ResolvedMount} to be used for link rewriting when this request is embedded, otherwise null
      * @see HstRequestContext#isEmbeddedRequest()
+     * @deprecated portlet support will be removed after 2.26.xx
      */
+    @Deprecated
     ResolvedMount getResolvedEmbeddingMount();
     
     /**

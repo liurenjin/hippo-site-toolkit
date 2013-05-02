@@ -336,23 +336,28 @@ public class HstRequestContextImpl implements HstMutableRequestContext {
     public VirtualHost getVirtualHost() {
        return resolvedMount.getMount().getVirtualHost();
     }
-    
+
+    @Deprecated
     public boolean isEmbeddedRequest() {
         return resolvedEmbeddingMount != null;
     }
-    
+
+    @Deprecated
     public void setEmbeddingContextPath(String embeddingContextPath) {
     	this.embeddingContextPath = embeddingContextPath;
     }
-    
+
+    @Deprecated
     public String getEmbeddingContextPath() {
     	return this.embeddingContextPath;
     }
-    
+
+    @Deprecated
     public void setResolvedEmbeddingMount(ResolvedMount resolvedEmbeddingMount) {
     	this.resolvedEmbeddingMount = resolvedEmbeddingMount;
     }
-    
+
+    @Deprecated
     public ResolvedMount getResolvedEmbeddingMount() {
     	return this.resolvedEmbeddingMount;
     }

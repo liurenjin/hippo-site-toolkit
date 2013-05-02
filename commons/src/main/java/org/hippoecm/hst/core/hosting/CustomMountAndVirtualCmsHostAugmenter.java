@@ -720,6 +720,7 @@ public class CustomMountAndVirtualCmsHostAugmenter implements HstConfigurationAu
         }
 
         @Override
+        @Deprecated
         public String getEmbeddedMountPath() {
             return fakeNonExistingPath;
         }

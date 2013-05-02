@@ -78,10 +78,14 @@ public interface HstMutableRequestContext extends HstRequestContext {
 	public void setHstQueryManagerFactory(HstQueryManagerFactory hstQueryManagerFactory);
 
 	public void setContainerConfiguration(ContainerConfiguration containerConfiguration);
-	
-	public void setEmbeddingContextPath(String embeddingContextPath);
 
-	public void setResolvedEmbeddingMount(ResolvedMount resolvedEmbeddingMount);
+    /** @deprecated portlet support will be removed after 2.26.xx */
+    @Deprecated
+    public void setEmbeddingContextPath(String embeddingContextPath);
+
+    /** @deprecated portlet support will be removed after 2.26.xx */
+    @Deprecated
+    public void setResolvedEmbeddingMount(ResolvedMount resolvedEmbeddingMount);
 	
     public void setSubject(Subject subject);
     

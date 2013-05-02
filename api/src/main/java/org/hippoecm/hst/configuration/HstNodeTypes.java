@@ -152,6 +152,8 @@ public interface HstNodeTypes {
     static final String MOUNT_PROPERTY_ALIAS = "hst:alias";
     static final String MOUNT_PROPERTY_TYPE = "hst:type";
     static final String MOUNT_PROPERTY_TYPES = "hst:types";
+    /** @deprecated portlet support will be removed after 2.26.xx */
+    @Deprecated
     static final String MOUNT_PROPERTY_EMBEDDEDMOUNTPATH = "hst:embeddedmountpath";
     static final String MOUNT_PROPERTY_AUTHENTICATED =  "hst:authenticated";
     static final String MOUNT_PROPERTY_ROLES =  "hst:roles";

@@ -225,6 +225,7 @@ public class MountDecoratorImpl implements MountDecorator {
         }
 
         @Override
+        @Deprecated
         public String getEmbeddedMountPath() {
             return delegatee.getEmbeddedMountPath();
         }

@@ -259,10 +259,12 @@ public class MockHstRequestContext implements HstRequestContext {
         this.virtualHost = virtualHost;
     }
 
+    @Deprecated
     public boolean isEmbeddedRequest() {
         return embeddedRequest;
     }
-    
+
+    @Deprecated
     public void setEmbeddedRequest(boolean embeddedRequest) {
         this.embeddedRequest = embeddedRequest;
     }
@@ -285,18 +287,22 @@ public class MockHstRequestContext implements HstRequestContext {
         this.contextCredentialsProvider = contextCredentialsProvider;
     }
 
+    @Deprecated
     public String getEmbeddingContextPath() {
     	return embeddingContextPath;
     }
-    
+
+    @Deprecated
     public void setEmbeddingContextPath(String embeddingContextPath) {
         this.embeddingContextPath = embeddingContextPath;
     }
-    
+
+    @Deprecated
 	public ResolvedMount getResolvedEmbeddingMount() {
 		return resolvedEmbeddingMount;
 	}
-	
+
+    @Deprecated
     public void setResolvedEmbeddingMount(ResolvedMount resolvedEmbeddingMount) {
         this.resolvedEmbeddingMount = resolvedEmbeddingMount;
     }

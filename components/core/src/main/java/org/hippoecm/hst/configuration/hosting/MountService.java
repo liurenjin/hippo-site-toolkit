@@ -835,6 +835,7 @@ public class MountService implements ContextualizableMount, MutableMount {
         return getVirtualHost().getVirtualHosts().getHstManager().getSiteMapMatcher();
     }
 
+    @Deprecated
     public String getEmbeddedMountPath() {
         return embeddedMountPath;
     }
