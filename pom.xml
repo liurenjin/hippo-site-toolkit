@@ -24,10 +24,10 @@
 
   <name>Hippo Site Toolkit</name>
   <description>The Hippo Site Toolkit (HST) is an engine that serves content from the Hippo repository (2) on webpages, dynamically.
-    The HST produces a complete, dynamic website for an organization, or several complete, dynamic websites for several suborganizations 
+    The HST produces a complete, dynamic website for an organization, or several complete, dynamic websites for several suborganizations
     that have all their content managed in one Hippo repository.
     The functionality, views and markup of the website(s) are to be defined by the web developers with Java classes, JSP and CSS, respectively.
-    The HST provides a framework of predefined Java classes, abstract Java classes and interfaces and JSP tags 
+    The HST provides a framework of predefined Java classes, abstract Java classes and interfaces and JSP tags
     for the web developers to work with and build on.
   </description>
   <url>http://www.onehippo.org/site-toolkit/</url>
@@ -92,14 +92,14 @@
     <jackrabbit-ocm.version>1.5.3</jackrabbit-ocm.version>
 
     <hippo.commons.version>1.02.01</hippo.commons.version>
-    <hippo.repository.version>2.24.02</hippo.repository.version>
+    <hippo.repository.version>2.24.04-SNAPSHOT</hippo.repository.version>
     <hippo.utilities.version>1.01.02</hippo.utilities.version>
     <hippo.services.version>1.02.02</hippo.services.version>
 
     <htmlcleaner.version>2.2</htmlcleaner.version>
 
     <jsr311.version>1.1</jsr311.version>
-    
+
     <geronimo-stax-api_1.2_spec.version>1.1</geronimo-stax-api_1.2_spec.version>
     <stax.version>1.2.0</stax.version>
     <stax2-api.version>3.1.1</stax2-api.version>
@@ -115,8 +115,8 @@
   </properties>
 
   <!--
-     Software configuration management (scm): where to find and how to get acces to the source repository 
-     This is used by normal plugins, but also to autogenerate documentation in .../target/site/source-repository.html 
+     Software configuration management (scm): where to find and how to get acces to the source repository
+     This is used by normal plugins, but also to autogenerate documentation in .../target/site/source-repository.html
   -->
   <scm>
     <connection>scm:svn:http://svn.onehippo.org/repos/hippo/hippo-cms7/site-toolkit/branches/hst-2.26.xx</connection>
@@ -139,7 +139,7 @@
       <url>scp://www.onehippo.org/site-toolkit/project/</url>
     </site>
   </distributionManagement>
-  
+
   <repositories>
    <repository>
       <id>hippo</id>
@@ -155,20 +155,20 @@
   </repositories>
 
   <dependencyManagement>
-  
+
     <dependencies>
 
       <!-- Servlet API dependencies -->
-      
+
       <dependency>
         <groupId>org.apache.geronimo.specs</groupId>
         <artifactId>geronimo-annotation_1.1_spec</artifactId>
         <version>${geronimo-annotation_1.1_spec.version}</version>
         <scope>provided</scope>
       </dependency>
-      
+
       <!-- Hippo CMS7 API dependency -->
-      
+
       <dependency>
         <groupId>org.onehippo.cms7</groupId>
         <artifactId>hippo-repository-api</artifactId>
@@ -190,14 +190,14 @@
       </dependency>
 
       <!-- JSP-related API dependencies -->
-      
+
       <dependency>
         <groupId>javax.servlet.jsp</groupId>
         <artifactId>jsp-api</artifactId>
         <version>${jsp-api.version}</version>
         <scope>provided</scope>
       </dependency>
-      
+
       <dependency>
         <groupId>javax.portlet</groupId>
         <artifactId>portlet-api</artifactId>
@@ -211,7 +211,7 @@
         <version>${portals-bridges-common.version}</version>
         <scope>provided</scope>
       </dependency>
-      
+
       <dependency>
         <groupId>javax.servlet</groupId>
         <artifactId>jstl</artifactId>
@@ -223,7 +223,7 @@
         <artifactId>standard</artifactId>
         <version>${taglibs.version}</version>
       </dependency>
-      
+
       <dependency>
         <groupId>xerces</groupId>
         <artifactId>xercesImpl</artifactId>
@@ -237,34 +237,34 @@
         <version>${xerces.version}</version>
         <scope>runtime</scope>
       </dependency>
-      
+
       <dependency>
         <groupId>xalan</groupId>
         <artifactId>xalan</artifactId>
         <version>${xalan.version}</version>
         <scope>runtime</scope>
       </dependency>
-      
+
       <!-- Apache Commons -->
-      
+
       <dependency>
         <groupId>commons-lang</groupId>
         <artifactId>commons-lang</artifactId>
         <version>${commons-lang.version}</version>
       </dependency>
-      
+
       <dependency>
         <groupId>commons-collections</groupId>
         <artifactId>commons-collections</artifactId>
         <version>${commons-collections.version}</version>
       </dependency>
-    
+
       <dependency>
         <groupId>commons-pool</groupId>
         <artifactId>commons-pool</artifactId>
         <version>${commons-pool.version}</version>
       </dependency>
-      
+
       <dependency>
         <groupId>commons-beanutils</groupId>
         <artifactId>commons-beanutils</artifactId>
@@ -294,7 +294,7 @@
         <artifactId>commons-io</artifactId>
         <version>${commons-io.version}</version>
       </dependency>
-      
+
       <dependency>
         <groupId>commons-jexl</groupId>
         <artifactId>commons-jexl</artifactId>
@@ -306,7 +306,7 @@
           </exclusion>
         </exclusions>
       </dependency>
-      
+
       <dependency>
         <groupId>commons-configuration</groupId>
         <artifactId>commons-configuration</artifactId>
@@ -322,7 +322,7 @@
           </exclusion>
         </exclusions>
       </dependency>
-      
+
       <dependency>
         <groupId>org.apache.commons</groupId>
         <artifactId>commons-proxy</artifactId>
@@ -334,13 +334,13 @@
         <artifactId>ehcache-core</artifactId>
         <version>${ehcache-core.version}</version>
       </dependency>
-      
+
       <dependency>
         <groupId>net.sf.ehcache</groupId>
         <artifactId>ehcache-web</artifactId>
         <version>${ehcache-web.version}</version>
       </dependency>
-      
+
       <dependency>
         <groupId>org.slf4j</groupId>
         <artifactId>slf4j-ext</artifactId>
@@ -348,15 +348,15 @@
       </dependency>
 
       <!-- AspectJ -->
-      
+
       <dependency>
         <groupId>org.aspectj</groupId>
         <artifactId>aspectjweaver</artifactId>
         <version>${aspectj.version}</version>
       </dependency>
-      
+
       <!-- Spring Framework -->
-      
+
       <dependency>
         <groupId>org.springframework</groupId>
         <artifactId>spring-core</artifactId>
@@ -368,7 +368,7 @@
           </exclusion>
         </exclusions>
       </dependency>
-    
+
       <dependency>
         <groupId>org.springframework</groupId>
         <artifactId>spring-beans</artifactId>
@@ -380,7 +380,7 @@
           </exclusion>
         </exclusions>
       </dependency>
-    
+
       <dependency>
         <groupId>org.springframework</groupId>
         <artifactId>spring-context</artifactId>
@@ -392,7 +392,7 @@
           </exclusion>
         </exclusions>
       </dependency>
-      
+
       <dependency>
         <groupId>org.springframework</groupId>
         <artifactId>spring-context-support</artifactId>
@@ -404,7 +404,7 @@
           </exclusion>
         </exclusions>
       </dependency>
-      
+
       <dependency>
         <groupId>org.springframework</groupId>
         <artifactId>spring-web</artifactId>
@@ -428,7 +428,7 @@
           </exclusion>
         </exclusions>
       </dependency>
-      
+
       <dependency>
         <groupId>org.springframework</groupId>
         <artifactId>spring-aop</artifactId>
@@ -440,7 +440,7 @@
           </exclusion>
         </exclusions>
       </dependency>
-      
+
       <dependency>
         <groupId>org.springframework</groupId>
         <artifactId>spring-test</artifactId>
@@ -481,17 +481,17 @@
           </exclusion>
         </exclusions>
       </dependency>
-        
+
       <!-- Freemarker -->
       <dependency>
         <groupId>org.freemarker</groupId>
         <artifactId>freemarker</artifactId>
         <version>${freemarker.version}</version>
       </dependency>
-      
+
       <!-- Hippo CMS7 Depedencies -->
-    
-    
+
+
       <!-- SSO for encryption/decryption -->
       <dependency>
         <groupId>org.onehippo.cms7</groupId>
@@ -499,7 +499,7 @@
         <version>${hippo.commons.version}</version>
         <scope>provided</scope>
       </dependency>
-    
+
       <dependency>
         <groupId>org.onehippo.cms7</groupId>
         <artifactId>hippo-repository-connector</artifactId>
@@ -516,7 +516,7 @@
           </exclusion>
         </exclusions>
       </dependency>
-      
+
       <dependency>
         <groupId>org.onehippo.cms7</groupId>
         <artifactId>hippo-repository-builtin</artifactId>
@@ -525,7 +525,7 @@
       </dependency>
 
       <!-- Jackrabbit ocm -->
-            
+
       <dependency>
         <groupId>org.apache.jackrabbit</groupId>
         <artifactId>jackrabbit-ocm</artifactId>
@@ -553,7 +553,7 @@
           </exclusion>
         </exclusions>
       </dependency>
-      
+
       <!-- SpringFramework WebFlow SpringFramework JS -->
       <dependency>
         <groupId>org.springframework.webflow</groupId>
@@ -572,17 +572,17 @@
         <artifactId>jsr311-api</artifactId>
         <version>${jsr311.version}</version>
       </dependency>
-      
+
       <!-- STAX API -->
-      
+
       <dependency>
         <groupId>org.apache.geronimo.specs</groupId>
         <artifactId>geronimo-stax-api_1.2_spec</artifactId>
         <version>${geronimo-stax-api_1.2_spec.version}</version>
       </dependency>
-      
+
       <!-- STAX Implementation -->
-      
+
       <dependency>
         <groupId>stax</groupId>
         <artifactId>stax</artifactId>
@@ -594,9 +594,9 @@
           </exclusion>
         </exclusions>
       </dependency>
-      
+
       <!-- STAX2 API -->
-      
+
       <dependency>
         <groupId>org.codehaus.woodstox</groupId>
         <artifactId>stax2-api</artifactId>
@@ -612,9 +612,9 @@
           </exclusion>
         </exclusions>
       </dependency>
-      
+
       <!-- STAX2 Implementation -->
-      
+
       <dependency>
         <groupId>org.codehaus.woodstox</groupId>
         <artifactId>woodstox-core-asl</artifactId>
@@ -630,7 +630,7 @@
           </exclusion>
         </exclusions>
       </dependency>
-      
+
       <dependency>
         <groupId>org.apache.cxf</groupId>
         <artifactId>cxf-rt-frontend-jaxrs</artifactId>
@@ -662,7 +662,7 @@
           </exclusion>
         </exclusions>
       </dependency>
-      
+
       <!-- Jackson JSON -->
       <dependency>
         <groupId>org.codehaus.jackson</groupId>
@@ -670,7 +670,7 @@
         <version>${jackson.version}</version>
         <scope>runtime</scope>
       </dependency>
-      
+
       <dependency>
         <groupId>org.codehaus.jackson</groupId>
         <artifactId>jackson-xc</artifactId>
@@ -703,23 +703,23 @@
       </dependency>
 
       <!-- Test dependencies -->
-    
+
       <dependency>
         <groupId>junit</groupId>
         <artifactId>junit</artifactId>
         <version>${junit.version}</version>
         <scope>test</scope>
       </dependency>
-      
+
       <dependency>
         <groupId>org.easymock</groupId>
         <artifactId>easymock</artifactId>
         <version>${easymock.version}</version>
         <scope>test</scope>
       </dependency>
-      
+
     </dependencies>
-    
+
   </dependencyManagement>
 
   <build>
