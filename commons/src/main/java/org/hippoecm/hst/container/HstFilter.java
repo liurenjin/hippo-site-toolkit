@@ -931,7 +931,9 @@ public class HstFilter implements Filter {
      * Determine if the current request is an cross-context include, as typically exercised by Portals dispatching to a targetted portlet
      * @param request
      * @return
+     * @deprecated portlet support will be removed after 2.26.xx
      */
+    @Deprecated
     protected boolean isCrossContextInclude(HttpServletRequest request) {
     	String includeContextPath = (String)request.getAttribute("javax.servlet.include.context_path");
     	return (includeContextPath != null && !includeContextPath.equals(request.getContextPath()));
