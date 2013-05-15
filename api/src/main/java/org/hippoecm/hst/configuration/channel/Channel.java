@@ -16,12 +16,16 @@
 package org.hippoecm.hst.configuration.channel;
 
 import java.io.Serializable;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class Channel implements Serializable {
 
     private static final long serialVersionUID = 1L;
+
+    public static final String DEFAULT_DEVICE = "default";
 
     private String id;
     private String name;
@@ -44,6 +48,8 @@ public class Channel implements Serializable {
     private String locale;
     private String lockedBy;
     private Long lockedOn;
+    private String defaultDevice = DEFAULT_DEVICE;
+    private List<String> devices = Collections.EMPTY_LIST;
 
     /**
      * {@link Channel} default constructor it is required for REST de/serialization 
@@ -250,6 +256,22 @@ public class Channel implements Serializable {
         this.lockedOn = lockedOn;
     }
 
+    public String getDefaultDevice() {
+        return defaultDevice;
+    }
+
+    public List<String> getDevices() {
+        return devices;
+    }
+
+    public void setDefaultDevice(String defaultDevice) {
+        this.defaultDevice = defaultDevice;
+    }
+
+    public void setDevices(List<String> devices) {
+        this.devices = devices;
+    }
+
     public int hashCode() {
         return id.hashCode() ^ 317;
     }
@@ -282,6 +304,8 @@ public class Channel implements Serializable {
         b.append(",mountPath=").append(mountPath);
         b.append(",lockedBy=").append(lockedBy);
         b.append(",lockedOn=").append(lockedOn);
+        b.append(",devices=").append(devices);
+        b.append(",defaultDevice=").append(defaultDevice);
         b.append('}');
 
         return b.toString();
