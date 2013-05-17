@@ -160,6 +160,7 @@ api/src/main/java/org/hippoecm/hst/core/container/PageErrorHandler.java svneol=n
 api/src/main/java/org/hippoecm/hst/core/container/PageErrors.java svneol=native#text/plain
 api/src/main/java/org/hippoecm/hst/core/container/Pipeline.java svneol=native#text/plain
 api/src/main/java/org/hippoecm/hst/core/container/Pipelines.java svneol=native#text/plain
+api/src/main/java/org/hippoecm/hst/core/container/RepositoryNotAvailableException.java -text
 api/src/main/java/org/hippoecm/hst/core/container/RequestInfoCacheKeyFragmentCreator.java -text
 api/src/main/java/org/hippoecm/hst/core/container/ServletContextAware.java svneol=native#text/plain
 api/src/main/java/org/hippoecm/hst/core/container/Valve.java svneol=native#text/plain
