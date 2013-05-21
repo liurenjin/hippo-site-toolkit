@@ -89,7 +89,17 @@ public class JcrHippoRepository implements Repository {
 
     private synchronized void initHippoRepository() throws RepositoryException {
         if (repositoryInitialized) {
-            return;
+            // check if repository is still available: if for instance the repository application is reloaded it will no longer be valid to use
+            // this better should not be done 'lazily like this but through listeners but these are not (yet) available
+            // REPO-662 will provide a more permanent solution
+            if (hippoRepository != null && hippoRepository.getLocation() == null) {
+                // remove reference to no longer valid repository
+                hippoRepository = null;
+                repositoryInitialized = false;
+            }
+            else {
+                return;
+            }
         }
 
         try {
@@ -161,9 +171,7 @@ public class JcrHippoRepository implements Repository {
     }
 
     public Session login() throws LoginException, RepositoryException {
-        if (!repositoryInitialized) {
-            initHippoRepository();
-        }
+        initHippoRepository();
 
         if (jcrDelegateeRepository != null) {
             return jcrDelegateeRepository.login();
@@ -181,9 +189,7 @@ public class JcrHippoRepository implements Repository {
     }
 
     public Session login(Credentials credentials) throws LoginException, RepositoryException {
-        if (!repositoryInitialized) {
-            initHippoRepository();
-        }
+        initHippoRepository();
 
         if (jcrDelegateeRepository != null) {
             return jcrDelegateeRepository.login(credentials);
@@ -201,9 +207,7 @@ public class JcrHippoRepository implements Repository {
     }
 
     public Session login(String workspaceName) throws LoginException, NoSuchWorkspaceException, RepositoryException {
-        if (!repositoryInitialized) {
-            initHippoRepository();
-        }
+        initHippoRepository();
 
         if (jcrDelegateeRepository != null) {
             return jcrDelegateeRepository.login(workspaceName);
@@ -214,9 +218,7 @@ public class JcrHippoRepository implements Repository {
 
     public Session login(Credentials credentials, String workspaceName) throws LoginException, NoSuchWorkspaceException,
             RepositoryException {
-        if (!repositoryInitialized) {
-            initHippoRepository();
-        }
+        initHippoRepository();
 
         if (jcrDelegateeRepository != null) {
             return jcrDelegateeRepository.login(credentials, workspaceName);
