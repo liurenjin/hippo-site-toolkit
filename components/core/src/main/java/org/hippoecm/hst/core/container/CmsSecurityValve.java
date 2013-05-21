@@ -28,6 +28,7 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.lang.StringUtils;
 import org.hippoecm.hst.configuration.hosting.MutableMount;
+import org.hippoecm.hst.configuration.hosting.VirtualHost;
 import org.hippoecm.hst.core.internal.HstMutableRequestContext;
 import org.hippoecm.hst.core.jcr.LazySession;
 import org.hippoecm.hst.core.request.HstRequestContext;
@@ -127,11 +128,14 @@ public class CmsSecurityValve extends AbstractBaseOrderableValve {
                 }
 
                 StringBuilder destinationURL = new StringBuilder();
-                String cmsBaseUrl = getBaseUrl(cmsUrl);
-                destinationURL.append(cmsBaseUrl);
+                VirtualHost vhost = requestContext.getVirtualHost();
+                destinationURL.append(vhost.getBaseURL(servletRequest));
 
-                // we append the request uri including the context path (normally this is /site/...)
-                destinationURL.append(servletRequest.getRequestURI());
+                if (vhost.isContextPathInUrl()) {
+                    destinationURL.append(servletRequest.getRequestURI());
+                } else {
+                    destinationURL.append(StringUtils.substring(servletRequest.getRequestURI(), servletRequest.getContextPath().length()));
+                }
 
                 if(requestContext.getPathSuffix() != null) {
                     String subPathDelimeter = requestContext.getVirtualHost().getVirtualHosts().getHstManager().getPathSuffixDelimiter();
@@ -214,25 +218,6 @@ public class CmsSecurityValve extends AbstractBaseOrderableValve {
 
     private boolean isCmsRestRequestContext(final HttpServletRequest servletRequest) {
         return Boolean.TRUE.equals(servletRequest.getAttribute(ContainerConstants.CMS_HOST_REST_REQUEST_CONTEXT));
-    }
-
-    /**
-     * from a url, return everything up to the contextpath : Thus,
-     * scheme + host + port
-     * @param url the URL string to get the base from
-     * @return the scheme + host + port without trailing / at the end
-     * @throws ContainerException if the URL does not contain // after the scheme or does not contain a / after the host (+port)
-     */
-    private String getBaseUrl(final String url) throws ContainerException {
-        int indexOfDoubleSlash = url.indexOf("//");
-        if (indexOfDoubleSlash == -1) {
-            throw new ContainerException("Could not establish a SSO between CMS & site application because cannot get a cms url from the referer '"+url+"'");
-        }
-        int indexOfRequestURI = url.substring(indexOfDoubleSlash +2).indexOf("/") + indexOfDoubleSlash +2;
-        if (indexOfRequestURI == -1) {
-            throw new ContainerException("Could not establish a SSO between CMS & site application because cannot get a cms url from the referer '"+url+"'");
-        }
-        return url.substring(0, indexOfRequestURI);
     }
 
 }
