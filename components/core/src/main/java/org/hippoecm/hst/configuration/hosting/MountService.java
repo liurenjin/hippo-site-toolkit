@@ -516,7 +516,7 @@ public class MountService implements ContextualizableMount, MutableMount {
 
         if (mount.getValueProvider().hasProperty(HstNodeTypes.MOUNT_PROPERTY_DEFAULTSITEMAPITEMHANDLERIDS)) {
             defaultSiteMapItemHandlerIds = mount.getValueProvider().getStrings(HstNodeTypes.MOUNT_PROPERTY_DEFAULTSITEMAPITEMHANDLERIDS);
-        } else {
+        } else if (parent != null) {
             defaultSiteMapItemHandlerIds = parent.getDefaultSiteMapItemHandlerIds();
         }
 
