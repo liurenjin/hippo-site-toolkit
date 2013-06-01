@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -48,7 +49,7 @@ public class HstSiteMapItemService implements HstSiteMapItem {
 
     private Map<String, HstSiteMapItem> childSiteMapItems = new HashMap<String, HstSiteMapItem>();
     
-    private Map<String, HstSiteMapItemHandlerConfiguration> siteMapItemHandlerConfigurations = new HashMap<String, HstSiteMapItemHandlerConfiguration>();
+    private Map<String, HstSiteMapItemHandlerConfiguration> siteMapItemHandlerConfigurations = new LinkedHashMap<String, HstSiteMapItemHandlerConfiguration>();
 
     private String id;
 
