@@ -46,9 +46,7 @@
   
   
   <!-- SSO cms non-pooling delegating repository -->
-  <bean id="javax.jcr.Repository.cms" class="org.hippoecm.hst.core.jcr.LazySessionDelegatingRepository">
-    <constructor-arg ref="javax.jcr.Repository.delegating" />
-    <property name="logoutOnSessionUnbound" value="true" />
+  <bean id="javax.jcr.Repository.cms" class="org.hippoecm.hst.core.jcr.pool.JcrHippoRepository">
   </bean>
   
   <bean id="javax.jcr.Repository" class="org.hippoecm.hst.core.jcr.pool.MultipleRepositoryImpl">
