@@ -1,5 +1,5 @@
 /*
- *  Copyright 2011 Hippo.
+ *  Copyright 2011-2013 Hippo B.V. (http://www.onehippo.com)
  * 
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -13,7 +13,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package org.hippoecm.hst.configuration;
+package org.hippoecm.hst.core.internal;
 
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -26,16 +26,16 @@ import java.util.concurrent.ConcurrentMap;
 public class StringPool {
 
     private static final ConcurrentMap<String,String> stringPool = new ConcurrentHashMap<String, String>(1000);
-    
+
     /**
      * not allowed to instantiate
      */
     private StringPool(){}
-    
+
     /**
      * If <code>string</code> is already present in the pool (same hashcode and equals), then the already present String 
      * object is returned. Else, the <code>string</code> is added to the stringPool. 
-     * @param string 
+     * @param string The {@link String} object for which to get its cached object instance
      * @return the String object from the argument or if their was already and equal object in the pool, the object that was already there.
      */
     public static String get(String string) {
@@ -53,7 +53,7 @@ public class StringPool {
         }
         return cached;
     }
-    
+
     /**
      * Clears the entire StringPool
      */
