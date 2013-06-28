@@ -58,6 +58,7 @@ public class CmsSecurityValve extends AbstractValve {
 
     private Repository repository;
     private Credentials previewCredentials;
+    private boolean securityDelegationEnabled;
 
     public void setRepository(Repository repository) {
         this.repository = repository;
@@ -65,6 +66,10 @@ public class CmsSecurityValve extends AbstractValve {
 
     public void setPreviewCredentials(SimpleCredentials credentials) {
         this.previewCredentials = credentials;
+    }
+
+    public void setSecurityDelegationEnabled(boolean securityDelegationEnabled) {
+        this.securityDelegationEnabled = securityDelegationEnabled;
     }
 
     @Override
@@ -169,6 +174,8 @@ public class CmsSecurityValve extends AbstractValve {
             } 
         }
 
+
+
         // we are in a request for the REST template composer
         // we need to synchronize on a http session as a jcr session which is tied to it is not thread safe. Also, virtual states will be lost
         // if another thread flushes this session.
@@ -178,13 +185,18 @@ public class CmsSecurityValve extends AbstractValve {
                 if (isCmsRestRequestContext(servletRequest)) {
                     jcrSession = createCmsRestSession(httpSession);
                 } else {
-                    jcrSession = createCmsPreviewSession(httpSession);
+                    if (securityDelegationEnabled) {
+                        jcrSession = createCmsPreviewSession(httpSession);
+                    } else {
+                        // do not yet create a session. just use the one that the HST container will create later
+                    }
                 }
 
-                httpSession.setAttribute(CMS_USER_ID_ATTR, jcrSession.getUserID());
-
-                // only set the cms based lazySession on the request context when the context is the cms context
-                ((HstMutableRequestContext) requestContext).setSession(jcrSession);
+                if (jcrSession != null) {
+                    httpSession.setAttribute(CMS_USER_ID_ATTR, jcrSession.getUserID());
+                    // only set the cms based lazySession on the request context when the context is the cms context
+                    ((HstMutableRequestContext) requestContext).setSession(jcrSession);
+                }
                 context.invokeNext();
             } finally {
                 if (jcrSession != null) {
