@@ -16,8 +16,7 @@
 package org.hippoecm.hst.core.channelmanager;
 
 import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.http.HttpSession;
 
@@ -29,6 +28,7 @@ import org.hippoecm.hst.core.component.HstRequest;
 import org.hippoecm.hst.core.component.HstResponse;
 import org.hippoecm.hst.core.component.HstURL;
 import org.hippoecm.hst.core.component.HstURLFactory;
+import org.hippoecm.hst.core.container.CmsSecurityValve;
 import org.hippoecm.hst.core.container.ContainerConstants;
 import org.hippoecm.hst.core.container.HstComponentWindow;
 import org.w3c.dom.Comment;
@@ -49,15 +49,17 @@ public class CmsComponentWindowResponseAppender extends AbstractComponentWindowR
 
         // we are in render host mode. Add the wrapper elements that are needed for the composer around all components
         HstComponentConfiguration compConfig  = ((HstComponentConfiguration)window.getComponentInfo());
+        Mount mount = request.getRequestContext().getResolvedMount().getMount();
+        boolean fineGrainedLocking = ((MutableMount)mount).getVirtualHost().getVirtualHosts().getHstManager().isFineGrainedLocking();
         if (isTopHstResponse(rootWindow, rootRenderingWindow, window)) {
-            Mount mount = request.getRequestContext().getResolvedMount().getMount();
             response.addHeader(ChannelManagerConstants.HST_MOUNT_ID, mount.getIdentifier());
             response.addHeader(ChannelManagerConstants.HST_SITE_ID, mount.getHstSite().getCanonicalIdentifier());
             response.addHeader(ChannelManagerConstants.HST_PAGE_ID, compConfig.getCanonicalIdentifier());
             if (mount instanceof MutableMount) {
+                response.addHeader(ChannelManagerConstants.HST_MOUNT_FINEGRAINED_LOCKING, String.valueOf(fineGrainedLocking));
                 MutableMount mutableMount = (MutableMount)mount;
                 final String lockedBy = mutableMount.getLockedBy();
-                if (StringUtils.isNotBlank(lockedBy)) {
+                if (!fineGrainedLocking && StringUtils.isNotBlank(lockedBy)) {
                     response.addHeader(ChannelManagerConstants.HST_MOUNT_LOCKED_BY, lockedBy);
                     response.addHeader(ChannelManagerConstants.HST_MOUNT_LOCKED_ON, String.valueOf(mutableMount.getLockedOn().getTimeInMillis()));
                 }
@@ -68,7 +70,6 @@ public class CmsComponentWindowResponseAppender extends AbstractComponentWindowR
             }
             response.addHeader(ChannelManagerConstants.HST_RENDER_VARIANT, variant.toString());
             response.addHeader(ChannelManagerConstants.HST_SITE_HAS_PREVIEW_CONFIG, String.valueOf(mount.getHstSite().hasPreviewConfiguration()));
-
         } else if (isComposerMode(request)) {
             HashMap<String, String> attributes = new HashMap<String, String>();
             attributes.put("uuid", compConfig.getCanonicalIdentifier());
@@ -85,12 +86,30 @@ public class CmsComponentWindowResponseAppender extends AbstractComponentWindowR
                     request.getRequestContext());
             attributes.put("url", url.toString());
             attributes.put("refNS", window.getReferenceNamespace());
+            if (mount instanceof MutableMount) {
+                if (fineGrainedLocking) {
+                    if (compConfig.getLockedBy() != null) {
+                        String cmsUserId = (String)session.getAttribute(CmsSecurityValve.CMS_USER_ID_ATTR);
+                        attributes.put(ChannelManagerConstants.HST_CONTAINER_COMPONENT_LOCKED_BY, compConfig.getLockedBy());
+                        if (compConfig.getLockedBy().equals(cmsUserId)) {
+                            attributes.put(ChannelManagerConstants.HST_CONTAINER_COMPONENT_LOCKED_BY_CURRENT_USER, "true");
+                        } else {
+                            attributes.put(ChannelManagerConstants.HST_CONTAINER_COMPONENT_LOCKED_BY_CURRENT_USER, "false");
+                        }
+                        if (compConfig.getLockedOn() != null) {
+                            attributes.put(ChannelManagerConstants.HST_CONTAINER_COMPONENT_LOCKED_ON, String.valueOf(compConfig.getLockedOn().getTimeInMillis()));
+                        }
+                    }
+                    if (compConfig.getLastModified() != null) {
+                        attributes.put(ChannelManagerConstants.HST_CONTAINER_COMPONENT_LAST_MODIFIED, String.valueOf(compConfig.getLastModified().getTimeInMillis()));
+                    }
+                }
 
+            }
             Comment comment = createCommentWithAttr(attributes, response);
             response.addPreamble(comment);
         }
 
     }
-
 
 }

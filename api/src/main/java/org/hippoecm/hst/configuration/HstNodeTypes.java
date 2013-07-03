@@ -52,6 +52,8 @@ public interface HstNodeTypes {
     static final String GENERAL_PROPERTY_INHERITS_FROM = "hst:inheritsfrom";
     static final String GENERAL_PROPERTY_LOCKED_BY = "hst:lockedby";
     static final String GENERAL_PROPERTY_LOCKED_ON = "hst:lockedon";
+    static final String GENERAL_PROPERTY_LAST_MODIFIED = "hst:lastmodified";
+    static final String GENERAL_PROPERTY_LAST_MODIFIED_BY = "hst:lastmodifiedby";
     static final String GENERAL_PROPERTY_PARAMETER_NAMES = "hst:parameternames";
     static final String GENERAL_PROPERTY_PARAMETER_VALUES = "hst:parametervalues";
     static final String GENERAL_PROPERTY_HOMEPAGE = "hst:homepage";

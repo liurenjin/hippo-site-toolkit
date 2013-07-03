@@ -41,6 +41,7 @@ public class ComponentRepresentation {
 
     private String type;
     private String xtype;
+    private long lastModifiedTimestamp;
 
     public ComponentRepresentation represent(HstComponentConfiguration componentConfiguration, Mount mount) {
 
@@ -61,6 +62,10 @@ public class ComponentRepresentation {
             HstRequestContext requestContext = RequestContextProvider.get();
             iconURL = requestContext.getHstLinkCreator().create(iconPath, mount, true).toUrlForm(requestContext, false);
         }
+        if(componentConfiguration.getParent() != null && componentConfiguration.getParent().getLastModified() != null) {
+            lastModifiedTimestamp = componentConfiguration.getParent().getLastModified().getTimeInMillis();
+        }
+
         return this;
     }
 
@@ -156,6 +161,13 @@ public class ComponentRepresentation {
         this.iconURL = iconURL;
     }
     
-    
+    public long getLastModifiedTimestamp() {
+        return lastModifiedTimestamp;
+    }
+
+    public void setLastModifiedTimestamp(final long lastModifiedTimestamp) {
+        this.lastModifiedTimestamp = lastModifiedTimestamp;
+    }
+
 
 }

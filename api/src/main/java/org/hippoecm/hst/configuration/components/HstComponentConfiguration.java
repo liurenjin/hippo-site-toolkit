@@ -15,6 +15,7 @@
  */
 package org.hippoecm.hst.configuration.components;
 
+import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -269,5 +270,20 @@ public interface HstComponentConfiguration extends HstComponentInfo {
      * to the site webapp 
      */
     String getIconPath();
+
+    /**
+     * @return if this hst component is locked, this method returns by whom it is locked
+     */
+    String getLockedBy();
+
+    /**
+     * @return if {@link Calendar} time this component got locked or <code>null</code> if it is not locked
+     */
+    Calendar getLockedOn();
+
+    /**
+     * @return if {@link Calendar} time this component got changed for the last time or <code>null</code> if not available
+     */
+    Calendar getLastModified();
 
 }
