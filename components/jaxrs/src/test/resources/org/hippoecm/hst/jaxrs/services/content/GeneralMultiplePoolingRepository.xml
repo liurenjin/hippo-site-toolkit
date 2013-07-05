@@ -163,5 +163,12 @@
   <bean id="javax.jcr.Repository.subjectBased" class="org.hippoecm.hst.core.jcr.SubjectBasedRepository">
     <constructor-arg ref="javax.jcr.Repository.delegating" />
   </bean>
+
+  <bean id="org.hippoecm.hst.core.jcr.SessionSecurityDelegation" class="org.hippoecm.hst.core.jcr.SessionSecurityDelegationImpl">
+    <property name="securityDelegationEnabled" value="${cms.preview.security.delegation.enabled}"/>
+    <property name="repository" ref="javax.jcr.Repository.delegating"/>
+    <property name="previewCredentials" ref="javax.jcr.Credentials.preview.delegating"/>
+    <property name="liveCredentials" ref="javax.jcr.Credentials.default.delegating"/>
+  </bean>
   
 </beans>
