@@ -18,13 +18,9 @@ package org.hippoecm.hst.core.container;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.security.SignatureException;
-import java.util.Arrays;
 
 import javax.jcr.Credentials;
-import javax.jcr.PropertyType;
-import javax.jcr.Repository;
 import javax.jcr.Session;
-import javax.jcr.SimpleCredentials;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -33,10 +29,7 @@ import org.apache.commons.lang.StringUtils;
 import org.hippoecm.hst.configuration.hosting.MutableMount;
 import org.hippoecm.hst.core.internal.HstMutableRequestContext;
 import org.hippoecm.hst.core.request.HstRequestContext;
-import org.hippoecm.repository.api.HippoNodeType;
-import org.hippoecm.repository.api.HippoSession;
-import org.onehippo.repository.security.domain.DomainRuleExtension;
-import org.onehippo.repository.security.domain.FacetRule;
+import org.hippoecm.hst.core.jcr.SessionSecurityDelegation;
 import org.onehippo.sso.CredentialCipher;
 
 /**
@@ -56,20 +49,10 @@ public class CmsSecurityValve extends AbstractValve {
 
     private final static String CMS_USER_ID_ATTR = CmsSecurityValve.class.getName() + ".cms_user_id";
 
-    private Repository repository;
-    private Credentials previewCredentials;
-    private boolean securityDelegationEnabled;
+    private SessionSecurityDelegation sessionSecurityDelegation;
 
-    public void setRepository(Repository repository) {
-        this.repository = repository;
-    }
-
-    public void setPreviewCredentials(SimpleCredentials credentials) {
-        this.previewCredentials = credentials;
-    }
-
-    public void setSecurityDelegationEnabled(boolean securityDelegationEnabled) {
-        this.securityDelegationEnabled = securityDelegationEnabled;
+    public void setSessionSecurityDelegation(SessionSecurityDelegation sessionSecurityDelegation) {
+        this.sessionSecurityDelegation = sessionSecurityDelegation;
     }
 
     @Override
@@ -185,7 +168,7 @@ public class CmsSecurityValve extends AbstractValve {
                 if (isCmsRestRequestContext(servletRequest)) {
                     jcrSession = createCmsRestSession(httpSession);
                 } else {
-                    if (securityDelegationEnabled) {
+                    if (sessionSecurityDelegation.sessionSecurityDelegationEnabled()) {
                         jcrSession = createCmsPreviewSession(httpSession);
                     } else {
                         // do not yet create a session. just use the one that the HST container will create later
@@ -232,7 +215,7 @@ public class CmsSecurityValve extends AbstractValve {
     private Session createCmsRestSession(final HttpSession httpSession) throws ContainerException {
         long start = System.currentTimeMillis();
         try {
-            Session session =  repository.login((Credentials) httpSession.getAttribute(ContainerConstants.CMS_SSO_REPO_CREDS_ATTR_NAME));
+            Session session = sessionSecurityDelegation.getDelegatedSession((Credentials) httpSession.getAttribute(ContainerConstants.CMS_SSO_REPO_CREDS_ATTR_NAME));
             log.debug("Acquiring cms rest session took '{}' ms.", (System.currentTimeMillis() - start));
             return session;
         } catch (Exception e) {
@@ -242,33 +225,13 @@ public class CmsSecurityValve extends AbstractValve {
 
     private Session createCmsPreviewSession(final HttpSession httpSession) throws ContainerException {
         long start = System.currentTimeMillis();
-        Session jcrSession = null;
+        Credentials cmsUserCred = (Credentials) httpSession.getAttribute(ContainerConstants.CMS_SSO_REPO_CREDS_ATTR_NAME);
         try {
-            Session cmsUserSession = repository.login((Credentials) httpSession.getAttribute(ContainerConstants.CMS_SSO_REPO_CREDS_ATTR_NAME));
-            if (!(cmsUserSession instanceof HippoSession)) {
-                cmsUserSession.logout();
-                throw new ContainerException("Repository returned Session is not a HippoSession.");
-            }
-
-            Session previewSession = null;
-            try {
-                previewSession = repository.login(previewCredentials);
-                FacetRule facetRule = new FacetRule(HippoNodeType.HIPPO_AVAILABILITY, "preview", true, true, PropertyType.STRING);
-                DomainRuleExtension dre = new DomainRuleExtension("*", "*", Arrays.asList(facetRule));
-                jcrSession = ((HippoSession) cmsUserSession).createSecurityDelegate(previewSession, dre);
-            } finally {
-                if (previewSession != null) {
-                    previewSession.logout();
-                }
-                if (jcrSession != null) {
-                    cmsUserSession.logout();
-                }
-            }
+            Session session = sessionSecurityDelegation.createPreviewSecurityDelegate(cmsUserCred, false);
+            log.debug("Acquiring security delegate session took '{}' ms.", (System.currentTimeMillis() - start));
+            return session;
         } catch (Exception e) {
             throw new ContainerException("Failed to create Session based on SSO.", e);
         }
-        log.debug("Acquiring security delegate session took '{}' ms.", (System.currentTimeMillis() - start));
-        return jcrSession;
     }
-
 }

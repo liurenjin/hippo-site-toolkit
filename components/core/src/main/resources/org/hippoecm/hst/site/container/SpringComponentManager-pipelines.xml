@@ -61,9 +61,7 @@
   </bean>
    
   <bean id="cmsSecurityValve" parent="abstractValve" class="org.hippoecm.hst.core.container.CmsSecurityValve">
-    <property name="repository" ref="javax.jcr.Repository.cms"/>
-    <property name="previewCredentials" ref="javax.jcr.Credentials.cmspreview"/>
-    <property name="securityDelegationEnabled" value="${cms.preview.security.delegation.enabled}"/>
+    <property name="sessionSecurityDelegation" ref="org.hippoecm.hst.core.jcr.SessionSecurityDelegation"/>
   </bean>
   
   <bean id="cmsHostContextValve" parent="abstractValve" class="org.hippoecm.hst.core.container.CmsHostContextValve"/>
@@ -131,6 +129,7 @@
   
   <bean id="cleanupValve" parent="abstractValve" class="org.hippoecm.hst.core.container.CleanupValve">
     <property name="resourceLifecycleManagements" ref="resourceLifecycleManagementList" />
+    <property name="sessionSecurityDelegation" ref="org.hippoecm.hst.core.jcr.SessionSecurityDelegation"/>
   </bean>
   
   <!-- Pipelines -->

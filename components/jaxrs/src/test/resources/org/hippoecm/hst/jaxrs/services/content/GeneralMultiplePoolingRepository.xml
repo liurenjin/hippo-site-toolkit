@@ -29,12 +29,17 @@
     <constructor-arg value="admin" />
   </bean>
 
+  <bean id="javax.jcr.Credentials.default.delegating" class="javax.jcr.SimpleCredentials">
+    <constructor-arg value="admin" />
+    <constructor-arg value="admin" />
+  </bean>
+
   <bean id="javax.jcr.Credentials.preview" class="javax.jcr.SimpleCredentials">
     <constructor-arg value="admin@preview" />
     <constructor-arg value="admin" />
   </bean>
 
-  <bean id="javax.jcr.Credentials.cmspreview" class="javax.jcr.SimpleCredentials">
+  <bean id="javax.jcr.Credentials.preview.delegating" class="javax.jcr.SimpleCredentials">
     <constructor-arg value="admin" />
     <constructor-arg value="admin" />
   </bean>
@@ -157,10 +162,6 @@
   <!-- Subject based non-pooling delegating repository -->
   <bean id="javax.jcr.Repository.subjectBased" class="org.hippoecm.hst.core.jcr.SubjectBasedRepository">
     <constructor-arg ref="javax.jcr.Repository.delegating" />
-  </bean>
-  
-  <!-- SSO cms non-pooling delegating repository -->
-  <bean id="javax.jcr.Repository.cms" class="org.hippoecm.hst.core.jcr.pool.JcrHippoRepository">
   </bean>
   
 </beans>
