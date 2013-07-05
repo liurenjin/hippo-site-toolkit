@@ -81,7 +81,7 @@ public class SessionSecurityDelegationImpl implements SessionSecurityDelegation 
                     session.logout();
                 }
             }
-            sessionList.clear();;
+            sessionList.clear();
         }
         Map<String, Session> sessionMap = (Map<String, Session>)requestContext.getAttribute(SESSIONS_KEY_MAP_ATTR_NAME);
         if (sessionMap != null) {
