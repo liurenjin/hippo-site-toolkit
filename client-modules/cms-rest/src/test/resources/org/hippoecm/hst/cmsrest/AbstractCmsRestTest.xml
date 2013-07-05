@@ -61,10 +61,6 @@
     <constructor-arg value="${hstconfigreader.repository.password}"/>
   </bean>
 
-  <!-- SSO cms non-pooling delegating repository -->
-  <bean id="javax.jcr.Repository.cms" class="org.hippoecm.hst.core.jcr.pool.JcrHippoRepository">
-  </bean>
-  
   <bean id="javax.jcr.Repository" class="org.hippoecm.hst.core.jcr.pool.MultipleRepositoryImpl">
     <!-- Delegating session pool repositories -->
     <constructor-arg>
