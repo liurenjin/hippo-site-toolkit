@@ -139,6 +139,11 @@ public class TestSessionSecurityDelegation extends AbstractHstTestCase {
         assertFalse(live1 == preview1);
 
         sessionSecurityDelegation.cleanupSessionDelegates(RequestContextProvider.get());
+
+        final Session live5 = sessionSecurityDelegation.getOrCreateLiveSecurityDelegate(creds, "test123");
+        // after clean up sessions get all logout from sessionSecurityDelegation
+        assertFalse(live1 == live5);
+        sessionSecurityDelegation.cleanupSessionDelegates(RequestContextProvider.get());
     }
 
 
