@@ -76,7 +76,7 @@ public class SessionSecurityDelegationImpl implements SessionSecurityDelegation 
 
     @Override
     public void cleanupSessionDelegates(HstRequestContext requestContext) {
-        List<Session> sessionList = (List<Session>)requestContext.getAttribute(SESSIONS_KEY_LIST_ATTR_NAME);
+        List<Session> sessionList = getSessionList(requestContext);
         if (sessionList != null) {
             for (Session session : sessionList) {
                 if (session.isLive()) {
@@ -85,7 +85,7 @@ public class SessionSecurityDelegationImpl implements SessionSecurityDelegation 
             }
             sessionList.clear();
         }
-        Map<String, Session> sessionMap = (Map<String, Session>)requestContext.getAttribute(SESSIONS_KEY_MAP_ATTR_NAME);
+        Map<DelegateSessionKey, Session> sessionMap = getSessionMap(requestContext);
         if (sessionMap != null) {
             for (Session session : sessionMap.values()) {
                 if (session.isLive()) {
@@ -156,7 +156,7 @@ public class SessionSecurityDelegationImpl implements SessionSecurityDelegation 
             if (requestContext == null) {
                 throw new IllegalStateException("Cannot automatically logout jcr session since there is no HstRequestContext");
             }
-            Map<DelegateSessionKey, Session> sessionMap = (Map<DelegateSessionKey, Session>)requestContext.getAttribute(SESSIONS_KEY_MAP_ATTR_NAME);
+            Map<DelegateSessionKey, Session> sessionMap = getSessionMap(requestContext);
             if (sessionMap != null) {
                 DelegateSessionKey dsk = new DelegateSessionKey(cred1, cred2, key, domainExtensions);
                 Session existing = sessionMap.get(dsk);
@@ -204,7 +204,7 @@ public class SessionSecurityDelegationImpl implements SessionSecurityDelegation 
     }
 
     private void storeInList(final Session jcrSession, final HstRequestContext requestContext) {
-        List<Session> sessionList = (List<Session>)requestContext.getAttribute(SESSIONS_KEY_LIST_ATTR_NAME);
+        List<Session> sessionList = getSessionList(requestContext);
         if (sessionList == null) {
             sessionList = new ArrayList<Session>();
             requestContext.setAttribute(SESSIONS_KEY_LIST_ATTR_NAME, sessionList);
@@ -213,7 +213,7 @@ public class SessionSecurityDelegationImpl implements SessionSecurityDelegation 
     }
 
     private void storeInMap(final Session jcrSession, final DelegateSessionKey key, final HstRequestContext requestContext) {
-        Map<DelegateSessionKey, Session> sessionMap = (Map<DelegateSessionKey, Session>)requestContext.getAttribute(SESSIONS_KEY_MAP_ATTR_NAME);
+        Map<DelegateSessionKey, Session> sessionMap = getSessionMap(requestContext);
         if (sessionMap == null) {
             sessionMap = new HashMap<DelegateSessionKey, Session>();
             requestContext.setAttribute(SESSIONS_KEY_MAP_ATTR_NAME, sessionMap);
@@ -295,4 +295,14 @@ public class SessionSecurityDelegationImpl implements SessionSecurityDelegation 
             return (cred != null ? cred.hashCode() : 0);
         }
     }
+
+
+    private Map<DelegateSessionKey, Session> getSessionMap(final HstRequestContext requestContext) {
+        return (Map<DelegateSessionKey, Session>)requestContext.getAttribute(SESSIONS_KEY_MAP_ATTR_NAME);
+    }
+
+    private List<Session> getSessionList(final HstRequestContext requestContext) {
+        return (List<Session>)requestContext.getAttribute(SESSIONS_KEY_LIST_ATTR_NAME);
+    }
+
 }
