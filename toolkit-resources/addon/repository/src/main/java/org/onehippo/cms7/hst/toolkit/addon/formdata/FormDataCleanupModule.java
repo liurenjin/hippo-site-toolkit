@@ -190,7 +190,9 @@ public class FormDataCleanupModule implements ConfigurableDaemonModule {
     }
 
     void unscheduleJob() throws SchedulerException {
-        scheduler.deleteJob(job.getName(), job.getGroup());
+        if (job != null) {
+            scheduler.deleteJob(job.getName(), job.getGroup());
+        }
     }
 
     public static class FormDataCleanupJob implements Job {
@@ -286,11 +288,11 @@ public class FormDataCleanupModule implements ConfigurableDaemonModule {
                         lockManager.lock(moduleConfigPath, false, false, ONE_WEEK, getClusterNodeId(session));
                         return true;
                     } catch (LockException e) {
-                        log.warn("Failed to obtain lock: " + e.getMessage() + ". Event log cleanup will not run");
+                        log.warn("Failed to obtain lock: " + e.getMessage() + ". Form data cleanup will not run");
                     }
                 }
             } catch (RepositoryException e) {
-                log.error("Failed to obtain lock: event log cleanup will not run", e);
+                log.error("Failed to obtain lock: form data cleanup will not run", e);
             }
             return false;
         }
@@ -339,6 +341,9 @@ public class FormDataCleanupModule implements ConfigurableDaemonModule {
                     synchronized (FormDataCleanupModule.this) {
                         unscheduleJob();
                         configure(session.getNode(moduleConfigPath));
+                        if (scheduler == null) {
+                            startScheduler();
+                        }
                         scheduleJob();
                     }
                 } catch (RepositoryException e) {
