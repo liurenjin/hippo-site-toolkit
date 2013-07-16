@@ -29,8 +29,10 @@ import org.hippoecm.hst.core.sitemapitemhandler.HstSiteMapItemHandlerException;
 /**
  * The abstract implementation of the HstSiteMapItemHandler interface. Note that HstSiteMapItemHandler's are used concurrent and are 
  * not thread-safe. Implementations should take care of concurrency.
+ * @deprecated since 2.26.04 implement a HstSiteMapItemHandler yourself
  */
-public abstract class AbstractHstSiteMapHandler implements HstSiteMapItemHandler{
+@Deprecated
+public abstract class AbstractHstSiteMapHandler implements HstSiteMapItemHandler {
 
     private ServletContext servletContext;
     private SiteMapItemHandlerConfiguration handlerConfig;
