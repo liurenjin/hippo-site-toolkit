@@ -88,7 +88,7 @@
     <jackrabbit-ocm.version>1.5.3</jackrabbit-ocm.version>
 
     <hippo.cms.version>2.22.14</hippo.cms.version>
-    <hippo.repository.version>2.22.19-SNAPSHOT</hippo.repository.version>
+    <hippo.repository.version>2.22.19</hippo.repository.version>
     <hippo.addon-publication-workflow.version>2.22.05</hippo.addon-publication-workflow.version>
 
     <htmlcleaner.version>2.1</htmlcleaner.version>
