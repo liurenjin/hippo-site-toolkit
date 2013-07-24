@@ -549,7 +549,9 @@ public class BaseHstComponent extends GenericHstComponent {
      * 
      * This method is only called during the init() phase of a component     
 	 * @return List of annotated classes, and if there are none, return an empty list
+     * @deprecated since 7.8.3 : There is no replacement. Since automatic beans scanning this method is completely redundant
      */
+    @Deprecated
     protected List<Class<? extends HippoBean>> getLocalAnnotatedClasses() {
         return null;
     }
