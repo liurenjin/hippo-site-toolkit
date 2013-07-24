@@ -21,6 +21,7 @@ import java.security.SignatureException;
 
 import javax.jcr.Credentials;
 import javax.jcr.Session;
+import javax.jcr.SimpleCredentials;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -149,6 +150,7 @@ public class CmsSecurityValve extends AbstractValve {
                 CredentialCipher credentialCipher = CredentialCipher.getInstance();
                 try {
                     Credentials cred = credentialCipher.decryptFromString(key, credentialParam);
+                    httpSession.setAttribute(CMS_USER_ID_ATTR, ((SimpleCredentials) cred).getUserID());
                     httpSession.setAttribute(ContainerConstants.CMS_SSO_REPO_CREDS_ATTR_NAME, cred);
                     httpSession.setAttribute(ContainerConstants.CMS_SSO_AUTHENTICATED, true);
                 } catch (SignatureException se) {
@@ -176,7 +178,6 @@ public class CmsSecurityValve extends AbstractValve {
                 }
 
                 if (jcrSession != null) {
-                    httpSession.setAttribute(CMS_USER_ID_ATTR, jcrSession.getUserID());
                     // only set the cms based lazySession on the request context when the context is the cms context
                     ((HstMutableRequestContext) requestContext).setSession(jcrSession);
                 }
@@ -215,7 +216,8 @@ public class CmsSecurityValve extends AbstractValve {
     private Session createCmsRestSession(final HttpSession httpSession) throws ContainerException {
         long start = System.currentTimeMillis();
         try {
-            Session session = sessionSecurityDelegation.getDelegatedSession((Credentials) httpSession.getAttribute(ContainerConstants.CMS_SSO_REPO_CREDS_ATTR_NAME));
+            final Credentials credentials = (Credentials) httpSession.getAttribute(ContainerConstants.CMS_SSO_REPO_CREDS_ATTR_NAME);
+            Session session = sessionSecurityDelegation.getDelegatedSession(credentials);
             log.debug("Acquiring cms rest session took '{}' ms.", (System.currentTimeMillis() - start));
             return session;
         } catch (Exception e) {
