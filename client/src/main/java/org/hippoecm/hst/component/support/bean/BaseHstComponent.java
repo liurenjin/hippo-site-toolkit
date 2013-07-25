@@ -87,8 +87,22 @@ public class BaseHstComponent extends GenericHstComponent {
 
     private static Logger log = LoggerFactory.getLogger(BaseHstComponent.class);
 
+    /**
+     * @deprecated since 2.26.05 : do not use any more, In the 2.28.00 this static class variable is removed.
+     */
+    @Deprecated
     public static final String BEANS_ANNOTATED_CLASSES_CONF_PARAM = "hst-beans-annotated-classes";
+
+    /**
+     * @deprecated since 2.26.05 : do not use any more, In the 2.28.00 this static class variable is removed.
+     */
+    @Deprecated
     public static final String DEFAULT_BEANS_ANNOTATED_CLASSES_CONF = "/WEB-INF/beans-annotated-classes.xml";
+
+    /**
+     * @deprecated since 2.26.05 : do not use any more, In the 2.28.00 this static class variable is removed.
+     */
+    @Deprecated
     public static final String OBJECT_CONVERTER_CONTEXT_ATTRIBUTE = BaseHstComponent.class.getName() + ".objectConverter";
     
     private static final String BEANS_ANNOTATED_CLASSES_CONF_PARAM_ERROR_MSG = 
@@ -96,8 +110,23 @@ public class BaseHstComponent extends GenericHstComponent {
         "You can set a servlet context parameter named '" + BEANS_ANNOTATED_CLASSES_CONF_PARAM + "' with xml or classes location filter.\n" +
         "For example, '" + DEFAULT_BEANS_ANNOTATED_CLASSES_CONF + "' or 'classpath*:org/examples/beans/**/*.class'";
 
+    /**
+     * @deprecated since 2.26.05 : do not use any more, In the 2.28.00 this protected member is removed.
+     */
+    @Deprecated
     protected boolean beansInitialized;
+
+    /**
+     * @deprecated since 2.26.05 : do not use any more, In the 2.28.00 this protected member is removed.
+     * Use {@link #getObjectConverter()} instead
+     */
+    @Deprecated
     protected ObjectConverter objectConverter;
+    /**
+     * @deprecated since 2.26.05 : do not use any more, In the 2.28.00 this protected member is removed.
+     * Use {@link org.hippoecm.hst.core.request.HstRequestContext#getHstQueryManagerFactory()} instead
+     */
+    @Deprecated
     protected HstQueryManagerFactory hstQueryManagerFactory;
     
     private ServletContext servletContext;
