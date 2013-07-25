@@ -574,11 +574,23 @@ public class BaseHstComponent extends GenericHstComponent {
     }
 
     /**
-     * when you want to inject specific component only custom annotated classes override this method
-     * 
-     * This method is only called during the init() phase of a component     
+     * <p>when you want to inject specific component only custom annotated classes override this method</p>
+     * <p>
+     * This method is only called during the init() phase of a component
 	 * @return List of annotated classes, and if there are none, return an empty list
-     * @deprecated since 7.8.3 : There is no replacement. Since automatic beans scanning this method is completely redundant
+     * @deprecated since 7.8.3 : There is no replacement. Since automatic beans scanning this method is completely redundant. Make
+     * sure that through the 'hst-beans-annotated-classes' in the web.xml all annotated beans can be found. For example
+     * </p>
+     * <code>
+     * <pre>
+     * &lt;param-value&gt;
+     * classpath*:com/onehippo/myproject/beans/**\/\*.class,
+     * classpath*:org/onehippo/forge/poll/**\/\*.class,
+     * classpath*:org/onehippo/forge/properties/**\/\*.class,
+     * classpath*:org/onehippo/forge/tcmp/**\/\*.class,
+     * &lt;/param-value&gt;
+     *
+     * </pre></code>
      */
     @Deprecated
     protected List<Class<? extends HippoBean>> getLocalAnnotatedClasses() {
