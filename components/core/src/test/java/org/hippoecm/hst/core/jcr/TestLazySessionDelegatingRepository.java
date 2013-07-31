@@ -65,8 +65,6 @@ public class TestLazySessionDelegatingRepository  extends AbstractHstTestCase {
         assertTrue(((LazySession) session).lastLoggedIn() > 0);
         assertTrue((((LazySession) session).lastRefreshed() - timestamp) < 60000);
 
-        assertEquals(0, ((LazySession) session).lastRefreshed());
-        
         long time = System.currentTimeMillis();
         session.refresh(false);
         assertTrue("session is not refreshed: " + ((LazySession) session).lastRefreshed(), time <= ((LazySession) session).lastRefreshed());
