@@ -48,6 +48,7 @@ public class TestLazySessionDelegatingRepository  extends AbstractHstTestCase {
     @Test
     public void testLazySession() throws Exception {
         Credentials creds = new SimpleCredentials("admin", "admin".toCharArray());
+        long timestamp = System.currentTimeMillis();
         Session session = repository.login(creds);
         
         assertFalse(((LazySession) session).lastLoggedIn() > 0);
@@ -62,6 +63,8 @@ public class TestLazySessionDelegatingRepository  extends AbstractHstTestCase {
         
         String userID = session.getUserID();
         assertTrue(((LazySession) session).lastLoggedIn() > 0);
+        assertTrue((((LazySession) session).lastRefreshed() - timestamp) < 60000);
+
         assertEquals(0, ((LazySession) session).lastRefreshed());
         
         long time = System.currentTimeMillis();
