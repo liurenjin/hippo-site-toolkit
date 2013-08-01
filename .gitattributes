@@ -110,6 +110,7 @@ api/src/main/java/org/hippoecm/hst/content/package-info.java svneol=native#text/
 api/src/main/java/org/hippoecm/hst/content/rewriter/ContentRewriter.java svneol=native#text/plain
 api/src/main/java/org/hippoecm/hst/content/rewriter/ImageVariant.java -text
 api/src/main/java/org/hippoecm/hst/content/rewriter/package-info.java svneol=native#text/plain
+api/src/main/java/org/hippoecm/hst/content/tool/ContentBeansTool.java -text
 api/src/main/java/org/hippoecm/hst/core/ResourceLifecycleManagement.java svneol=native#text/plain
 api/src/main/java/org/hippoecm/hst/core/ResourceVisitor.java svneol=native#text/plain
 api/src/main/java/org/hippoecm/hst/core/channelmanager/ChannelManagerConstants.java -text
@@ -973,6 +974,7 @@ content-beans/src/main/java/org/hippoecm/hst/content/beans/standard/facetnavigat
 content-beans/src/main/java/org/hippoecm/hst/content/beans/standard/facetnavigation/HippoFacetSearch.java svneol=native#text/plain
 content-beans/src/main/java/org/hippoecm/hst/content/beans/standard/facetnavigation/HippoFacetSubNavigation.java svneol=native#text/plain
 content-beans/src/main/java/org/hippoecm/hst/content/beans/standard/facetnavigation/HippoFacetsAvailableNavigation.java svneol=native#text/plain
+content-beans/src/main/java/org/hippoecm/hst/content/tool/DefaultContentBeansTool.java -text
 content-beans/src/main/java/org/hippoecm/hst/provider/jcr/JCRValueProviderImpl.java svneol=native#text/plain
 content-beans/src/main/java/org/hippoecm/hst/provider/jcr/PropertyMapImpl.java svneol=native#text/plain
 content-beans/src/main/java/org/hippoecm/hst/proxy/NamespacedBeanMethodInvoker.java svneol=native#text/plain
