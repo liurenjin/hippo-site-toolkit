@@ -36,6 +36,10 @@ import javax.servlet.http.HttpServletResponse;
 import org.hippoecm.hst.configuration.hosting.Mount;
 import org.hippoecm.hst.configuration.hosting.VirtualHost;
 import org.hippoecm.hst.configuration.hosting.VirtualHosts;
+import org.hippoecm.hst.container.RequestContextProvider;
+import org.hippoecm.hst.content.beans.ObjectBeanManagerException;
+import org.hippoecm.hst.content.beans.standard.HippoBean;
+import org.hippoecm.hst.content.tool.ContentBeansTool;
 import org.hippoecm.hst.core.component.HstComponentException;
 import org.hippoecm.hst.core.component.HstParameterInfoProxyFactory;
 import org.hippoecm.hst.core.component.HstParameterInfoProxyFactoryImpl;
@@ -48,11 +52,13 @@ import org.hippoecm.hst.core.container.HstContainerURLProvider;
 import org.hippoecm.hst.core.internal.HstMutableRequestContext;
 import org.hippoecm.hst.core.linking.HstLinkCreator;
 import org.hippoecm.hst.core.request.ContextCredentialsProvider;
+import org.hippoecm.hst.core.request.HstRequestContext;
 import org.hippoecm.hst.core.request.HstSiteMapMatcher;
 import org.hippoecm.hst.core.request.ResolvedMount;
 import org.hippoecm.hst.core.request.ResolvedSiteMapItem;
 import org.hippoecm.hst.core.search.HstQueryManagerFactory;
 import org.hippoecm.hst.core.sitemenu.HstSiteMenus;
+import org.hippoecm.hst.util.PathUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -84,6 +90,7 @@ public class HstRequestContextImpl implements HstMutableRequestContext {
     protected HstSiteMapMatcher siteMapMatcher;
     protected HstSiteMenus siteMenus;
     protected HstQueryManagerFactory hstQueryManagerFactory;
+    protected ContentBeansTool contentBeansTool;
     protected Map<String, Object> attributes;
     protected ContainerConfiguration containerConfiguration;
     protected String embeddingContextPath;
@@ -99,6 +106,11 @@ public class HstRequestContextImpl implements HstMutableRequestContext {
     // default a request is considered to be not from a cms. If cmsRequest is true, this means the
     // request is done from a cms context. This can influence for example how a link is created
     protected boolean cmsRequest;
+
+    protected HippoBean contentBean;
+    protected String contentBeanPopulatedBy;
+    protected HippoBean siteContentBaseBean;
+    protected String siteContentBaseBeanPopulatedBy;
 
     private Map<String, Object> unmodifiableAttributes;
     
@@ -577,5 +589,90 @@ public class HstRequestContextImpl implements HstMutableRequestContext {
     public void setCmsRequest(final boolean cmsRequest) {
         this.cmsRequest = cmsRequest;
     }
+
+    @Override
+    public ContentBeansTool getContentBeansTool() {
+        return contentBeansTool;
+    }
+
+    @Override
+    public void setContentBeansTool(ContentBeansTool contentBeansTool) {
+        this.contentBeansTool = contentBeansTool;
+    }
+
+    @Override
+    public HippoBean getContentBean() {
+        try {
+            if (contentBeanPopulatedBy != null && contentBeanPopulatedBy.equals(RequestContextProvider.get().getSession().getUserID())) {
+                return contentBean;
+            }
+            HstRequestContext requestContext = RequestContextProvider.get();
+
+            if (requestContext == null || requestContext.getResolvedSiteMapItem() == null) {
+                return null;
+            }
+            // cache for next getter
+            contentBean = getBeanForResolvedSiteMapItem(requestContext.getResolvedSiteMapItem());
+            contentBeanPopulatedBy = requestContext.getSession().getUserID();
+            return contentBean;
+        } catch (RepositoryException e) {
+            throw new IllegalStateException(e);
+        }
+    }
+
+    @Override
+    public String getSiteContentBasePath() {
+        HstRequestContext requestContext = RequestContextProvider.get();
+
+        if (requestContext == null) {
+            throw new IllegalStateException("HstRequestContext is not set in handler.");
+        }
+
+        return PathUtils.normalizePath(requestContext.getResolvedMount().getMount().getContentPath());
+    }
+
+    @Override
+    public HippoBean getSiteContentBaseBean() {
+        try {
+            if (siteContentBaseBeanPopulatedBy != null && siteContentBaseBeanPopulatedBy.equals(RequestContextProvider.get().getSession().getUserID())) {
+                return contentBean;
+            }
+
+            String base = getSiteContentBasePath();
+            try {
+                siteContentBaseBean = (HippoBean) getContentBeansTool().getObjectBeanManager().getObject("/" + base);
+            } catch (ObjectBeanManagerException e) {
+                log.error("ObjectBeanManagerException. Return null : {}", e);
+            }
+            siteContentBaseBeanPopulatedBy = RequestContextProvider.get().getSession().getUserID();
+            return siteContentBaseBean;
+        } catch (RepositoryException e) {
+            throw new IllegalStateException(e);
+        }
+    }
+
+
+    private HippoBean getBeanForResolvedSiteMapItem(ResolvedSiteMapItem resolvedSiteMapItem) {
+        String base = getSiteContentBasePath();
+        String relPath = PathUtils.normalizePath(resolvedSiteMapItem.getRelativeContentPath());
+
+        if (relPath == null) {
+            log.debug("Cannot return a content bean for relative path null for resolvedSitemapItem belonging to '{}'. Return null", resolvedSiteMapItem.getHstSiteMapItem().getId());
+            return null;
+        }
+
+        try {
+            if ("".equals(relPath)) {
+                return (HippoBean) getContentBeansTool().getObjectBeanManager().getObject("/" + base);
+            } else {
+                return (HippoBean) getContentBeansTool().getObjectBeanManager().getObject("/" + base+ "/" + relPath);
+            }
+        } catch (ObjectBeanManagerException e) {
+            log.error("ObjectBeanManagerException. Return null : {}", e);
+        }
+
+        return null;
+    }
+
 
 }

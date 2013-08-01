@@ -52,6 +52,10 @@ public class InitializationValve extends AbstractBaseOrderableValve {
             requestContext.setHstQueryManagerFactory(getHstQueryManagerFactory());
         }
         
+        if (requestContext.getContentBeansTool() == null) {
+            requestContext.setContentBeansTool(getContentBeansTool());
+        }
+
         if (this.resourceLifecycleManagements != null) {
             for (ResourceLifecycleManagement resourceLifecycleManagement : this.resourceLifecycleManagements) {
                 resourceLifecycleManagement.disposeAllResources();

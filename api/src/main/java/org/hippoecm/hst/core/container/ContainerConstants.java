@@ -168,4 +168,8 @@ public interface ContainerConstants {
      */
     String DEFAULT_PARAMETER_PREFIX = "hippo-default";
 
+    /**
+     * The current servlet filter chain request attribute name.
+     */
+    String HST_FILTER_CHAIN = "org.hippoecm.hst.container.filter.chain";
 }

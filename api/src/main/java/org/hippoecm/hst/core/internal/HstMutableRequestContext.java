@@ -25,6 +25,7 @@ import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.hippoecm.hst.content.tool.ContentBeansTool;
 import org.hippoecm.hst.core.component.HstParameterInfoProxyFactory;
 import org.hippoecm.hst.core.component.HstURLFactory;
 import org.hippoecm.hst.core.container.ContainerConfiguration;
@@ -137,4 +138,10 @@ public interface HstMutableRequestContext extends HstRequestContext {
      * @see {@link #isCmsRequest()}
      */
     public void setCmsRequest(boolean cmsRequest);
+
+    /**
+     * Sets ContentBeansTool instance for this request context
+     * @param contentBeansTool
+     */
+    public void setContentBeansTool(ContentBeansTool contentBeansTool);
 }

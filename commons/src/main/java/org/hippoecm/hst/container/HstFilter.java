@@ -406,6 +406,9 @@ public class HstFilter implements Filter {
                     }
                 }
 
+                // sets filterChain for ValveContext to be able to retrieve...
+                req.setAttribute(ContainerConstants.HST_FILTER_CHAIN, chain);
+
                 HstContainerURL hstContainerUrl = setMountPathAsServletPath(containerRequest, hstManager, requestContext, resolvedMount, res);
 
                 if (resolvedMount.getMount().isMapped()) {

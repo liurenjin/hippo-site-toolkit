@@ -32,6 +32,7 @@ import org.hippoecm.hst.configuration.components.HstComponentInfo;
 import org.hippoecm.hst.configuration.hosting.Mount;
 import org.hippoecm.hst.configuration.model.HstManager;
 import org.hippoecm.hst.container.valves.AbstractOrderableValve;
+import org.hippoecm.hst.content.tool.ContentBeansTool;
 import org.hippoecm.hst.core.component.HstComponentException;
 import org.hippoecm.hst.core.component.HstRequest;
 import org.hippoecm.hst.core.component.HstResponse;
@@ -74,7 +75,8 @@ public abstract class AbstractBaseOrderableValve extends AbstractOrderableValve 
     protected HstQueryManagerFactory hstQueryManagerFactory;
     protected PageErrorHandler defaultPageErrorHandler;
     protected ResourceBundleRegistry resourceBundleRegistry;
-    
+    protected ContentBeansTool contentBeansTool;
+
     protected boolean alwaysRedirectLocationToAbsoluteUrl = true;
 
     protected String defaultAsynchronousComponentWindowRenderingMode = "ajax";
@@ -181,6 +183,14 @@ public abstract class AbstractBaseOrderableValve extends AbstractOrderableValve 
 
     public void setResourceBundleRegistry(ResourceBundleRegistry resourceBundleRegistry) {
         this.resourceBundleRegistry = resourceBundleRegistry;
+    }
+
+    public ContentBeansTool getContentBeansTool() {
+        return contentBeansTool;
+    }
+
+    public void setContentBeansTool(ContentBeansTool contentBeansTool) {
+        this.contentBeansTool = contentBeansTool;
     }
 
     public abstract void invoke(ValveContext context) throws ContainerException;

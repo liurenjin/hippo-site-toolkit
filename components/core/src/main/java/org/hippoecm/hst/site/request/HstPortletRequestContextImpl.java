@@ -20,6 +20,7 @@ import javax.portlet.PortletConfig;
 import javax.portlet.PortletRequest;
 import javax.portlet.PortletResponse;
 
+import org.hippoecm.hst.content.tool.ContentBeansTool;
 import org.hippoecm.hst.core.internal.HstMutablePortletRequestContext;
 import org.hippoecm.hst.core.request.ContextCredentialsProvider;
 
@@ -69,4 +70,5 @@ public class HstPortletRequestContextImpl extends HstRequestContextImpl implemen
     public void setPortletResponse(PortletResponse portletResponse) {
         this.portletResponse = portletResponse;
     }
+
 }

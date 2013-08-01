@@ -290,7 +290,7 @@ public class BaseHstComponent extends GenericHstComponent {
      * @return the jcr path relative to the root (not starting with / thus)
      */
     public String getSiteContentBasePath(HstRequest request){
-        return PathUtils.normalizePath(request.getRequestContext().getResolvedMount().getMount().getContentPath());
+        return request.getRequestContext().getSiteContentBasePath();
     }
     
     /**
@@ -310,6 +310,9 @@ public class BaseHstComponent extends GenericHstComponent {
      * @return A <code>HippoBean</code> or <code>null</code> when there cannot be created a content bean for the resolvedSiteMapItem belonging to the current request
      */
     public HippoBean getContentBean(HstRequest request) {
+        if (getLocalAnnotatedClasses() == null || getLocalAnnotatedClasses().isEmpty()) {
+            return request.getRequestContext().getContentBean();
+        }
         ResolvedSiteMapItem resolvedSiteMapItem = request.getRequestContext().getResolvedSiteMapItem();
         return this.getBeanForResolvedSiteMapItem(request, resolvedSiteMapItem);
     }
@@ -322,8 +325,14 @@ public class BaseHstComponent extends GenericHstComponent {
      * @return A HippoBean of {@code beanMappingClass} or <code>null</code> if bean cannot be found or is of a different class
      */
     public <T extends HippoBean> T getContentBean(HstRequest request, Class<T> beanMappingClass) {
-        ResolvedSiteMapItem resolvedSiteMapItem = request.getRequestContext().getResolvedSiteMapItem();
-        HippoBean bean = this.getBeanForResolvedSiteMapItem(request, resolvedSiteMapItem);
+        HippoBean bean;
+        if (getLocalAnnotatedClasses() == null || getLocalAnnotatedClasses().isEmpty()) {
+            bean = request.getRequestContext().getContentBean();
+        } else {
+            ResolvedSiteMapItem resolvedSiteMapItem = request.getRequestContext().getResolvedSiteMapItem();
+            bean = this.getBeanForResolvedSiteMapItem(request, resolvedSiteMapItem);
+        }
+
         if(bean == null) {
             return null;
         }
@@ -336,13 +345,17 @@ public class BaseHstComponent extends GenericHstComponent {
     
   
     public HippoBean getSiteContentBaseBean(HstRequest request) {
-        String base = getSiteContentBasePath(request);
-        try {
-            return (HippoBean) getObjectBeanManager(request).getObject("/"+base);
-        } catch (ObjectBeanManagerException e) {
-            log.error("ObjectBeanManagerException. Return null : {}", e);
+        String base = request.getRequestContext().getSiteContentBasePath();
+        if (getLocalAnnotatedClasses() == null || getLocalAnnotatedClasses().isEmpty()) {
+            return request.getRequestContext().getSiteContentBaseBean();
+        } else {
+            try {
+                return (HippoBean) getObjectBeanManager(request).getObject("/"+base);
+            } catch (ObjectBeanManagerException e) {
+                log.error("ObjectBeanManagerException. Return null : {}", e);
+                return null;
+            }
         }
-        return null;
     }
     
     /**
@@ -351,7 +364,7 @@ public class BaseHstComponent extends GenericHstComponent {
      */
     public HippoFolderBean getGalleryBaseBean(HstRequest request){
         try {
-            HippoBean gallery = (HippoBean)this.getObjectBeanManager(request).getObject("/content/gallery");
+            HippoBean gallery = (HippoBean)getObjectBeanManager(request).getObject("/content/gallery");
             if(gallery instanceof HippoFolderBean) {
                 return (HippoFolderBean)gallery;
             } else {
@@ -369,7 +382,7 @@ public class BaseHstComponent extends GenericHstComponent {
      */
     public HippoFolderBean getAssetBaseBean(HstRequest request){
         try {
-            HippoBean assets = (HippoBean)this.getObjectBeanManager(request).getObject("/content/assets");
+            HippoBean assets = (HippoBean)getObjectBeanManager(request).getObject("/content/assets");
             if(assets instanceof HippoFolderBean) {
                 return (HippoFolderBean)assets;
             } else {
@@ -390,7 +403,7 @@ public class BaseHstComponent extends GenericHstComponent {
      * @return A <code>HippoBean</code> or <code>null</code> when there cannot be created a content bean for this resolvedSiteMapItem
      */
     public HippoBean getBeanForResolvedSiteMapItem(HstRequest request, ResolvedSiteMapItem resolvedSiteMapItem) {
-        String base = getSiteContentBasePath(request);
+        String base = request.getRequestContext().getSiteContentBasePath();
         String relPath = PathUtils.normalizePath(resolvedSiteMapItem.getRelativeContentPath());
         if(relPath == null) {
             log.debug("Cannot return a content bean for relative path null for resolvedSitemapItem belonging to '{}'. Return null", resolvedSiteMapItem.getHstSiteMapItem().getId());
@@ -425,12 +438,7 @@ public class BaseHstComponent extends GenericHstComponent {
      * @see  {@link #getQueryManager(HstRequest)} and {@link #getQueryManager(Session)}
      */
     public HstQueryManager getQueryManager(HstRequestContext ctx) {
-       try {
-            return getQueryManager(ctx.getSession());
-        } catch (RepositoryException e) {
-            log.error("Unable to get a queryManager", e);
-        }
-        return null;
+        return ctx.getContentBeansTool().getQueryManager();
     }
     
     /**
@@ -439,12 +447,15 @@ public class BaseHstComponent extends GenericHstComponent {
      * @see {@link #getQueryManager(HstRequestContext)} and {@link #getQueryManager(HstRequest)}
      */
     public HstQueryManager getQueryManager(Session session) {
-        HstQueryManager queryManager = null;
-        queryManager = hstQueryManagerFactory.createQueryManager(session, this.objectConverter);
-        return queryManager;
+        return RequestContextProvider.get().getContentBeansTool().getQueryManager(session);
     }
     
     public ObjectBeanManager getObjectBeanManager(HstRequest request) {
+        if (getLocalAnnotatedClasses() == null || getLocalAnnotatedClasses().isEmpty()) {
+            return request.getRequestContext().getContentBeansTool().getObjectBeanManager();
+        }
+        // if there are local annotated classes, the object converter is not the same as the global
+        // one on the request context, hence return specific ObjectBeanManagerImpl
         try {
             HstRequestContext requestContext = request.getRequestContext();
             return new ObjectBeanManagerImpl(requestContext.getSession(), getObjectConverter());
@@ -526,6 +537,10 @@ public class BaseHstComponent extends GenericHstComponent {
     }
     
     public ObjectConverter getObjectConverter() throws HstComponentException {
+        if (RequestContextProvider.get() != null && (getLocalAnnotatedClasses() == null || getLocalAnnotatedClasses().isEmpty())) {
+            // return global one
+            return RequestContextProvider.get().getContentBeansTool().getObjectConverter();
+        }
         // builds ordered mapping from jcrPrimaryNodeType to class or interface(s).
         if (objectConverter == null) {
             
