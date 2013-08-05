@@ -25,38 +25,22 @@ import javax.jcr.Repository;
 import javax.jcr.Session;
 
 import org.hippoecm.hst.configuration.HstNodeTypes;
-import org.hippoecm.hst.configuration.hosting.VirtualHosts;
-import org.hippoecm.hst.configuration.model.HstManager;
 import org.hippoecm.hst.content.beans.manager.ObjectBeanManager;
 import org.hippoecm.hst.content.beans.manager.ObjectBeanManagerImpl;
 import org.hippoecm.hst.content.beans.manager.ObjectConverter;
 import org.hippoecm.hst.content.beans.standard.HippoBean;
 import org.hippoecm.hst.core.beans.AbstractBeanTestCase;
-import org.hippoecm.hst.core.component.HstURLFactory;
-import org.hippoecm.hst.core.container.ContainerException;
-import org.hippoecm.hst.core.container.HstContainerURL;
-import org.hippoecm.hst.core.internal.HstMutableRequestContext;
-import org.hippoecm.hst.core.internal.HstRequestContextComponent;
 import org.hippoecm.hst.core.request.HstRequestContext;
-import org.hippoecm.hst.core.request.HstSiteMapMatcher;
-import org.hippoecm.hst.core.request.ResolvedMount;
-import org.hippoecm.hst.core.request.ResolvedSiteMapItem;
-import org.hippoecm.hst.util.HstRequestUtils;
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.mock.web.MockHttpServletRequest;
-import org.springframework.mock.web.MockHttpServletResponse;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
 
 public class TestHstLinkRewritingCrossScheme extends AbstractBeanTestCase {
 
-    private HstManager hstManager;
-    private HstURLFactory hstURLFactory;
     private ObjectConverter objectConverter;
     private HstLinkCreator linkCreator;
-    private HstSiteMapMatcher siteMapMatcher;
     private Repository repository;
     private Credentials credentials;
 
@@ -66,9 +50,6 @@ public class TestHstLinkRewritingCrossScheme extends AbstractBeanTestCase {
     @Before
     public void setUp() throws Exception {
         super.setUp();
-        this.hstManager = getComponent(HstManager.class.getName());
-        this.siteMapMatcher = getComponent(HstSiteMapMatcher.class.getName());
-        this.hstURLFactory = getComponent(HstURLFactory.class.getName());
         this.objectConverter = getObjectConverter();
         this.linkCreator = getComponent(HstLinkCreator.class.getName());
         this.repository = getComponent(Repository.class.getName());
@@ -93,7 +74,7 @@ public class TestHstLinkRewritingCrossScheme extends AbstractBeanTestCase {
         try {
             makeSiteMapItemsHttps(siteMapItemsToSetHttpsScheme);
 
-            HstRequestContext requestContext = getRequestContextWithResolvedSiteMapItemAndContainerURL("http","localhost","/home");
+            HstRequestContext requestContext = getRequestContextWithResolvedSiteMapItemAndContainerURL("http", "localhost", "/home", null);
             ObjectBeanManager obm = new ObjectBeanManagerImpl(requestContext.getSession(), objectConverter);
             Object newsArticleBean = obm.getObject("/unittestcontent/documents/unittestproject/News/2009/April/AprilNewsArticle");
             HstLink newsArticleLink = linkCreator.create((HippoBean)newsArticleBean, requestContext);
@@ -122,7 +103,7 @@ public class TestHstLinkRewritingCrossScheme extends AbstractBeanTestCase {
             makeSiteMapItemsHttps(siteMapItemsToSetHttpsScheme);
 
             // note below https scheme for current request!!
-            HstRequestContext requestContext = getRequestContextWithResolvedSiteMapItemAndContainerURL("https","localhost","/home");
+            HstRequestContext requestContext = getRequestContextWithResolvedSiteMapItemAndContainerURL("https", "localhost", "/home", null);
             ObjectBeanManager obm = new ObjectBeanManagerImpl(requestContext.getSession(), objectConverter);
             Object newsArticleBean = obm.getObject("/unittestcontent/documents/unittestproject/News/2009/April/AprilNewsArticle");
             HstLink newsArticleLink = linkCreator.create((HippoBean)newsArticleBean, requestContext);
@@ -135,7 +116,7 @@ public class TestHstLinkRewritingCrossScheme extends AbstractBeanTestCase {
                     "/site/news/2009/April/AprilNewsArticle.html", newsArticlesHttpsURL);
 
             assertEquals("fully qualified link for news articles should start with https.",
-                    HTTPS_SCHEME +"://localhost/site/news/2009/April/AprilNewsArticle.html", newsArticlesHttpsURLFullyQualified);
+                    HTTPS_SCHEME + "://localhost/site/news/2009/April/AprilNewsArticle.html", newsArticlesHttpsURLFullyQualified);
 
         } finally {
             revertSiteMapItemsToValueBefore(siteMapItemsToSetHttpsScheme);
@@ -151,7 +132,7 @@ public class TestHstLinkRewritingCrossScheme extends AbstractBeanTestCase {
             makeSiteMapItemsHttps(siteMapItemsToSetHttpsScheme);
 
             // note below https scheme for current request!!
-            HstRequestContext requestContext = getRequestContextWithResolvedSiteMapItemAndContainerURL("https","localhost","/home");
+            HstRequestContext requestContext = getRequestContextWithResolvedSiteMapItemAndContainerURL("https", "localhost", "/home", null);
             ObjectBeanManager obm = new ObjectBeanManagerImpl(requestContext.getSession(), objectConverter);
             Object homepageBean = obm.getObject("/unittestcontent/documents/unittestproject/common/homepage");
             HstLink homepageLink = linkCreator.create((HippoBean)homepageBean, requestContext);
@@ -179,7 +160,7 @@ public class TestHstLinkRewritingCrossScheme extends AbstractBeanTestCase {
         try {
             makeSiteMapItemsHttps(siteMapItemsToSetHttpsScheme);
 
-            HstRequestContext requestContext = getRequestContextWithResolvedSiteMapItemAndContainerURL("http","localhost","/subsite/home");
+            HstRequestContext requestContext = getRequestContextWithResolvedSiteMapItemAndContainerURL("http", "localhost", "/subsite/home", null);
             ObjectBeanManager obm = new ObjectBeanManagerImpl(requestContext.getSession(), objectConverter);
 
             {
@@ -256,7 +237,7 @@ public class TestHstLinkRewritingCrossScheme extends AbstractBeanTestCase {
         try {
             makeSiteMapItemsHttps(siteMapItemsToSetHttpsScheme);
 
-            HstRequestContext requestContext = getRequestContextWithResolvedSiteMapItemAndContainerURL("http","sub.unit.test","/home");
+            HstRequestContext requestContext = getRequestContextWithResolvedSiteMapItemAndContainerURL("http", "sub.unit.test", "/home", null);
             ObjectBeanManager obm = new ObjectBeanManagerImpl(requestContext.getSession(), objectConverter);
 
             Object newsArticleBean = obm.getObject("/unittestcontent/documents/unittestproject/News/2009/April/AprilNewsArticle");
@@ -318,48 +299,5 @@ public class TestHstLinkRewritingCrossScheme extends AbstractBeanTestCase {
             }
         }
     }
-
-    public HstRequestContext getRequestContextWithResolvedSiteMapItemAndContainerURL(String scheme, String hostAndPort, String requestURI) throws Exception {
-        HstRequestContextComponent rcc = getComponent(HstRequestContextComponent.class.getName());
-        HstMutableRequestContext requestContext = rcc.create(false);
-        HstContainerURL containerUrl = createContainerUrl(scheme, hostAndPort, requestURI, requestContext);
-        requestContext.setBaseURL(containerUrl);
-        ResolvedSiteMapItem resolvedSiteMapItem = getResolvedSiteMapItem(containerUrl);
-        requestContext.setResolvedSiteMapItem(resolvedSiteMapItem);
-        requestContext.setResolvedMount(resolvedSiteMapItem.getResolvedMount());
-        HstURLFactory hstURLFactory = getComponent(HstURLFactory.class.getName());
-        requestContext.setURLFactory(hstURLFactory);
-        requestContext.setSiteMapMatcher(siteMapMatcher);
-        return requestContext;
-    }
-
-    public HstContainerURL createContainerUrl(String scheme, String hostAndPort, String requestURI,
-                                              HstMutableRequestContext requestContext) throws Exception {
-        MockHttpServletResponse response = new MockHttpServletResponse();
-        MockHttpServletRequest request = new MockHttpServletRequest();
-        requestContext.setServletRequest(request);
-        requestContext.setServletResponse(response);
-        String host = hostAndPort.split(":")[0];
-        if (hostAndPort.split(":").length > 1) {
-            int port = Integer.parseInt(hostAndPort.split(":")[1]);
-            request.setLocalPort(port);
-            request.setServerPort(port);
-        }
-        request.setScheme(scheme);
-        request.setServerName(host);
-        request.addHeader("Host", hostAndPort);
-        request.setContextPath("/site");
-        requestURI = "/site" + requestURI;
-        request.setRequestURI(requestURI);
-        VirtualHosts vhosts = hstManager.getVirtualHosts();
-        ResolvedMount mount = vhosts.matchMount(HstRequestUtils.getFarthestRequestHost(request), request.getContextPath(), HstRequestUtils.getRequestPath(request));
-        return hstURLFactory.getContainerURLProvider().parseURL(request, response, mount);
-    }
-
-    public ResolvedSiteMapItem getResolvedSiteMapItem(HstContainerURL url) throws ContainerException {
-        VirtualHosts vhosts = hstManager.getVirtualHosts();
-        return vhosts.matchSiteMapItem(url);
-    }
-
 
 }

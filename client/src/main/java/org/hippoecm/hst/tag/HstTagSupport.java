@@ -26,6 +26,7 @@ import org.hippoecm.hst.component.support.bean.BaseHstComponent;
 import org.hippoecm.hst.configuration.hosting.Mount;
 import org.hippoecm.hst.configuration.site.HstSite;
 import org.hippoecm.hst.container.HstFilter;
+import org.hippoecm.hst.container.RequestContextProvider;
 import org.hippoecm.hst.content.beans.ObjectBeanManagerException;
 import org.hippoecm.hst.content.beans.manager.ObjectBeanManager;
 import org.hippoecm.hst.content.beans.manager.ObjectBeanManagerImpl;
@@ -122,32 +123,35 @@ public class HstTagSupport extends TagSupport {
      * preview or live context. 
      */
     protected HippoBean getSiteContentBaseBean(HstRequest request) {
-        String base = getSiteContentBasePath(request);
-        try {
-            return (HippoBean) getObjectBeanManager(request).getObject("/"+base);
-        } catch (ObjectBeanManagerException e) {
-            logger.error("ObjectBeanManagerException. Return null : {}", e);
-        }
-        return null;
+        return request.getRequestContext().getSiteContentBaseBean();
     }
     
     protected String getSiteContentBasePath(HstRequest request){
-        return PathUtils.normalizePath(request.getRequestContext().getResolvedMount().getMount().getContentPath());
+        return request.getRequestContext().getSiteContentBasePath();
     }
     
     protected ObjectBeanManager getObjectBeanManager(HstRequest request) {
         try {
             HstRequestContext requestContext = request.getRequestContext();
-            return new ObjectBeanManagerImpl(requestContext.getSession(), getObjectConverter());
+            if (pageContext.getServletContext().getAttribute(BaseHstComponent.OBJECT_CONVERTER_CONTEXT_ATTRIBUTE) == null) {
+                return requestContext.getObjectBeanManager();
+            } else {
+                // hst component specific object converter might be used
+                return new ObjectBeanManagerImpl(requestContext.getSession(), getObjectConverter());
+            }
         } catch (UnsupportedRepositoryOperationException e) {
             throw new HstComponentException(e);
         } catch (RepositoryException e) {
             throw new HstComponentException(e);
         }
     }
-    
+
     protected ObjectConverter getObjectConverter()  {
-        // get the objectconverter that was put in servlet context by HstComponent 
-        return (ObjectConverter) pageContext.getServletContext().getAttribute(BaseHstComponent.OBJECT_CONVERTER_CONTEXT_ATTRIBUTE);
+        // get the objectconverter that was put in servlet context by HstComponent and otherwise from the request context
+        ObjectConverter converter = (ObjectConverter) pageContext.getServletContext().getAttribute(BaseHstComponent.OBJECT_CONVERTER_CONTEXT_ATTRIBUTE);
+        if (converter != null) {
+            return converter;
+        }
+        return RequestContextProvider.get().getContentBeansTool().getObjectConverter();
     }
 }

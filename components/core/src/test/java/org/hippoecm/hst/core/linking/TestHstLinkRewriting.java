@@ -22,46 +22,27 @@ import java.util.List;
 
 import javax.jcr.Node;
 
-import org.hippoecm.hst.configuration.hosting.VirtualHosts;
-import org.hippoecm.hst.configuration.model.HstManager;
 import org.hippoecm.hst.configuration.sitemap.HstSiteMapItem;
 import org.hippoecm.hst.content.beans.manager.ObjectBeanManager;
 import org.hippoecm.hst.content.beans.manager.ObjectBeanManagerImpl;
 import org.hippoecm.hst.content.beans.manager.ObjectConverter;
 import org.hippoecm.hst.content.beans.standard.HippoBean;
 import org.hippoecm.hst.core.beans.AbstractBeanTestCase;
-import org.hippoecm.hst.core.component.HstURLFactory;
-import org.hippoecm.hst.core.container.ContainerException;
-import org.hippoecm.hst.core.container.HstContainerURL;
-import org.hippoecm.hst.core.internal.HstMutableRequestContext;
-import org.hippoecm.hst.core.internal.HstRequestContextComponent;
 import org.hippoecm.hst.core.request.HstRequestContext;
-import org.hippoecm.hst.core.request.HstSiteMapMatcher;
-import org.hippoecm.hst.core.request.ResolvedMount;
-import org.hippoecm.hst.core.request.ResolvedSiteMapItem;
-import org.hippoecm.hst.util.HstRequestUtils;
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.mock.web.MockHttpServletRequest;
-import org.springframework.mock.web.MockHttpServletResponse;
 
 import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertTrue;
 
 public class TestHstLinkRewriting extends AbstractBeanTestCase {
 
-        private HstManager hstManager;
-        private HstURLFactory hstURLFactory;
         private  ObjectConverter objectConverter;
         private HstLinkCreator linkCreator;
-        private HstSiteMapMatcher siteMapMatcher;
 
         @Before
         public void setUp() throws Exception {
             super.setUp();
-            this.hstManager = getComponent(HstManager.class.getName());
-            this.siteMapMatcher = getComponent(HstSiteMapMatcher.class.getName());
-            this.hstURLFactory = getComponent(HstURLFactory.class.getName());
             this.objectConverter = getObjectConverter();
             this.linkCreator = getComponent(HstLinkCreator.class.getName());
         }
@@ -105,7 +86,6 @@ public class TestHstLinkRewriting extends AbstractBeanTestCase {
             // for absolute links, we do not include port 443 !!
             assertEquals("wrong fully qualified url for homepage" ,"http://localhost:8080/site", (homePageLink.toUrlForm(requestContext, true)));
            
-            
             
             // on port 8081 we have the preview mount
             requestContext = getRequestContextWithResolvedSiteMapItemAndContainerURL("localhost:8081","/home");
@@ -156,7 +136,7 @@ public class TestHstLinkRewriting extends AbstractBeanTestCase {
             HstRequestContext requestContext = getRequestContextWithResolvedSiteMapItemAndContainerURL("localhost:8080","/home");
             Node someNode = requestContext.getSession().getNode("/unittestcontent");
             HstLink notFoundLink = linkCreator.create(someNode, requestContext);
-            assertEquals("wrong link.getPath for random node that does not belong to site content: Expected was a page not found link","pagenotfound", notFoundLink.getPath());
+            assertEquals("wrong link.getPath for random node that does not belong to site content: Expected was a page not found link", "pagenotfound", notFoundLink.getPath());
         }
         
         /**
@@ -186,7 +166,7 @@ public class TestHstLinkRewriting extends AbstractBeanTestCase {
 
             ObjectBeanManager obm = new ObjectBeanManagerImpl(requestContext.getSession(), objectConverter);
             Object newsBean = obm.getObject("/unittestcontent/documents/unittestproject/News/News1");
-            HstLink newsLink = linkCreator.create((HippoBean)newsBean, requestContext);
+            HstLink newsLink = linkCreator.create((HippoBean) newsBean, requestContext);
             assertEquals("wrong link.getPath for News/News1","newsCtxOnly/foo/news/News1.html", newsLink.getPath());
             assertEquals("wrong absolute link for News/News1" ,"/site/newsCtxOnly/foo/news/News1.html", (newsLink.toUrlForm(requestContext, false)));
             assertEquals("wrong fully qualified url for News/News1" ,"http://localhost:8080/site/newsCtxOnly/foo/news/News1.html", (newsLink.toUrlForm(requestContext, true)));
@@ -292,7 +272,7 @@ public class TestHstLinkRewriting extends AbstractBeanTestCase {
         public void testNavigationStatefulLink() throws Exception {
             
             // test first a preview navigation stateful URL. We need to get the node/bean from the preview context
-            HstRequestContext requestContext = getRequestContextWithResolvedSiteMapItemAndContainerURL("localhost:8081","/news", "query=foo&page=6");
+            HstRequestContext requestContext = getRequestContextWithResolvedSiteMapItemAndContainerURL(null, "localhost:8081","/news", "query=foo&page=6");
             Node node = requestContext.getSession().getNode("/unittestcontent/documents/unittestproject/News/News1");
             HstLink navigationStatefulNewsLink = linkCreator.create(node, requestContext, null, false, true);
             assertEquals("wrong navigationStateful link.getPath for /unittestcontent/documents/unittestproject/News/News1","news/News1.html", navigationStatefulNewsLink.getPath());
@@ -320,7 +300,6 @@ public class TestHstLinkRewriting extends AbstractBeanTestCase {
         }
         
         
-
         @Test
         public void testCrossSiteAndDomainHstLinkForBean() throws Exception {
             HstRequestContext requestContext = getRequestContextWithResolvedSiteMapItemAndContainerURL("localhost:8080","/news2");
@@ -636,50 +615,5 @@ public class TestHstLinkRewriting extends AbstractBeanTestCase {
         result = link.toUrlForm(requestContext, false);
         assertEquals("/site/ho+me?hint=one#chapter1" + URLEncoder.encode("&delay=two", "UTF-8"), result);
     }
-        
-        public HstRequestContext getRequestContextWithResolvedSiteMapItemAndContainerURL(String hostAndPort, String requestURI) throws Exception {
-            return getRequestContextWithResolvedSiteMapItemAndContainerURL(hostAndPort, requestURI, null);
-        }
-        
-        public HstRequestContext getRequestContextWithResolvedSiteMapItemAndContainerURL(String hostAndPort, String requestURI, String queryString) throws Exception {
-            HstRequestContextComponent rcc = getComponent(HstRequestContextComponent.class.getName());
-            HstMutableRequestContext requestContext = rcc.create(false);
-            HstContainerURL containerUrl = createContainerUrl(hostAndPort, requestURI, queryString);
-            requestContext.setBaseURL(containerUrl);
-            ResolvedSiteMapItem resolvedSiteMapItem = getResolvedSiteMapItem(containerUrl);
-            requestContext.setResolvedSiteMapItem(resolvedSiteMapItem);
-            requestContext.setResolvedMount(resolvedSiteMapItem.getResolvedMount());
-            HstURLFactory hstURLFactory = getComponent(HstURLFactory.class.getName());
-            requestContext.setURLFactory(hstURLFactory);
-            requestContext.setSiteMapMatcher(siteMapMatcher);
-            return requestContext;
-        }
 
-        public HstContainerURL createContainerUrl(String hostAndPort, String requestURI, String queryString) throws Exception {
-            MockHttpServletResponse response = new MockHttpServletResponse();
-            MockHttpServletRequest request = new MockHttpServletRequest();
-            String host = hostAndPort.split(":")[0];
-            if(hostAndPort.split(":").length > 1) { 
-                   int port = Integer.parseInt(hostAndPort.split(":")[1]);
-                   request.setLocalPort(port);
-                   request.setServerPort(port);
-            }
-            request.setScheme("http");
-            request.setServerName(host);
-            request.addHeader("Host", hostAndPort);
-            request.setContextPath("/site");
-            request.setQueryString(queryString);
-            requestURI = "/site" + requestURI;
-            request.setRequestURI(requestURI);
-            VirtualHosts vhosts = hstManager.getVirtualHosts();
-            ResolvedMount mount = vhosts.matchMount(HstRequestUtils.getFarthestRequestHost(request), request.getContextPath() , HstRequestUtils.getRequestPath(request));
-            return hstURLFactory.getContainerURLProvider().parseURL(request, response, mount);
-        }
-        
-        public ResolvedSiteMapItem getResolvedSiteMapItem(HstContainerURL url) throws ContainerException {
-            VirtualHosts vhosts = hstManager.getVirtualHosts();
-            return vhosts.matchSiteMapItem(url);
-        }
-     
-        
 }

@@ -438,7 +438,7 @@ public class BaseHstComponent extends GenericHstComponent {
      * @see  {@link #getQueryManager(HstRequest)} and {@link #getQueryManager(Session)}
      */
     public HstQueryManager getQueryManager(HstRequestContext ctx) {
-        return ctx.getContentBeansTool().getQueryManager();
+        return ctx.getQueryManager();
     }
     
     /**
@@ -447,12 +447,12 @@ public class BaseHstComponent extends GenericHstComponent {
      * @see {@link #getQueryManager(HstRequestContext)} and {@link #getQueryManager(HstRequest)}
      */
     public HstQueryManager getQueryManager(Session session) {
-        return RequestContextProvider.get().getContentBeansTool().getQueryManager(session);
+        return RequestContextProvider.get().getQueryManager(session);
     }
     
     public ObjectBeanManager getObjectBeanManager(HstRequest request) {
         if (getLocalAnnotatedClasses() == null || getLocalAnnotatedClasses().isEmpty()) {
-            return request.getRequestContext().getContentBeansTool().getObjectBeanManager();
+            return request.getRequestContext().getObjectBeanManager();
         }
         // if there are local annotated classes, the object converter is not the same as the global
         // one on the request context, hence return specific ObjectBeanManagerImpl
