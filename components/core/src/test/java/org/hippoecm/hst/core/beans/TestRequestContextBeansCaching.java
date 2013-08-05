@@ -139,7 +139,7 @@ public class TestRequestContextBeansCaching extends AbstractBeanTestCase {
 
 
     @Test
-    public void testBaseContentBeansCached() throws Exception {
+    public void testContentBeansCached() throws Exception {
 
         HstRequestContext ctx = getRequestContextWithResolvedSiteMapItemAndContainerURL("localhost", "/home");
         ModifiableRequestContextProvider.set(ctx);
