@@ -139,7 +139,11 @@ public class HippoDocument extends HippoItem implements HippoDocumentBean{
             return null;
         }
     }
-    
+
+    /**
+     * @deprecated since 2.26.01 : Use {@link #getAvailableTranslations(Class)} instead
+     */
+    @Deprecated
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public <T extends HippoBean> HippoAvailableTranslationsBean<T> getAvailableTranslationsBean(Class<T> beanMappingClass) {
         if(!availableTranslationsBeanMappingClassInitialized) {

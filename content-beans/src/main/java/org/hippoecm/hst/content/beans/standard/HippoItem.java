@@ -524,6 +524,12 @@ public class HippoItem implements HippoBean {
         return null;
     }
 
+    /*
+     * @deprecated  since 2.25.02 : use {@link #getCanonicalBean()} instead. The only different is, that {@link #getContextualBean()} returns
+     * the current {@link HippoBean} instance when there exists no canonical version of the backing jcr Node, whereas  {@link #getCanonicalBean()} in that
+     * case returns <code>null</code>
+     */
+    @Deprecated
     public HippoBean getContextualBean() {
         if(this.getNode() == null) {
             log.warn("Cannot get contextual bean for detached bean. Return just the current bean instance");
@@ -554,6 +560,12 @@ public class HippoItem implements HippoBean {
         return null;
     }
 
+    /*
+     * @deprecated  since 2.25.02 : use {@link #getCanonicalBean()} instead. The only different is, that {@link #getContextualBean()} returns
+     * the current {@link HippoBean} instance when there exists no canonical version of the backing jcr Node, whereas  {@link #getCanonicalBean()} in that
+     * case returns <code>null</code>
+     */
+    @Deprecated
     public HippoBean getContextualParentBean() {
         HippoBean contextualBean = getContextualBean();
         if(contextualBean == null) {
@@ -617,6 +629,10 @@ public class HippoItem implements HippoBean {
     }
 
 
+    /**
+     * @deprecated since 2.26.01 : Use {@link #getAvailableTranslations()} instead
+     */
+    @Deprecated
     @SuppressWarnings("unchecked")
     public <T extends HippoBean> HippoAvailableTranslationsBean<T> getAvailableTranslationsBean() {
         if(!availableTranslationsBeanInitialized) {
