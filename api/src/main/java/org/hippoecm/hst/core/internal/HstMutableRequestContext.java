@@ -144,4 +144,6 @@ public interface HstMutableRequestContext extends HstRequestContext {
      * @param contentBeansTool
      */
     public void setContentBeansTool(ContentBeansTool contentBeansTool);
+
+    public void setCachingObjectConverter(boolean enabled);
 }

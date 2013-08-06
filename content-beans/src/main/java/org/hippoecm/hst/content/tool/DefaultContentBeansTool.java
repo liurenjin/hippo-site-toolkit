@@ -17,12 +17,18 @@ package org.hippoecm.hst.content.tool;
 
 import java.util.List;
 
+import javax.jcr.Session;
+
 import org.apache.commons.lang.StringUtils;
 import org.hippoecm.hst.container.RequestContextProvider;
+import org.hippoecm.hst.content.beans.manager.ObjectBeanManager;
+import org.hippoecm.hst.content.beans.manager.ObjectBeanManagerImpl;
 import org.hippoecm.hst.content.beans.manager.ObjectConverter;
+import org.hippoecm.hst.content.beans.query.HstQueryManager;
 import org.hippoecm.hst.content.beans.standard.HippoBean;
 import org.hippoecm.hst.content.tool.ContentBeansTool;
 import org.hippoecm.hst.core.request.HstRequestContext;
+import org.hippoecm.hst.core.search.HstQueryManagerFactory;
 import org.hippoecm.hst.site.HstServices;
 import org.hippoecm.hst.util.ClasspathResourceScanner;
 import org.hippoecm.hst.util.ObjectConverterUtils;
@@ -34,6 +40,8 @@ public class DefaultContentBeansTool implements ContentBeansTool {
 
     public static final String BEANS_ANNOTATED_CLASSES_CONF_PARAM = "hst-beans-annotated-classes";
 
+    private final HstQueryManagerFactory queryManagerFactory;
+
     /*
      * On purpose, the objectConverter below is not <code>volatile</code>. This means that the getObjectConverter()
      * is not a correct double-checked locking singleton pattern. However, objectConverter is used by every thread
@@ -43,7 +51,8 @@ public class DefaultContentBeansTool implements ContentBeansTool {
      */
     private ObjectConverter objectConverter;
 
-    public DefaultContentBeansTool() {
+    public DefaultContentBeansTool(HstQueryManagerFactory queryManagerFactory) {
+        this.queryManagerFactory = queryManagerFactory;
     }
 
     public ObjectConverter getObjectConverter() {
@@ -62,6 +71,14 @@ public class DefaultContentBeansTool implements ContentBeansTool {
         }
 
         return objectConverter;
+    }
+
+    public ObjectBeanManager createObjectBeanManager(Session session) {
+        return new ObjectBeanManagerImpl(session, getObjectConverter());
+    }
+
+    public HstQueryManager createQueryManager(Session session) throws IllegalStateException {
+        return queryManagerFactory.createQueryManager(session, getObjectConverter());
     }
 
     private List<Class<? extends HippoBean>> getAnnotatedClasses(final ClasspathResourceScanner classpathResourceScanner) {

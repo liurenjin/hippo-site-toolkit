@@ -95,6 +95,7 @@ public class MockHstRequestContext implements HstMutableRequestContext {
     private String renderHost;
     private boolean cmsRequest;
     private ContentBeansTool contentBeansTool;
+    private boolean cachingObjectConverterEnabled;
     private HippoBean contentBean;
     private HippoBean siteContentBean;
     private String siteContentBasePath;
@@ -495,6 +496,11 @@ public class MockHstRequestContext implements HstMutableRequestContext {
 
     public void setContentBeansTool(final ContentBeansTool contentBeansTool) {
         this.contentBeansTool = contentBeansTool;
+    }
+
+    @Override
+    public void setCachingObjectConverter(final boolean enabled) {
+        this.cachingObjectConverterEnabled = enabled;
     }
 
     @Override

@@ -40,6 +40,7 @@ import org.hippoecm.hst.container.RequestContextProvider;
 import org.hippoecm.hst.content.beans.ObjectBeanManagerException;
 import org.hippoecm.hst.content.beans.manager.ObjectBeanManager;
 import org.hippoecm.hst.content.beans.manager.ObjectBeanManagerImpl;
+import org.hippoecm.hst.content.beans.manager.ObjectConverter;
 import org.hippoecm.hst.content.beans.query.HstQueryManager;
 import org.hippoecm.hst.content.beans.standard.HippoBean;
 import org.hippoecm.hst.content.tool.ContentBeansTool;
@@ -94,6 +95,7 @@ public class HstRequestContextImpl implements HstMutableRequestContext {
     protected HstSiteMenus siteMenus;
     protected HstQueryManagerFactory hstQueryManagerFactory;
     protected ContentBeansTool contentBeansTool;
+    protected boolean cachingObjectConverterEnabled;
     protected Map<String, Object> attributes;
     protected ContainerConfiguration containerConfiguration;
     protected String embeddingContextPath;
@@ -109,11 +111,6 @@ public class HstRequestContextImpl implements HstMutableRequestContext {
     // default a request is considered to be not from a cms. If cmsRequest is true, this means the
     // request is done from a cms context. This can influence for example how a link is created
     protected boolean cmsRequest;
-
-    private HippoBean contentBean;
-    private String contentBeanPopulatedBy;
-    private HippoBean siteContentBaseBean;
-    private String siteContentBaseBeanPopulatedBy;
 
     private ObjectBeanManager defaultObjectBeanManager;
     private Map<Session, ObjectBeanManager> nonDefaultObjectBeanManagers;
@@ -609,23 +606,17 @@ public class HstRequestContextImpl implements HstMutableRequestContext {
     }
 
     @Override
-    public HippoBean getContentBean() {
-        try {
-            if (contentBeanPopulatedBy != null && contentBeanPopulatedBy.equals(RequestContextProvider.get().getSession().getUserID())) {
-                return contentBean;
-            }
-            HstRequestContext requestContext = RequestContextProvider.get();
+    public void setCachingObjectConverter(final boolean enabled) {
+        this.cachingObjectConverterEnabled = enabled;
+    }
 
-            if (requestContext == null || requestContext.getResolvedSiteMapItem() == null) {
-                return null;
-            }
-            // cache for next getter
-            contentBean = getBeanForResolvedSiteMapItem(requestContext.getResolvedSiteMapItem());
-            contentBeanPopulatedBy = requestContext.getSession().getUserID();
-            return contentBean;
-        } catch (RepositoryException e) {
-            throw new IllegalStateException(e);
+    @Override
+    public HippoBean getContentBean() {
+        HstRequestContext requestContext = RequestContextProvider.get();
+        if (requestContext == null || requestContext.getResolvedSiteMapItem() == null) {
+            return null;
         }
+        return getBeanForResolvedSiteMapItem(requestContext.getResolvedSiteMapItem());
     }
 
     @Override
@@ -641,21 +632,12 @@ public class HstRequestContextImpl implements HstMutableRequestContext {
 
     @Override
     public HippoBean getSiteContentBaseBean() {
+        String base = getSiteContentBasePath();
         try {
-            if (siteContentBaseBeanPopulatedBy != null && siteContentBaseBeanPopulatedBy.equals(RequestContextProvider.get().getSession().getUserID())) {
-                return siteContentBaseBean;
-            }
-
-            String base = getSiteContentBasePath();
-            try {
-                siteContentBaseBean = (HippoBean) getObjectBeanManager().getObject("/" + base);
-            } catch (ObjectBeanManagerException e) {
-                log.error("ObjectBeanManagerException. Return null : {}", e);
-            }
-            siteContentBaseBeanPopulatedBy = RequestContextProvider.get().getSession().getUserID();
-            return siteContentBaseBean;
-        } catch (RepositoryException e) {
-            throw new IllegalStateException(e);
+            return (HippoBean) getObjectBeanManager().getObject("/" + base);
+        } catch (ObjectBeanManagerException e) {
+            log.error("ObjectBeanManagerException. Return null : {}", e);
+            return null;
         }
     }
 
@@ -677,9 +659,9 @@ public class HstRequestContextImpl implements HstMutableRequestContext {
             }
         } catch (ObjectBeanManagerException e) {
             log.error("ObjectBeanManagerException. Return null : {}", e);
+            return null;
         }
 
-        return null;
     }
 
     @Override
@@ -735,20 +717,21 @@ public class HstRequestContextImpl implements HstMutableRequestContext {
     }
 
 
-
     private ObjectBeanManager createObjectBeanManager(Session session) {
-        HstRequestContext requestContext = RequestContextProvider.get();
-        if (requestContext == null) {
-            throw new IllegalStateException("HstRequestContext is not set in handler.");
-        }
-        return new ObjectBeanManagerImpl(session, getContentBeansTool().getObjectConverter());
+        return new ObjectBeanManagerImpl(session, getObjectConverter());
     }
 
     private HstQueryManager createQueryManager(Session session) throws IllegalStateException {
-        return hstQueryManagerFactory.createQueryManager(session, getContentBeansTool().getObjectConverter());
+        return hstQueryManagerFactory.createQueryManager(session, getObjectConverter());
     }
 
-
+    private ObjectConverter getObjectConverter() {
+        final ObjectConverter converter = getContentBeansTool().getObjectConverter();
+        if (cachingObjectConverterEnabled) {
+            return new CachingObjectConverter(converter);
+        }
+        return converter;
+    }
 
 
 }
