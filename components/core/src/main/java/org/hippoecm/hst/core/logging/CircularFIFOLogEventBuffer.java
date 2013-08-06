@@ -21,6 +21,10 @@ import org.apache.commons.collections.buffer.CircularFifoBuffer;
 import org.hippoecm.hst.logging.LogEvent;
 import org.hippoecm.hst.logging.LogEventBuffer;
 
+/**
+ * @deprecated since 2.26.05. It will be removed from 2.28.00 and onwards.
+ */
+@Deprecated
 public class CircularFIFOLogEventBuffer implements LogEventBuffer {
     
     protected CircularFifoBuffer buffer;

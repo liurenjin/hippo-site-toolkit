@@ -16,6 +16,8 @@
 
 /**
  * The org.hippoecm.hst.logging package defines the API for the HST Logging
+ * @deprecated since 2.26.05. It will be removed from 2.28.00 and onwards.
  */
+@Deprecated
 package org.hippoecm.hst.logging;
 

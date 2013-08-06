@@ -25,6 +25,10 @@ import org.hippoecm.hst.logging.Logger;
 import org.hippoecm.hst.logging.LogEvent.Level;
 import org.slf4j.helpers.MessageFormatter;
 
+/**
+ * @deprecated since 2.26.05. It will be removed from 2.28.00 and onwards.
+ */
+@Deprecated
 public class TraceToolSlf4jLogger implements Logger {
     
     private static final String LINE_SEPARATOR = System.getProperty("line.separator");

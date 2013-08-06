@@ -19,6 +19,10 @@ import org.hippoecm.hst.logging.Logger;
 import org.slf4j.helpers.MessageFormatter;
 import org.slf4j.spi.LocationAwareLogger;
 
+/**
+ * @deprecated since 2.26.05. It will be removed from 2.28.00 and onwards.
+ */
+@Deprecated
 public class Slf4jLogger implements Logger {
 
     /**

@@ -24,9 +24,11 @@ package org.hippoecm.hst.logging;
  * implementation like slf4j. For this reason, the components in hst-commons should get
  * {@Logger} instance from the container to leave a log message.
  * </P>
- * 
- * @version $Id$
+ *
+ * @deprecated since 2.26.05. It will be removed from 2.28.00 and onwards. Just use org.slf4j.LoggerFactory;
+ * instead
  */
+@Deprecated
 public interface LoggerFactory {
     
     /**

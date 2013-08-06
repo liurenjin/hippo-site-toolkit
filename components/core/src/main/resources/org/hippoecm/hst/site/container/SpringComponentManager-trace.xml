@@ -21,10 +21,12 @@
                            http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-3.0.xsd">
 
   <!-- A wrapping LoggerFactory component which can be used as a centralized logging management. -->
+  <!-- @deprecated org.hippoecm.hst.logging.LoggerFactory since 2.26.05. It will be removed from 2.28.00 and onwards.  -->
   <bean id="org.hippoecm.hst.logging.LoggerFactory" class="org.hippoecm.hst.core.logging.Slf4jLoggerFactory">
     <property name="traceToolLogEventBuffer" ref="hstTraceToolLogEventBuffer" />
   </bean>
-  
+
+  <!-- @deprecated hstTraceToolLogEventBuffer since 2.26.05. It will be removed from 2.28.00 and onwards.  -->
   <bean id="hstTraceToolLogEventBuffer" class="org.hippoecm.hst.core.logging.CircularFIFOLogEventBuffer">
     <constructor-arg><value>500</value></constructor-arg>
     <property name="levelByName" value="DEBUG" />

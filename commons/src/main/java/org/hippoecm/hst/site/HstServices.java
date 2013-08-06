@@ -77,12 +77,15 @@ public class HstServices {
     public static HstRequestProcessor getRequestProcessor() {
         return componentManager.getComponent(HstRequestProcessor.class.getName());
     }
-    
+
     /**
      * Returns the centralized {@link Logger} component managed by the HST container.
      * @param loggerName
      * @return
+     * @deprecated since 2.26.05. It will be removed from 2.28.00 and onwards. Just use org.slf4j.LoggerFactory.getLogger(MyClass.class);
+     * instead
      */
+    @Deprecated
     public static Logger getLogger(String loggerName) {
         if (isAvailable()) {
             return ((LoggerFactory) getComponentManager().getComponent(LOGGER_FACTORY_COMPONENT_NAME)).getLogger(loggerName);
@@ -95,8 +98,10 @@ public class HstServices {
      * Returns the centralized {@link Logger} component managed by the HST container with wrapper logger fqcn used to find logging location
      * @param loggerName
      * @param fqcn
-     * @return
+     * @deprecated since 2.26.05. It will be removed from 2.28.00 and onwards. Just use org.slf4j.LoggerFactory.getLogger(MyClass.class);
+     * instead
      */
+    @Deprecated
     public static Logger getLogger(String loggerName, String fqcn) {
         if (isAvailable()) {
             return ((LoggerFactory) getComponentManager().getComponent(LOGGER_FACTORY_COMPONENT_NAME)).getLogger(loggerName, fqcn);

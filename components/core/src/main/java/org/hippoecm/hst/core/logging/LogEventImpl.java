@@ -17,6 +17,10 @@ package org.hippoecm.hst.core.logging;
 
 import org.hippoecm.hst.logging.LogEvent;
 
+/**
+ * @deprecated since 2.26.05. It will be removed from 2.28.00 and onwards.
+ */
+@Deprecated
 public class LogEventImpl implements LogEvent {
     
     private static final long serialVersionUID = 1L;

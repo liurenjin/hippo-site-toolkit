@@ -21,9 +21,10 @@ import java.io.Serializable;
  * The representation of logging events. When an affirmative
  * decision is made to log then a <code>LogEvent</code> instance
  * is created.
- * 
- * @version $Id$
+ *
+ * @deprecated since 2.26.05. It will be removed from 2.28.00 and onwards.
  */
+@Deprecated
 public interface LogEvent extends Serializable {
     
     /**

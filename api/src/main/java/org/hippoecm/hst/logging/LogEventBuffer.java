@@ -19,9 +19,10 @@ import java.util.Iterator;
 
 /**
  * Defines a collection that allows log events to be stored and removed in some well-defined order. 
- * 
- * @version $Id$
+ *
+ * @deprecated since 2.26.05. It will be removed from 2.28.00 and onwards.
  */
+@Deprecated
 public interface LogEventBuffer {
     
     /**
