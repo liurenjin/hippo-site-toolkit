@@ -300,7 +300,9 @@ public class Channel implements Serializable {
      * In finegrained locking mode it always returns <code>null</code>
      * @return In coarse grained locking mode the timestamp in milliseconds of when channel lock was acquired and in finegrained locking
      * mode always returns null
+     * @deprecated from 2.26.06 and onwards: method will be removed in 2.28.00
      */
+    @Deprecated
     public Long getLockedOn() {
         if (fineGrainedLocking) {
             return null;
@@ -311,7 +313,9 @@ public class Channel implements Serializable {
     /**
      * Set to null if the channel is not locked.
      * @param lockedOn timestamp in milliseconds of when channel lock was acquired
+     * @deprecated from 2.26.06 and onwards: method will be removed in 2.28.00
      */
+    @Deprecated
     public void setLockedOn(final Long lockedOn) {
         this.lockedOn = lockedOn;
     }
