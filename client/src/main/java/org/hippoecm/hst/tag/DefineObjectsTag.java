@@ -59,6 +59,11 @@ public class DefineObjectsTag extends TagSupport {
         HttpServletRequest servletRequest = (HttpServletRequest) pageContext.getRequest();
         HttpServletResponse servletResponse = (HttpServletResponse) pageContext.getResponse();
         HstRequest hstRequest = HstRequestUtils.getHstRequest(servletRequest);
+
+        if (hstRequest == null) {
+            return SKIP_BODY;
+        }
+
         HstResponse hstResponse = HstRequestUtils.getHstResponse(servletRequest, servletResponse);
         
         // set attribute hstRequest
