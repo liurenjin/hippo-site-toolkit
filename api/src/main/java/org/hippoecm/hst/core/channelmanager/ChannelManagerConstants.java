@@ -22,6 +22,10 @@ public interface ChannelManagerConstants {
     static final String HST_PAGE_ID = "HST-Page-Id";
     static final String HST_MOUNT_LOCKED_BY = "HST-Mount-LockedBy";
     static final String HST_MOUNT_LOCKED_ON = "HST-Mount-LockedOn";
+    /**
+     * @deprecated from 2.26.06. Will be removed in the 2.28.00
+     */
+    @Deprecated
     static final String HST_MOUNT_FINEGRAINED_LOCKING = "HST-Mount-FineGrainedLocking";
     static final String HST_RENDER_VARIANT = "HST-Render-Variant";
     static final String HST_SITE_HAS_PREVIEW_CONFIG = "HST-Site-HasPreviewConfig";
