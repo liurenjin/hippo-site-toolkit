@@ -874,6 +874,11 @@ public abstract class AbstractHstResponseState implements HstResponseState {
         }
     }
 
+    @Override
+    public boolean isFlushed() {
+        return flushed;
+    }
+
     protected abstract void setResponseLocale(Locale locale);
     
     protected abstract void addResponseCookie(Cookie cookie);
