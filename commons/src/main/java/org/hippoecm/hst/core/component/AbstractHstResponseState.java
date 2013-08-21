@@ -35,6 +35,7 @@ import java.util.TimeZone;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletResponse;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -193,6 +194,9 @@ public abstract class AbstractHstResponseState implements HstResponseState {
      */
     public void addHeader(String name, String value) {
         if (isMimeResponse && !committed) {
+            if (statusCode == HttpServletResponse.SC_MOVED_PERMANENTLY &&  "Location".equals(name)) {
+                redirectLocation = value;
+            }
             getAddedHeaderList(name, true).add(value);
         }
     }
@@ -300,6 +304,9 @@ public abstract class AbstractHstResponseState implements HstResponseState {
      */
     public void setHeader(String name, String value) {
         if (isMimeResponse && !committed) {
+            if (statusCode == HttpServletResponse.SC_MOVED_PERMANENTLY &&  "Location".equals(name)) {
+                redirectLocation = value;
+            }
             List<String> headerList = getSetHeaderList(name, true);
             headerList.clear();
             headerList.add(value);
@@ -331,6 +338,14 @@ public abstract class AbstractHstResponseState implements HstResponseState {
      */
     public void setStatus(int statusCode) {
         if (!committed) {
+            if (statusCode == HttpServletResponse.SC_MOVED_PERMANENTLY && containsHeader("Location")) {
+                // permanent redirect, set #getRedirectLocation to trigger short-circuiting of hst aggregation
+                if (setHeaders.get("Location") != null) {
+                    redirectLocation = setHeaders.get("Location").get(0);
+                } else if (addedHeaders.get("Location") != null) {
+                    redirectLocation = addedHeaders.get("Location").get(0);
+                }
+            }
             if (response instanceof HstResponse) {
                 ((HstResponse) response).setStatus(statusCode);
             } else {
