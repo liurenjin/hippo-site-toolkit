@@ -96,14 +96,14 @@ public abstract class AbstractHstResponseState implements HstResponseState {
     protected String errorMessage;
     protected int statusCode;
 
-    private Object response;
+    private Object parentResponse;
 
     private String redirectLocation;
     
     private String forwardPathInfo;
 
-    public AbstractHstResponseState(Object request, Object response) {
-        this.response = response;
+    public AbstractHstResponseState(Object request, Object parentResponse) {
+        this.parentResponse = parentResponse;
         this.defaultLocale = null;
     }
 
@@ -272,8 +272,8 @@ public abstract class AbstractHstResponseState implements HstResponseState {
     
     public void forward(String pathInfo) throws IOException {
         if (isRenderResponse) {
-            if (response instanceof HstResponse) {
-                ((HstResponse) response).forward(pathInfo);
+            if (parentResponse instanceof HstResponse) {
+                ((HstResponse) parentResponse).forward(pathInfo);
             } else {
                 failIfCommitted();
                 closed = true;
@@ -346,14 +346,20 @@ public abstract class AbstractHstResponseState implements HstResponseState {
                     redirectLocation = addedHeaders.get("Location").get(0);
                 }
             }
-            if (response instanceof HstResponse) {
-                ((HstResponse) response).setStatus(statusCode);
+            if (parentResponse instanceof HstResponse) {
+                this.statusCode = statusCode;
+                ((HstResponse) parentResponse).setStatus(statusCode);
             } else {
                 this.statusCode = statusCode;
                 hasStatus = true;
                 resetBuffer();
             }
         }
+    }
+
+    @Override
+    public int getStatus() {
+        return statusCode;
     }
 
     /*
@@ -577,8 +583,8 @@ public abstract class AbstractHstResponseState implements HstResponseState {
             // the property should be passed into the parent component.
             // Otherwise, the property should be kept in the response state.
 
-            if (response instanceof HstResponse) {
-                ((HstResponse) response).addHeadElement(element, keyHint);
+            if (parentResponse instanceof HstResponse) {
+                ((HstResponse) parentResponse).addHeadElement(element, keyHint);
             } else {
                 if (this.headElements == null) {
                     this.headElements = new ArrayList<KeyValue<String, Element>>();
