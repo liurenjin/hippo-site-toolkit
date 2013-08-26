@@ -38,11 +38,11 @@ import org.w3c.dom.Element;
  */
 public class HstServletResponseState extends AbstractHstResponseState
 {
-    protected HttpServletResponse response;
+    protected HttpServletResponse parentResponse;
     
-    public HstServletResponseState(HttpServletRequest request, HttpServletResponse response) {
-        super(request, response);
-        this.response = response;
+    public HstServletResponseState(HttpServletRequest request, HttpServletResponse parentResponse) {
+        super(request, parentResponse);
+        this.parentResponse = parentResponse;
         
         HstRequestContext requestContext = HstRequestUtils.getHstRequestContext(request);
         
@@ -71,49 +71,49 @@ public class HstServletResponseState extends AbstractHstResponseState
     }
 
     protected void setResponseLocale(Locale locale) {
-        this.response.setLocale(locale);
+        this.parentResponse.setLocale(locale);
     }
     
     protected void addResponseCookie(Cookie cookie) {
-        this.response.addCookie(cookie);
+        this.parentResponse.addCookie(cookie);
     }
     
     protected void setResponseCharacterEncoding(String characterEncoding) {
-        this.response.setCharacterEncoding(characterEncoding);
+        this.parentResponse.setCharacterEncoding(characterEncoding);
     }
     
     protected void setResponseContentType(String contentType) {
-        this.response.setContentType(contentType);
+        this.parentResponse.setContentType(contentType);
     }
     
     protected void addResponseHeader(String name, String value) {
-        this.response.addHeader(name, value);
+        this.parentResponse.addHeader(name, value);
     }
     
     protected void setResponseHeader(String name, String value) {
-        this.response.setHeader(name, value);
+        this.parentResponse.setHeader(name, value);
     }
     
     protected void addResponseHeadElement(Element element, String keyHint) {
-        if (this.response instanceof HstResponse) {
-            ((HstResponse) this.response).addHeadElement(element, keyHint);
+        if (this.parentResponse instanceof HstResponse) {
+            ((HstResponse) this.parentResponse).addHeadElement(element, keyHint);
         }
     }
     
     protected void setResponseStatus(int status) {
-        this.response.setStatus(status);
+        this.parentResponse.setStatus(status);
     }
     
     protected void setResponseContentLength(int len) {
-        this.response.setContentLength(len);
+        this.parentResponse.setContentLength(len);
     }
     
     protected OutputStream getResponseOutputStream() throws IOException {
-        return this.response.getOutputStream();
+        return this.parentResponse.getOutputStream();
     }
     
     protected PrintWriter getResponseWriter() throws IOException {
-        return this.response.getWriter();
+        return this.parentResponse.getWriter();
     }
 
 }

@@ -173,30 +173,33 @@ public class AggregationValve extends AbstractValve {
                     }
                 
                 } else if (redirectLocation != null) {
-                    
+
                     try {
                         for (int i = sortedComponentWindows.length - 1; i >= 0; i--) {
                             HstComponentWindow window = sortedComponentWindows[i];
                             window.getResponseState().flush();
                         }
-                        
+
+                        boolean permanent = false;
+                        if (HttpServletResponse.SC_MOVED_PERMANENTLY == rootWindow.getResponseState().getStatus()) {
+                            permanent = true;
+                        }
                         if (redirectLocation.startsWith("http:") || redirectLocation.startsWith("https:")) {
-                            servletResponse.sendRedirect(redirectLocation);
-                        } else {
-                            if (!redirectLocation.startsWith("/")) {
-                                throw new ContainerException("Can only redirect to a context relative path starting with a '/'.");
-                            }
-                            
-                            /* 
-                             * We will redirect to a URL containing the scheme + hostname + portnumber to avoid problems
-                             * when redirecting behind a proxy by default.
-                             */
+                            sendRedirect(servletResponse, redirectLocation, permanent);
+                        } else if (redirectLocation.startsWith("/")) {
                             if (isAlwaysRedirectLocationToAbsoluteUrl()) {
-                                String absoluteRedirectUrl = requestContext.getVirtualHost().getBaseURL(servletRequest) + redirectLocation;
-                                servletResponse.sendRedirect(absoluteRedirectUrl);
+                                /*
+                                 * We will redirect to a URL containing the scheme + hostname + portnumber to avoid problems
+                                 * when redirecting behind a proxy by default.
+                                 */
+                                String fullyQualifiedURL = requestContext.getVirtualHost().getBaseURL(servletRequest) + redirectLocation;
+                                sendRedirect(servletResponse, fullyQualifiedURL, permanent);
                             } else {
-                                servletResponse.sendRedirect(redirectLocation);
+                                sendRedirect(servletResponse, redirectLocation, permanent);
                             }
+                        } else {
+                            throw new ContainerException("Can only redirect to a context relative path starting with a '/' or " +
+                                    "to a fully qualified url starting with http: or https: ");
                         }
                     } catch (Exception e) {
                         if (log.isDebugEnabled()) {
@@ -205,7 +208,7 @@ public class AggregationValve extends AbstractValve {
                             log.warn("Exception during sendRedirect. {}", e.toString());
                         }
                     }
-                    
+
                 } else if (forwardPathInfo != null) {
                     
                     servletRequest.setAttribute(ContainerConstants.HST_FORWARD_PATH_INFO, forwardPathInfo);
@@ -246,6 +249,15 @@ public class AggregationValve extends AbstractValve {
         
         // continue
         context.invokeNext();
+    }
+
+    private void sendRedirect(final HttpServletResponse servletResponse, final String redirectLocation, final boolean permanent) throws IOException {
+        if (permanent) {
+            servletResponse.setStatus(HttpServletResponse.SC_MOVED_PERMANENTLY);
+            servletResponse.setHeader("Location", redirectLocation);
+        } else {
+            servletResponse.sendRedirect(redirectLocation);
+        }
     }
 
     protected void createHstRequestResponseForWindows(
@@ -457,6 +469,7 @@ public class AggregationValve extends AbstractValve {
         @Override public void setLocale(Locale locale) {}
         @Override public void setStatus(int statusCode, String message) {}
         @Override public void setStatus(int statusCode) {}
+        @Override public int getStatus() {return 0;}
         @Override public void setWrapperElement(Element element) {}
         
     }
