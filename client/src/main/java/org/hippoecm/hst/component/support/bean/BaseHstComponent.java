@@ -100,7 +100,8 @@ public class BaseHstComponent extends GenericHstComponent {
     public static final String DEFAULT_BEANS_ANNOTATED_CLASSES_CONF = "/WEB-INF/beans-annotated-classes.xml";
 
     /**
-     * @deprecated since 2.26.05 : do not use any more, In the 2.28.00 this static class variable is removed.
+     * @deprecated since 2.26.05 : do not use any more, In the 2.28.00 this static class variable is removed. The
+     * object converter is always available through RequestContextProvider.get().getContentBeansTool().getObjectConverter()
      */
     @Deprecated
     public static final String OBJECT_CONVERTER_CONTEXT_ATTRIBUTE = BaseHstComponent.class.getName() + ".objectConverter";
@@ -539,52 +540,38 @@ public class BaseHstComponent extends GenericHstComponent {
     public ObjectConverter getObjectConverter() throws HstComponentException {
         if (RequestContextProvider.get() != null && (getLocalAnnotatedClasses() == null || getLocalAnnotatedClasses().isEmpty())) {
             // return global one
-            return RequestContextProvider.get().getContentBeansTool().getObjectConverter();
+            ObjectConverter converter =  RequestContextProvider.get().getContentBeansTool().getObjectConverter();
+            if (servletContext.getAttribute(OBJECT_CONVERTER_CONTEXT_ATTRIBUTE) == null) {
+             servletContext.setAttribute(OBJECT_CONVERTER_CONTEXT_ATTRIBUTE, converter);
+            }
+            return converter;
         }
         // builds ordered mapping from jcrPrimaryNodeType to class or interface(s).
         if (objectConverter == null) {
-            
-            List<Class<? extends HippoBean>> localAnnotatedClasses = getLocalAnnotatedClasses();
-            
-            // 
-            // When local annotated classes are not empty, it means the specific component
+
+            //
+            // Local annotated classes are not empty, it means the specific component
             // wants its own object converter with some additional annotated bean classes
             // which were manullay added by its overriding method, #getLocalAnnotatedClasses().
             //
             // On the other hand, if local annotated classes are empty, it means each component
             // can share one globally shared object converter with the same annotated classes.
             // In this case, the object converter is stored into servlet context attribute.
-            // 
-            
-            boolean objectConverterSharable = (localAnnotatedClasses == null || localAnnotatedClasses.isEmpty());
-            
-            if (objectConverterSharable) {
+            //
+
+            List<Class<? extends HippoBean>> localAnnotatedClasses = getLocalAnnotatedClasses();
+            List<Class<? extends HippoBean>> annotatedClasses = getAnnotatedClasses();
                 
-                objectConverter = (ObjectConverter) servletContext.getAttribute(OBJECT_CONVERTER_CONTEXT_ATTRIBUTE);
-                
-                if (objectConverter == null) {
-                    List<Class<? extends HippoBean>> annotatedClasses = getAnnotatedClasses();
-                    objectConverter = ObjectConverterUtils.createObjectConverter(annotatedClasses);
-                    servletContext.setAttribute(OBJECT_CONVERTER_CONTEXT_ATTRIBUTE, objectConverter);
+            for (Class<? extends HippoBean> localClass : localAnnotatedClasses) {
+                if (annotatedClasses.contains(localClass)) {
+                    log.debug("local added class '{}' already present. Skipping", localClass.getName());
+                } else {
+                    annotatedClasses.add(localClass);
                 }
-                
-            } else {
-                
-                List<Class<? extends HippoBean>> annotatedClasses = getAnnotatedClasses();
-                
-                for (Class<? extends HippoBean> localClass : localAnnotatedClasses) {
-                    if (annotatedClasses.contains(localClass)) {
-                        log.debug("local added class '{}' already present. Skipping", localClass.getName());
-                    } else {
-                        annotatedClasses.add(localClass); 
-                    }
-                }
-                
-                objectConverter = ObjectConverterUtils.createObjectConverter(annotatedClasses);
-                
             }
+            objectConverter = ObjectConverterUtils.createObjectConverter(annotatedClasses);
         }
-        
+
         return objectConverter;
     }
 
