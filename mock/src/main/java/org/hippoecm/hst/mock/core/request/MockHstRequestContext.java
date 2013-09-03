@@ -548,4 +548,8 @@ public class MockHstRequestContext implements HstMutableRequestContext {
     public HstQueryManager getQueryManager(final Session session) throws IllegalStateException {
         return nonDefaultHstQueryManagers.get(session);
     }
+
+    @Override
+    public void clearObjectAndQueryManagers() {
+    }
 }
