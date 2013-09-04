@@ -542,7 +542,7 @@ public class BaseHstComponent extends GenericHstComponent {
             // return global one
             ObjectConverter converter =  RequestContextProvider.get().getContentBeansTool().getObjectConverter();
             if (servletContext.getAttribute(OBJECT_CONVERTER_CONTEXT_ATTRIBUTE) == null) {
-             servletContext.setAttribute(OBJECT_CONVERTER_CONTEXT_ATTRIBUTE, converter);
+                servletContext.setAttribute(OBJECT_CONVERTER_CONTEXT_ATTRIBUTE, converter);
             }
             return converter;
         }
@@ -561,12 +561,14 @@ public class BaseHstComponent extends GenericHstComponent {
 
             List<Class<? extends HippoBean>> localAnnotatedClasses = getLocalAnnotatedClasses();
             List<Class<? extends HippoBean>> annotatedClasses = getAnnotatedClasses();
-                
-            for (Class<? extends HippoBean> localClass : localAnnotatedClasses) {
-                if (annotatedClasses.contains(localClass)) {
-                    log.debug("local added class '{}' already present. Skipping", localClass.getName());
-                } else {
-                    annotatedClasses.add(localClass);
+
+            if (localAnnotatedClasses != null) {
+                for (Class<? extends HippoBean> localClass : localAnnotatedClasses) {
+                    if (annotatedClasses.contains(localClass)) {
+                        log.debug("local added class '{}' already present. Skipping", localClass.getName());
+                    } else {
+                        annotatedClasses.add(localClass);
+                    }
                 }
             }
             objectConverter = ObjectConverterUtils.createObjectConverter(annotatedClasses);
