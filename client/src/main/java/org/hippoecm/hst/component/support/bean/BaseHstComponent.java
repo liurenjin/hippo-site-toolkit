@@ -553,11 +553,6 @@ public class BaseHstComponent extends GenericHstComponent {
             // Local annotated classes are not empty, it means the specific component
             // wants its own object converter with some additional annotated bean classes
             // which were manullay added by its overriding method, #getLocalAnnotatedClasses().
-            //
-            // On the other hand, if local annotated classes are empty, it means each component
-            // can share one globally shared object converter with the same annotated classes.
-            // In this case, the object converter is stored into servlet context attribute.
-            //
 
             List<Class<? extends HippoBean>> localAnnotatedClasses = getLocalAnnotatedClasses();
             List<Class<? extends HippoBean>> annotatedClasses = getAnnotatedClasses();
