@@ -724,7 +724,7 @@ public class HstRequestContextImpl implements HstMutableRequestContext {
             nonDefaultObjectBeanManagers.clear();
         }
         if (nonDefaultHstQueryManagers != null) {
-            nonDefaultObjectBeanManagers.clear();
+            nonDefaultHstQueryManagers.clear();
         }
     }
 
