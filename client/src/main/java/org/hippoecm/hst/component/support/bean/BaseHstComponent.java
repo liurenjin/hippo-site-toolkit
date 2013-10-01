@@ -541,7 +541,7 @@ public class BaseHstComponent extends GenericHstComponent {
         if (RequestContextProvider.get() != null && (getLocalAnnotatedClasses() == null || getLocalAnnotatedClasses().isEmpty())) {
             // return global one
             ObjectConverter converter =  RequestContextProvider.get().getContentBeansTool().getObjectConverter();
-            if (servletContext.getAttribute(OBJECT_CONVERTER_CONTEXT_ATTRIBUTE) == null) {
+            if (servletContext != null && servletContext.getAttribute(OBJECT_CONVERTER_CONTEXT_ATTRIBUTE) == null) {
                 servletContext.setAttribute(OBJECT_CONVERTER_CONTEXT_ATTRIBUTE, converter);
             }
             return converter;
