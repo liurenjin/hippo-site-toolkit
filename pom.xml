@@ -91,7 +91,7 @@
 
     <jackrabbit-ocm.version>1.5.3</jackrabbit-ocm.version>
 
-    <hippo.commons.version>1.02.06-SNAPSHOT</hippo.commons.version>
+    <hippo.commons.version>1.02.06</hippo.commons.version>
     <hippo.repository.version>2.24.07</hippo.repository.version>
     <hippo.utilities.version>1.01.02</hippo.utilities.version>
     <hippo.services.version>1.02.02</hippo.services.version>
