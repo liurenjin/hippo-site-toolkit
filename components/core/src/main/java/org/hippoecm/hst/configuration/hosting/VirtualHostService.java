@@ -89,6 +89,7 @@ public class VirtualHostService implements MutableVirtualHost {
     private Integer defaultPort;
     private final boolean cacheable;
     private String [] defaultResourceBundleIds;
+    private boolean httpsApproved;
 
     public VirtualHostService(VirtualHostsService virtualHosts, HstNode virtualHostNode, VirtualHostService parentHost, String hostGroupName, String cmsLocation, int defaultPort, HstManagerImpl hstManager) throws ServiceException {
 
@@ -154,6 +155,12 @@ public class VirtualHostService implements MutableVirtualHost {
         if (schemeNotMatchingResponseCode == -1) {
             schemeNotMatchingResponseCode = parentHost != null ?
                     parentHost.getSchemeNotMatchingResponseCode() : virtualHosts.getSchemeNotMatchingResponseCode();
+        }
+
+        if(virtualHostNode.getValueProvider().hasProperty(HstNodeTypes.VIRTUALHOST_PROPERTY_HTTPS_APPROVED)) {
+            httpsApproved = virtualHostNode.getValueProvider().getBoolean(HstNodeTypes.VIRTUALHOST_PROPERTY_HTTPS_APPROVED);
+        } else {
+            httpsApproved = parentHost != null ? parentHost.isHttpsApproved() : false ;
         }
 
         if(virtualHostNode.getValueProvider().hasProperty(HstNodeTypes.GENERAL_PROPERTY_LOCALE)) {
@@ -324,6 +331,7 @@ public class VirtualHostService implements MutableVirtualHost {
         this.showPort = parent.showPort;
         this.cacheable = parent.cacheable;
         this.defaultResourceBundleIds = parent.defaultResourceBundleIds;
+        this.httpsApproved = parent.httpsApproved;
         this.name = nameSegments[position];
         // add child host services
         if(--position > -1 ) {
@@ -461,6 +469,11 @@ public class VirtualHostService implements MutableVirtualHost {
         }
 
         return (String[]) ArrayUtils.clone(defaultResourceBundleIds);
+    }
+
+    @Override
+    public boolean isHttpsApproved() {
+        return httpsApproved;
     }
 
     private String buildHostName() {
