@@ -546,7 +546,7 @@ public class HstFilter implements Filter {
         if (hstSiteMapItem.getScheme().equals(farthestRequestScheme)) {
             return true;
         }
-        if ("https".equals(farthestRequestScheme) && resolvedSiteMapItem.getResolvedMount().getMount().getVirtualHost().isHttpsApproved()) {
+        if ("https".equals(farthestRequestScheme) && resolvedSiteMapItem.getResolvedMount().getMount().getVirtualHost().isCustomHttpsSupported()) {
             // although sitemap item indicates http, https is approved by default to be rendered
             return true;
         }
@@ -566,7 +566,7 @@ public class HstFilter implements Filter {
         if (mount.getScheme().equals(farthestRequestScheme)) {
             return true;
         }
-        if ("https".equals(farthestRequestScheme) && mount.getVirtualHost().isHttpsApproved()) {
+        if ("https".equals(farthestRequestScheme) && mount.getVirtualHost().isCustomHttpsSupported()) {
             // although mount indicates http, https is approved by default to be rendered
             return true;
         }
