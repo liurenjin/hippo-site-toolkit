@@ -339,7 +339,7 @@ public class CustomMountAndVirtualHostAugmenter implements HstConfigurationAugme
         }
 
         @Override
-        public boolean isHttpsApproved() {
+        public boolean isCustomHttpsSupported() {
             return false;
         }
 
