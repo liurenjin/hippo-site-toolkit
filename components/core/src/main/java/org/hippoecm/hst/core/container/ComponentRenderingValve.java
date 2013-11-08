@@ -51,7 +51,7 @@ public class ComponentRenderingValve extends AbstractBaseOrderableValve {
             return;
         }
 
-        if (requestContext.isCmsRequest() || requestContext.isPreview()) {
+        if (requestContext.isCmsRequest()) {
             setNoCacheHeaders(servletResponse);
         }
 
@@ -65,12 +65,6 @@ public class ComponentRenderingValve extends AbstractBaseOrderableValve {
         }
 
         context.invokeNext();
-    }
-
-    private static void setNoCacheHeaders(final HttpServletResponse response) {
-        response.setDateHeader("Expires", -1);
-        response.setHeader("Pragma", "no-cache");
-        response.setHeader("Cache-Control", "no-cache");
     }
 
 }
