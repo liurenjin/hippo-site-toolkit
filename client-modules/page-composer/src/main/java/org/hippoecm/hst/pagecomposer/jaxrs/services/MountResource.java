@@ -712,7 +712,7 @@ public class MountResource extends AbstractConfigResource {
             return Collections.emptyList();
         }
 
-        final String xpath = buildXPathQueryToFindMainfConfigNodesForUsers(previewConfigurationPath, userIds);
+        final String xpath = buildXPathQueryToFindMainConfigNodesForUsers(previewConfigurationPath, userIds);
         final QueryResult result = session.getWorkspace().getQueryManager().createQuery(xpath, Query.XPATH).execute();
 
         final NodeIterable mainConfigNodesToRevert = new NodeIterable(result.getNodes());
@@ -754,7 +754,7 @@ public class MountResource extends AbstractConfigResource {
         return xpath.toString();
     }
 
-    private String buildXPathQueryToFindMainfConfigNodesForUsers(String previewConfigurationPath, List<String> userIds) {
+    private String buildXPathQueryToFindMainConfigNodesForUsers(String previewConfigurationPath, List<String> userIds) {
         if (userIds.isEmpty()) {
             throw new IllegalArgumentException("List of user IDs cannot be empty");
         }
