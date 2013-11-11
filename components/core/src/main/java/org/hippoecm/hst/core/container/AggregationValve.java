@@ -255,8 +255,12 @@ public class AggregationValve extends AbstractBaseOrderableValve {
 
             try {
                 // add the X-HST-VERSION as a response header if we are in preview:
-                if (rootWindow == rootRenderingWindow && requestContext.isPreview() && requestContext.getResolvedMount().getMount().isVersionInPreviewHeader()) {
-                    rootWindow.getResponseState().addHeader("X-HST-VERSION", HstServices.getImplementationVersion());
+                boolean isPreviewOrCmsRequest = requestContext.isPreview() || requestContext.isCmsRequest();
+                if (rootWindow == rootRenderingWindow && isPreviewOrCmsRequest) {
+                    setNoCacheHeaders(rootWindow.getResponseState());
+                    if (requestContext.getResolvedMount().getMount().isVersionInPreviewHeader()) {
+                        rootWindow.getResponseState().addHeader("X-HST-VERSION", HstServices.getImplementationVersion());
+                    }
                 }
                 // flush root component window content.
                 // note that the child component's contents are already flushed into the root component's response state.
@@ -272,6 +276,12 @@ public class AggregationValve extends AbstractBaseOrderableValve {
 
         // continue
         context.invokeNext();
+    }
+
+    private static void setNoCacheHeaders(final HstResponseState response) {
+        response.setDateHeader("Expires", -1);
+        response.setHeader("Pragma", "no-cache");
+        response.setHeader("Cache-Control", "no-cache");
     }
 
     private void sendRedirect(final HttpServletResponse servletResponse, final String redirectLocation, final boolean permanent) throws IOException {
