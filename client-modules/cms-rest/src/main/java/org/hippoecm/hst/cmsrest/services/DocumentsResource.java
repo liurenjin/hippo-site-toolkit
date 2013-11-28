@@ -225,7 +225,7 @@ public class DocumentsResource implements DocumentService {
         HstLink bestLink = secondCandidateList.get(0);
         if (secondCandidateList.size() > 1) {
             for (HstLink link : secondCandidateList) {
-                if (link == secondCandidateList) {
+                if (link == bestLink) {
                     continue;
                 }
                 if (hasLinkMoreMountAncestorsThanBestLink(link, bestLink)) {
