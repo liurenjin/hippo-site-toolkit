@@ -296,6 +296,9 @@ public class HstSiteMapItemService implements HstSiteMapItem {
                 relativeContentPath = resolved;
             }
         }
+        if (relativeContentPath != null) {
+            relativeContentPath.trim();
+        }
         relativeContentPath = StringPool.get(relativeContentPath);
         
         this.componentConfigurationId = node.getValueProvider().getString(HstNodeTypes.SITEMAPITEM_PROPERTY_COMPONENTCONFIGURATIONID);
