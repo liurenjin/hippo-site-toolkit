@@ -297,7 +297,7 @@ public class HstSiteMapItemService implements HstSiteMapItem {
             }
         }
         if (relativeContentPath != null) {
-            relativeContentPath.trim();
+            relativeContentPath = relativeContentPath.trim();
         }
         relativeContentPath = StringPool.get(relativeContentPath);
         
