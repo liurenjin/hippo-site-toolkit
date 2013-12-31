@@ -102,7 +102,7 @@ public class DefaultHstLinkCreator implements HstLinkCreator {
             Node node = session.getNodeByIdentifier(uuid);
             return create(node, requestContext);
         } catch (ItemNotFoundException e) {
-            log.warn("Node with uuid '{}' cannot be found. Cannot create a HstLink, return null", uuid);
+            log.info("Node with uuid '{}' cannot be found. Cannot create a HstLink, return null", uuid);
         } catch (RepositoryException e) {
             log.warn("RepositoryException Cannot create a HstLink, return null", uuid);
         } 
@@ -190,7 +190,7 @@ public class DefaultHstLinkCreator implements HstLinkCreator {
                 types.append(type);
             }
             String[] messages = {mountAlias , currentMount.getVirtualHost().getHostGroupName(), types.toString()};
-            log.warn("Cannot create a link for mountAlias '{}' as it cannot be found in the host group '{}' and one of the types '{}'", messages);
+            log.info("Cannot create a link for mountAlias '{}' as it cannot be found in the host group '{}' and one of the types '{}'", messages);
             return null;
         }
         
@@ -203,7 +203,7 @@ public class DefaultHstLinkCreator implements HstLinkCreator {
         Mount targetMount = requestContext.getMount(mountAlias, type);
         if(targetMount == null) {
             String[] messages = {mountAlias , requestContext.getVirtualHost().getHostGroupName(), type};
-            log.warn("Cannot create a link for mountAlias '{}' as it cannot be found in the host group '{}' for type '{}'", messages);
+            log.info("Cannot create a link for mountAlias '{}' as it cannot be found in the host group '{}' for type '{}'", messages);
             return null;
         }
         log.debug("Target Mount found for mountAlias '{}'. Create link for target Mount", mountAlias);
@@ -232,12 +232,12 @@ public class DefaultHstLinkCreator implements HstLinkCreator {
 
     public HstLink createByRefId(String siteMapItemRefId, Mount mount) {
         if(mount.getHstSite() == null) {
-            log.warn("Cannot create a link to a siteMapItemRefId '{}' for a mount '{}' that does not have a HstSiteMap. Return null", siteMapItemRefId, mount.getName());
+            log.info("Cannot create a link to a siteMapItemRefId '{}' for a mount '{}' that does not have a HstSiteMap. Return null", siteMapItemRefId, mount.getName());
             return null;
         }
         HstSiteMapItem siteMapItem = mount.getHstSite().getSiteMap().getSiteMapItemByRefId(siteMapItemRefId);
         if(siteMapItem == null) {
-            log.warn("Could not find HstSiteMapItem for siteMapItemRefId '{}' and mount '{}'. Return null", siteMapItemRefId, mount.getName());
+            log.info("Could not find HstSiteMapItem for siteMapItemRefId '{}' and mount '{}'. Return null", siteMapItemRefId, mount.getName());
             return null;
         }
         return create(siteMapItem, mount);
@@ -316,11 +316,11 @@ public class DefaultHstLinkCreator implements HstLinkCreator {
         
         HstLink resolve(){
             if(mount == null) {
-                log.warn("Cannot create link when the mount is null. Return null");
+                log.info("Cannot create link when the mount is null. Return null");
                 return null;
             }
             if(node == null) {
-                log.warn("Cannot create link when the jcr node null. Return a page not found link");
+                log.info("Cannot create link when the jcr node null. Return a page not found link");
                 return pageNotFoundLink(mount);
             }
             
@@ -352,7 +352,7 @@ public class DefaultHstLinkCreator implements HstLinkCreator {
                         }
                     }
                    
-                    log.warn("There is no resolver that can handle a resource of type '{}'. Return do not found link", node.getPrimaryNodeType().getName());          
+                    log.info("There is no resolver that can handle a resource of type '{}'. Return do not found link", node.getPrimaryNodeType().getName());
                     return pageNotFoundLink(mount);
                 } else {
                     if(canonicalNode != null) {
@@ -364,7 +364,7 @@ public class DefaultHstLinkCreator implements HstLinkCreator {
                     if(!resolverProperties.navigationStateful && (node.isNodeType(HippoNodeType.NT_FACETSELECT) || node.isNodeType(HippoNodeType.NT_MIRROR))) {
                         node = NodeUtils.getDeref(node);
                         if( node == null ) {
-                            log.warn("Broken content internal link for '{}'. Cannot create a HstLink for it. Return null", nodePath);
+                            log.info("Broken content internal link for '{}'. Cannot create a HstLink for it. Return null", nodePath);
                             return pageNotFoundLink(mount);
                         }
                     }
@@ -466,7 +466,7 @@ public class DefaultHstLinkCreator implements HstLinkCreator {
                         }
                         
                         if(candidateMounts.size() == 0) {
-                            log.warn("There is no Mount available that is suited to linkrewrite '{}'. Return page not found link.", nodePath);
+                            log.info("There is no Mount available that is suited to linkrewrite '{}'. Return page not found link.", nodePath);
                             return pageNotFoundLink(mount);
                         } else if(candidateMounts.size() == 1) {
                             linkInfo = resolveToLinkInfo(nodePath, candidateMounts.get(0), resolverProperties);
@@ -495,7 +495,7 @@ public class DefaultHstLinkCreator implements HstLinkCreator {
             }
             
             if(linkInfo == null) {
-                log.warn("Cannot create a link for node with path '{}'. Return a page not found link", nodePath);
+                log.info("Cannot create a link for node with path '{}'. Return a page not found link", nodePath);
                 return pageNotFoundLink(mount);
             }
             
@@ -519,18 +519,18 @@ public class DefaultHstLinkCreator implements HstLinkCreator {
             
             resolverProperties.canonicalLink = true;
             if(resolverProperties.preferredItem != null) {
-                log.warn("preferredItem is not suppored in combination with 'all available canonical links'. It will be ignored");
+                log.info("preferredItem is not suppored in combination with 'all available canonical links'. It will be ignored");
             }
             if(resolverProperties.navigationStateful) {
-                log.warn("navigationStateful is not suppored in combination with 'all available canonical links'. It will be ignored");
+                log.info("navigationStateful is not suppored in combination with 'all available canonical links'. It will be ignored");
             }
             
             if (mount == null) {
-                log.warn("Cannot create link when the mount is null. Return empty list for canonicalLinks.");
+                log.info("Cannot create link when the mount is null. Return empty list for canonicalLinks.");
                 return Collections.emptyList();
             }
             if (node == null) {
-                log.warn("Cannot create link when the jcr node is null. Return empty list for canonicalLinks.");
+                log.info("Cannot create link when the jcr node is null. Return empty list for canonicalLinks.");
                 return Collections.emptyList();
             }
             
@@ -542,7 +542,7 @@ public class DefaultHstLinkCreator implements HstLinkCreator {
             try {
                 if(node.isNodeType(HippoNodeType.NT_RESOURCE)) {
                     // we do not support all canonical links for resources (yet)
-                    log.warn("For binary resources the HST has no support to return all available canonical links");
+                    log.info("For binary resources the HST has no support to return all available canonical links");
                     return Collections.emptyList();
                 } 
                 if(canonicalNode == null) {
@@ -641,7 +641,7 @@ public class DefaultHstLinkCreator implements HstLinkCreator {
                 }
                 
                 if(candidateMounts.size() == 0) {
-                    log.warn("There is no Mount available that is suited to linkrewrite '{}'. Return empty list for canonicalLinks..", nodePath);
+                    log.info("There is no Mount available that is suited to linkrewrite '{}'. Return empty list for canonicalLinks..", nodePath);
                     return Collections.emptyList();
                     
                 } 
@@ -738,13 +738,9 @@ public class DefaultHstLinkCreator implements HstLinkCreator {
                     resolvedLocation = resolver.resolve(path);
                 }
                 if (resolvedLocation != null && resolvedLocation.getPath() != null) {
-                    if (log.isDebugEnabled()){
-                        log.debug("Creating a link for node '{}' succeeded", path);
-                    }
-                    if (log.isInfoEnabled()){
-                        log.info("Succesfull linkcreation for path '{}' to new pathInfo '{}'", path, resolvedLocation.getPath());
-                    }
-                    return resolvedLocation.getPath();
+                   log.debug("Creating a link for node '{}' succeeded", path);
+                   log.info("Succesfull linkcreation for path '{}' to new pathInfo '{}'", path, resolvedLocation.getPath());
+                   return resolvedLocation.getPath();
                 }
                 log.debug("Could not create a link for '"+path+"' for mount '{}' (host = {}). Other mounts will be tried if available.", tryMount.getMountPath(), tryMount.getVirtualHost().getHostName());
                 return null;
