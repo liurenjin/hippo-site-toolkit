@@ -827,6 +827,7 @@ public abstract class AbstractHstResponseState implements HstResponseState {
             final Writer writer = getParentWriter();
             for (Comment comment : preambles) {
                 writer.write("<!-- " + comment.getTextContent() + " -->");
+                writer.flush();
             }
         }
     }
@@ -855,6 +856,7 @@ public abstract class AbstractHstResponseState implements HstResponseState {
             for (Element element : preambles) {
                 WrapperElement wrapperElem = new WrapperElementImpl(element);
                 WrapperElementUtils.writeWrapperElement(writer, wrapperElem, chars, 0, len);
+                writer.flush();
             }
         }
     }
