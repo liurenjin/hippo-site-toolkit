@@ -20,6 +20,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import javax.jcr.Item;
+import javax.jcr.ItemNotFoundException;
 import javax.jcr.Node;
 import javax.jcr.PathNotFoundException;
 import javax.jcr.RepositoryException;
@@ -145,13 +146,17 @@ public abstract class AbstractResourceContainer implements ResourceContainer {
                        log.debug("Expected resource node of type '{}' but found node of type '{}'. Try to return the primary item from this resource container.", HippoNodeType.NT_RESOURCE, resourceNode.getPrimaryNodeType().getName());
                    }
                }
-               if(node.hasNode(primaryItem)) {
+               if(primaryItem != null && node.hasNode(primaryItem)) {
                    Node resourceNode = node.getNode(primaryItem);
                    if(resourceNode.isNodeType(HippoNodeType.NT_RESOURCE)) {
                        return resourceNode;
                    }
-                   log.debug("Expected resource node of type '{}' but found node of type '{}'. Try to return the primary jcr item (primarry item as in cnd).", HippoNodeType.NT_RESOURCE, resourceNode.getPrimaryNodeType().getName());
+                   log.debug("Expected resource node of type '{}' but found node of type '{}'. Try to return the primary jcr item (primary item as in cnd).", HippoNodeType.NT_RESOURCE, resourceNode.getPrimaryNodeType().getName());
                   
+               }
+               if (!hasPrimaryItem(node)) {
+                   log.debug("Node of type '{}' at path '{}' does not have a primary jcr item. Return null.", node.getPrimaryNodeType().getName(), node.getPath());
+                   return null;
                }
                Item primItem = node.getPrimaryItem();
                if (primItem.isNode()) {
@@ -177,5 +182,7 @@ public abstract class AbstractResourceContainer implements ResourceContainer {
         return null;
     }
 
-  
+    private boolean hasPrimaryItem(final Node node) throws RepositoryException {
+        return node.getPrimaryNodeType().getPrimaryItemName() != null;
+    }
 }
