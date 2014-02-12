@@ -32,8 +32,36 @@ Hippo.Hst.AsyncPage = {
                     while (tmpDiv.firstChild) {
                         fragment.appendChild(tmpDiv.firstChild);
                     }
+
                     parent = element.parentNode;
+
+                    var scriptNodes = [];
+                    var scripts = fragment.querySelectorAll('script');
+                    for (var i=0, length=scripts.length; i<length; i++) {
+                        var script = document.createElement('script');
+                        var scriptText = document.createTextNode(scripts[i].innerHTML);
+                        script.appendChild(scriptText);
+
+                        scripts[i].parentNode.removeChild(scripts[i]);
+                        scriptNodes.push(script);
+                    }
+
+                    var reference;
+                    if (element.nextSibling) {
+                        reference = element.nextSibling;
+                    } else {
+                        reference = parent;
+                    }
+
                     parent.replaceChild(fragment, element);
+
+                    for (var i=0, length=scriptNodes.length; i<length; i++) {
+                        if (parent !== reference) {
+                            parent.insertBefore(scriptNodes[i], reference);
+                        } else {
+                            parent.appendChild(scriptNodes[i]);
+                        }
+                    }
                 });
             }).call(this, result[i]);
         }
