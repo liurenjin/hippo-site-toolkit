@@ -47,6 +47,7 @@ public class HstLinkImpl implements HstLink {
     private HstSiteMapItem siteMapItem;
     private boolean containerResource;
     private boolean notFound = false;
+    private String[] FULLY_QUALIFIED_URL_PREFIXES = {"//", "http:", "https:"};
     
     public HstLinkImpl(String path, Mount mount) {
         this(path, mount,false);
@@ -66,7 +67,12 @@ public class HstLinkImpl implements HstLink {
     }
 
     public HstLinkImpl(String path, Mount mount, HstSiteMapItem siteMapItem, boolean containerResource, boolean rewriteHomePagePath) {
-        this.path = PathUtils.normalizePath(path);
+        if (path != null && path.startsWith("//")) {
+            // fully qualified path
+            this.path = "//" + PathUtils.normalizePath(path);
+        } else {
+            this.path = PathUtils.normalizePath(path);
+        }
         this.mount = mount;
         this.siteMapItem = siteMapItem;
         this.containerResource = containerResource;
@@ -127,6 +133,12 @@ public class HstLinkImpl implements HstLink {
         if (path == null) {
             log.warn("Unable to rewrite link. Return EVAL_PAGE");
             return null;
+        }
+
+        for (String s : FULLY_QUALIFIED_URL_PREFIXES) {
+            if (path.startsWith(s)) {
+                return path;
+            }
         }
 
         Mount requestMount = requestContext.getResolvedMount().getMount();
