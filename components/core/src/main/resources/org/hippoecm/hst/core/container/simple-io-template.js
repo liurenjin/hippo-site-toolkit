@@ -24,20 +24,10 @@ Hippo.Hst.AsyncPage = {
 
         // Fail safe node retrieval
         function findNodes(node, name) {
-            var all, elements;
             if (window.addEventListener) {
                 return node.querySelectorAll(name);
             } else { // IE8 or less
-                name = name.toUpperCase();
-                elements = [];
-                all = node.getElementsByTagName(name);
-                for (var i = 0, len = all.length; i < len; i++) {
-                    var el = all[i];
-                    if (el.nodeType === 1 && el.nodeName.toUpperCase() === name) {
-                        elements.push(el);
-                    }
-                }
-                return elements;
+                return node.getElementsByTagName(name.toUpperCase());
             }
         }
 
