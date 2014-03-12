@@ -38,7 +38,7 @@ Hippo.Hst.AsyncPage = {
             var i, j, length, node, nodes, script, scripts, atts;
 
             atts = ['async', 'charset', 'defer', 'src', 'type'];
-            scripts = findNodes('script');
+            scripts = findNodes(fragment, 'script');
             nodes = [];
 
             for (i = 0, length = scripts.length; i < length; i++) {
