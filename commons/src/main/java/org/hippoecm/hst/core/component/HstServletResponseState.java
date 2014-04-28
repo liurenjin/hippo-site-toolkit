@@ -52,6 +52,7 @@ public class HstServletResponseState extends AbstractHstResponseState
         
         isStateAwareResponse = isActionResponse;
         isMimeResponse = isRenderResponse || isResourceResponse;
+        characterEncoding = parentResponse.getCharacterEncoding();
     }
 
     public Element createElement(String tagName) {
