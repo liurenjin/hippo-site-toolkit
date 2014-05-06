@@ -826,7 +826,7 @@ public abstract class AbstractHstResponseState implements HstResponseState {
         if (preambles != null) {
             final Writer writer = getParentWriter();
             for (Comment comment : preambles) {
-                writer.write("<!-- " + comment.getTextContent() + " -->");
+                writer.write("<!--" + comment.getTextContent() + "-->");
                 writer.flush();
             }
         }
