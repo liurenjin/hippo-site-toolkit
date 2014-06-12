@@ -132,6 +132,10 @@ public class ObjectConverterImpl implements ObjectConverter {
         String jcrPrimaryNodeType;
         String path;
         try { 
+            if ("rep:root".equals(node.getPrimaryNodeType().getName())) {
+                log.debug("Root node is not supposed to be resolved to a bean.");
+                return null;
+            }
             if(node.isNodeType(HippoNodeType.NT_HANDLE) ) {
                 if(node.hasNode(node.getName())) {
                     return getObject(node.getNode(node.getName()));
@@ -174,7 +178,7 @@ public class ObjectConverterImpl implements ObjectConverter {
         } catch (Exception e) {
             throw new ObjectBeanManagerException("Impossible to convert the node", e);
         }
-        log.warn("No Descriptor found for node '{}'. Cannot return a Bean for '{}'.", path , jcrPrimaryNodeType);
+        log.info("No Descriptor found for node '{}'. Cannot return a Bean for '{}'.", path , jcrPrimaryNodeType);
         return null;
     }
 
@@ -182,6 +186,10 @@ public class ObjectConverterImpl implements ObjectConverter {
         String jcrPrimaryNodeType;
         String path;
         try { 
+            if ("rep:root".equals(node.getPrimaryNodeType().getName())) {
+                log.debug("Root node is not supposed to be resolved to a bean.");
+                return null;
+            }
             if(node.isNodeType(HippoNodeType.NT_HANDLE) ) {
                 if(node.hasNode(node.getName())) {
                     return getPrimaryObjectType(node.getNode(node.getName()));
@@ -218,7 +226,7 @@ public class ObjectConverterImpl implements ObjectConverter {
         } catch (Exception e) {
             throw new ObjectBeanManagerException("Impossible to determine node type for node", e);
         }
-        log.warn("No Descriptor found for node '{}'. Cannot return a matching node type for '{}'.", path , jcrPrimaryNodeType);
+        log.info("No Descriptor found for node '{}'. Cannot return a matching node type for '{}'.", path , jcrPrimaryNodeType);
         return null;
     }
     
