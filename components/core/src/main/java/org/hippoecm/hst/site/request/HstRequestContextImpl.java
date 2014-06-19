@@ -1,5 +1,5 @@
 /*
- *  Copyright 2008-2013 Hippo B.V. (http://www.onehippo.com)
+ *  Copyright 2008-2014 Hippo B.V. (http://www.onehippo.com)
  * 
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -49,7 +50,6 @@ import org.hippoecm.hst.core.component.HstParameterInfoProxyFactory;
 import org.hippoecm.hst.core.component.HstParameterInfoProxyFactoryImpl;
 import org.hippoecm.hst.core.component.HstURLFactory;
 import org.hippoecm.hst.core.container.ContainerConfiguration;
-import org.hippoecm.hst.core.container.ContainerConstants;
 import org.hippoecm.hst.core.container.HstComponentWindowFilter;
 import org.hippoecm.hst.core.container.HstContainerURL;
 import org.hippoecm.hst.core.container.HstContainerURLProvider;
@@ -112,10 +112,8 @@ public class HstRequestContextImpl implements HstMutableRequestContext {
     // request is done from a cms context. This can influence for example how a link is created
     protected boolean cmsRequest;
 
-    private ObjectBeanManager defaultObjectBeanManager;
-    private Map<Session, ObjectBeanManager> nonDefaultObjectBeanManagers;
-    private HstQueryManager defaultHstQueryManager;
-    private Map<Session, HstQueryManager>  nonDefaultHstQueryManagers;
+    private Map<Session, ObjectBeanManager> objectBeanManagers;
+    private Map<Session, HstQueryManager> hstQueryManagers;
 
     private Map<String, Object> unmodifiableAttributes;
     
@@ -666,65 +664,55 @@ public class HstRequestContextImpl implements HstMutableRequestContext {
 
     @Override
     public ObjectBeanManager getObjectBeanManager() {
-        if (defaultObjectBeanManager != null) {
-            return defaultObjectBeanManager;
-        }
         try {
-            defaultObjectBeanManager = createObjectBeanManager(getSession());
+            return getObjectBeanManager(getSession());
         } catch (RepositoryException e) {
-            throw new IllegalStateException("Cannot get ObjectBeanManager", e);
+            throw new IllegalStateException("Cannot get ObjectBeanManager. Cause : '"+e.toString()+"'", e);
         }
-        return  defaultObjectBeanManager;
     }
 
     @Override
     public ObjectBeanManager getObjectBeanManager(final Session session) {
-        if (nonDefaultObjectBeanManagers == null) {
-            nonDefaultObjectBeanManagers = new HashMap<Session, ObjectBeanManager>();
+        if (objectBeanManagers == null) {
+            objectBeanManagers = new IdentityHashMap<Session, ObjectBeanManager>();
         }
-        ObjectBeanManager nonDefaultObjectBeanManager = nonDefaultObjectBeanManagers.get(session);
-        if (nonDefaultObjectBeanManager == null) {
-            nonDefaultObjectBeanManager = createObjectBeanManager(session);
-            nonDefaultObjectBeanManagers.put(session, nonDefaultObjectBeanManager);
+        ObjectBeanManager objectBeanManager = objectBeanManagers.get(session);
+        if (objectBeanManager == null) {
+            objectBeanManager = createObjectBeanManager(session);
+            objectBeanManagers.put(session, objectBeanManager);
         }
-        return nonDefaultObjectBeanManager;
+        return objectBeanManager;
     }
 
     @Override
     public HstQueryManager getQueryManager() throws IllegalStateException {
-        if (defaultHstQueryManager != null) {
-            return defaultHstQueryManager;
-        }
         try {
-            defaultHstQueryManager = createQueryManager(getSession());
+            return getQueryManager(getSession());
         } catch (RepositoryException e) {
-            throw new IllegalStateException("Cannot get HstQueryManager", e);
+            throw new IllegalStateException("Cannot get HstQueryManager. Cause : '"+e.toString()+"'", e);
         }
-        return  defaultHstQueryManager;
     }
 
     @Override
     public HstQueryManager getQueryManager(final Session session) throws IllegalStateException {
-        if (nonDefaultHstQueryManagers == null) {
-            nonDefaultHstQueryManagers = new HashMap<Session, HstQueryManager>();
+        if (hstQueryManagers == null) {
+            hstQueryManagers = new IdentityHashMap<Session, HstQueryManager>();
         }
-        HstQueryManager nonDefaultHstQueryManager = nonDefaultHstQueryManagers.get(session);
-        if (nonDefaultHstQueryManager == null) {
-            nonDefaultHstQueryManager = createQueryManager(session);
-            nonDefaultHstQueryManagers.put(session, nonDefaultHstQueryManager);
+        HstQueryManager hstQueryManager = hstQueryManagers.get(session);
+        if (hstQueryManager == null) {
+            hstQueryManager = createQueryManager(session);
+            hstQueryManagers.put(session, hstQueryManager);
         }
-        return nonDefaultHstQueryManager;
+        return hstQueryManager;
     }
 
     @Override
     public void clearObjectAndQueryManagers() {
-        defaultHstQueryManager = null;
-        defaultObjectBeanManager = null;
-        if (nonDefaultObjectBeanManagers != null) {
-            nonDefaultObjectBeanManagers.clear();
+        if (objectBeanManagers != null) {
+            objectBeanManagers.clear();
         }
-        if (nonDefaultHstQueryManagers != null) {
-            nonDefaultHstQueryManagers.clear();
+        if (hstQueryManagers != null) {
+            hstQueryManagers.clear();
         }
     }
 
