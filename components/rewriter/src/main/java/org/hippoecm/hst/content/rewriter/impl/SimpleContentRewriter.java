@@ -131,7 +131,7 @@ public class SimpleContentRewriter extends AbstractContentRewriter<String> {
                         if (href != null && href.getPath() != null) {
                             sb.append(href.toUrlForm(requestContext, isFullyQualifiedLinks()));
                         } else {
-                           log.warn("Skip href because url is null");
+                           log.info("Skip href because url is null");
                         }
                         
                         if (hasQueryString) {
@@ -187,7 +187,7 @@ public class SimpleContentRewriter extends AbstractContentRewriter<String> {
                         if (binaryLink != null && binaryLink.getPath() != null) {
                             sb.append(binaryLink.toUrlForm(requestContext, isFullyQualifiedLinks()));
                         } else {
-                            log.warn("Could not translate image src. Skip src");
+                            log.info("Could not translate image src. Skip src");
                         }
                     }
                     
@@ -294,13 +294,9 @@ public class SimpleContentRewriter extends AbstractContentRewriter<String> {
                     mirrorNode = ((HippoWorkspace) node.getSession().getWorkspace()).getHierarchyResolver().getNode(node, path);
                 }
                 if (mirrorNode != null) {
-                    if (targetMount == null) {
-                        return reqContext.getHstLinkCreator().create(mirrorNode, reqContext);
-                    } else {
-                        return reqContext.getHstLinkCreator().create(mirrorNode, targetMount);
-                    }
+                    return createLink(mirrorNode, reqContext, targetMount);
                 } else {
-                    log.warn("Cannot find node '{}' for internal link for document '{}'. Cannot create link", triedPath, node.getPath());
+                    log.info("Cannot find node '{}' for internal link for document '{}'. Cannot create link", triedPath, node.getPath());
                 }
             } catch (InvalidItemStateException e) {
                 log.warn("Unable to rewrite '{}' to proper url : '{}'. Return null", path, e.getMessage());
@@ -310,7 +306,23 @@ public class SimpleContentRewriter extends AbstractContentRewriter<String> {
         }
         return null;
     }
-    
+
+    private HstLink createLink(final Node node, final HstRequestContext reqContext, final Mount targetMount) throws RepositoryException {
+        if (isCanonicalLinks()) {
+            if (targetMount != null) {
+                log.info("TargetMount is defined to create a link for, but target mount is ignored in case a canonical link is " +
+                        "requested. Ignoring target mount '{}' but instead return canonical link for nodepath '{}'.",
+                        targetMount.toString(), node.getPath());
+            }
+            return reqContext.getHstLinkCreator().createCanonical(node, reqContext);
+        }
+        if (targetMount == null) {
+            return reqContext.getHstLinkCreator().create(node, reqContext);
+        } else {
+            return reqContext.getHstLinkCreator().create(node, targetMount);
+        }
+    }
+
     protected boolean isExternal(String path) {
         for (String prefix : EXTERNALS) {
             if (path.startsWith(prefix)) {

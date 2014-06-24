@@ -1,5 +1,5 @@
 /*
- *  Copyright 2008-2013 Hippo B.V. (http://www.onehippo.com)
+ *  Copyright 2008-2014 Hippo B.V. (http://www.onehippo.com)
  * 
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -36,7 +36,6 @@ import org.slf4j.LoggerFactory;
 
 public class HstHtmlTag extends TagSupport {
     
-
     private final static Logger log = LoggerFactory.getLogger(HstHtmlTag.class);
     
     private static final long serialVersionUID = 1L;
@@ -48,6 +47,12 @@ public class HstHtmlTag extends TagSupport {
     protected String scope;
         
     protected ContentRewriter<String> contentRewriter;
+
+    /**
+     * boolean indicating whether possible available internal links will be created as canonicalLinks links. The canonicalLinks link is always the same,
+     * regardless the current context, in other words, regardless the current URL.
+     */
+    protected boolean canonicalLinks;
 
     /**
      * Whether links should be rewritten to fully qualified links (URLs) including scheme, host, port etc. 
@@ -88,12 +93,6 @@ public class HstHtmlTag extends TagSupport {
             cleanup();
             return EVAL_PAGE;
         }
-
-        String characterEncoding = pageContext.getResponse().getCharacterEncoding();
-        
-        if (characterEncoding == null) {
-            characterEncoding = "UTF-8";
-        }
         
         if(hippoHtml == null || hippoHtml.getContent() == null ) {
             log.warn("Node or content is null. Return");
@@ -109,6 +108,7 @@ public class HstHtmlTag extends TagSupport {
             }
             contentRewriter.setFullyQualifiedLinks(fullyQualifiedLinks);
             contentRewriter.setImageVariant(imageVariant);
+            contentRewriter.setCanonicalLinks(canonicalLinks);
             html = contentRewriter.rewrite(html, hippoHtml.getNode(), requestContext);
         } else {
             log.warn("Node should be a HippoNode and response a HstResponse");
@@ -166,6 +166,7 @@ public class HstHtmlTag extends TagSupport {
         hippoHtml = null;
         contentRewriter = null;
         imageVariant = null;
+        canonicalLinks = false;
     }
 
 
@@ -188,13 +189,25 @@ public class HstHtmlTag extends TagSupport {
     public ContentRewriter<String> getContentRewriter() {
         return contentRewriter;
     }
-    
+
+    public ContentRewriter<String> getOrCreateContentRewriter() {
+        if (contentRewriter == null) {
+            contentRewriter = new SimpleContentRewriter();
+        }
+        return contentRewriter;
+    }
+
+
     /**
      * @param fullyQualifiedLinks flag to define whether internal links are rewritten into fully qualified links (URLs)
      *                                 (including scheme and domain)
      */
-    public void setFullyQualifiedLinks(boolean fullyQualifiedLinks) {
+    public void setFullyQualifiedLinks(final boolean fullyQualifiedLinks) {
         this.fullyQualifiedLinks = fullyQualifiedLinks;
+    }
+
+    public void setCanonicalLinks(final boolean canonicalLinks) {
+        this.canonicalLinks = canonicalLinks;
     }
 
     /**
