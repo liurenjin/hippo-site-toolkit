@@ -31,15 +31,13 @@ import org.hippoecm.hst.configuration.hosting.Mount;
 public class ContainerRepresentation extends ComponentRepresentation {
 
     private List<String> children;
-    private long lastModifiedTimestamp;
 
-    @Override
-    public ComponentRepresentation represent(HstComponentConfiguration componentConfiguration, Mount mount) {
+    public ContainerRepresentation represent(HstComponentConfiguration componentConfiguration, Mount mount) {
         super.represent(componentConfiguration, mount);
         if (componentConfiguration.getLastModified() == null) {
-            lastModifiedTimestamp = 0;
+            setLastModifiedTimestamp(0);
         } else {
-            lastModifiedTimestamp = componentConfiguration.getLastModified().getTimeInMillis();
+            setLastModifiedTimestamp(componentConfiguration.getLastModified().getTimeInMillis());
         }
 
         Map<String, HstComponentConfiguration> childrenMap = componentConfiguration.getChildren();
@@ -53,14 +51,6 @@ public class ContainerRepresentation extends ComponentRepresentation {
         }
         
         return this;
-    }
-
-    public long getLastModifiedTimestamp() {
-        return lastModifiedTimestamp;
-    }
-
-    public void setLastModifiedTimestamp(final long lastModifiedTimestamp) {
-        this.lastModifiedTimestamp = lastModifiedTimestamp;
     }
 
     public List<String> getChildren() {

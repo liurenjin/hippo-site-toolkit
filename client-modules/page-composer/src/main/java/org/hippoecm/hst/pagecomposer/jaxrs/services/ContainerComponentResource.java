@@ -15,7 +15,6 @@
  */
 package org.hippoecm.hst.pagecomposer.jaxrs.services;
 
-import java.lang.reflect.Type;
 import java.util.List;
 import java.util.UUID;
 
@@ -35,9 +34,6 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 
 import org.hippoecm.hst.configuration.HstNodeTypes;
 import org.hippoecm.hst.configuration.hosting.NotFoundException;
@@ -128,15 +124,9 @@ public class ContainerComponentResource extends AbstractConfigResource {
                                     @Context HttpServletResponse servletResponse,
                                     @PathParam("itemUUID") String itemUUID,
                                     @QueryParam("lastModifiedTimestamp") long lastModifiedTimestamp,
-                                    String json) {
+                                    PostRepresentation<ContainerRepresentation> post) {
 
-        // TODO Instead of 'String json' in the argument it should be possible to have: ContainerRepresentation presentation
-        // It should be possible to automatically bind to ContainerRepresentation. Also, I don't think we need a Gson dependency here
-        // See HSTTWO-1823
-
-        Type type = new TypeToken<PostRepresentation<ContainerRepresentation>>() {}.getType();
-        PostRepresentation<ContainerRepresentation> pr = new Gson().fromJson(json, type);
-        ContainerRepresentation container = pr.getData();
+        ContainerRepresentation container = post.getData();
 
         HstRequestContext requestContext = getRequestContext(servletRequest);
         try {
