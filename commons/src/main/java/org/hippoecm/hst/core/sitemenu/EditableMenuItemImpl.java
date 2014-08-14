@@ -35,7 +35,7 @@ public class EditableMenuItemImpl extends AbstractMenuItem implements EditableMe
     
     public EditableMenuItemImpl(EditableMenuItem parentItem){
         if(parentItem == null) {
-            HstServices.getLogger(getClass().getName()).error("Cannot add a Editable menu item when parent item is null");
+            HstServices.getLogger(getClass().getName()).info("Can cause an invalid Editable menu item because parent item is null.");
             return;
         }
         this.parentItem = parentItem;
