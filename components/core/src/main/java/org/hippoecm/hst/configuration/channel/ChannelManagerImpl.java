@@ -22,9 +22,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.ResourceBundle;
 
 import javax.jcr.ItemNotFoundException;
 import javax.jcr.Node;
@@ -126,7 +123,7 @@ public class ChannelManagerImpl implements ChannelManager {
                 final Session session = getSession();
                 Node configNode = session.getNode(hstNodeLoadingCache.getRootPath());
                 String channelId = createUniqueChannelId(channel.getName(), session);
-                createChannel(configNode, blueprint, session, channelId, channel);
+                Node createdContentNode = createChannel(configNode, blueprint, session, channelId, channel);
 
                 ChannelManagerEvent event = new ChannelManagerEventImpl(blueprint, channelId, channel, configNode);
                 for (ChannelManagerEventListener listener : channelManagerEventListeners) {
@@ -135,8 +132,13 @@ public class ChannelManagerImpl implements ChannelManager {
                     } catch (ChannelManagerEventListenerException e) {
                         if (e.getStatus() == Status.STOP_CHANNEL_PROCESSING) {
                             session.refresh(false);
-                            throw new ChannelException(e.getMessage(), e, Type.STOPPED_BY_LISTENER,
-                                    "Channel creation stopped by listener '" + listener.getClass().getName() + "'");
+                            if (createdContentNode != null) {
+                                log.info("Removing just created root content node '{}' due ChannelManagerEventListenerException '{}'", createdContentNode.getPath(), e.toString());
+                                createdContentNode.remove();
+                                session.save();
+                            }
+                            throw new ChannelException("Channel creation stopped by listener '" + listener.getClass().getName() + "'",
+                                    e, Type.STOPPED_BY_LISTENER, e.getMessage());
                         } else {
                             log.warn(
                                     "Channel created event listener, " + listener + ", failed to handle the event. Continue channel processing",
@@ -209,8 +211,8 @@ public class ChannelManagerImpl implements ChannelManager {
                     } catch (ChannelManagerEventListenerException e) {
                         if (e.getStatus() == Status.STOP_CHANNEL_PROCESSING) {
                             session.refresh(false);
-                            throw new ChannelException(e.getMessage(), e, Type.STOPPED_BY_LISTENER,
-                                    "Channel '" + channel.getId() + "' update stopped by listener '" + listener.getClass().getName() + "'");
+                            throw new ChannelException("Channel '" + channel.getId() + "' update stopped by listener '" + listener.getClass().getName() + "'",
+                                    e, Type.STOPPED_BY_LISTENER, e.getMessage());
                         } else {
                             log.warn(
                                     "Channel created event listener, " + listener + ", failed to handle the event. Continue channel processing",
@@ -242,9 +244,13 @@ public class ChannelManagerImpl implements ChannelManager {
         return false;
     }
 
-    private void createChannel(Node configRoot, Blueprint blueprint, Session session, final String channelId, final Channel channel) throws ChannelException, RepositoryException {
+    /**
+     * @return created contentRootNode or <code>null</code> when no content has been created as part of the channel creation. Note that if there has been
+     * created content, this content also already has been persisted as it is created through workflow. In case of a later
+     * {@link ChannelManagerEventListenerException} the created content has to be explicitly removed again.
+     */
+    private Node createChannel(Node configRoot, Blueprint blueprint, Session session, final String channelId, final Channel channel) throws ChannelException, RepositoryException {
         Node contentRootNode = null;
-        boolean contentCreated = false;
         try {
             // Create virtual host
             final URI channelUri = getChannelUri(channel);
@@ -263,7 +269,6 @@ public class ChannelManagerImpl implements ChannelManager {
             final String channelContentRootPath;
             if (blueprint.getHasContentPrototype()) {
                 contentRootNode = createContent(blueprint, session, channelId, channel);
-                contentCreated = true;
                 channelContentRootPath = contentRootNode.getPath();
                 channel.setContentRoot(channelContentRootPath);
             } else {
@@ -294,13 +299,14 @@ public class ChannelManagerImpl implements ChannelManager {
                 mount.setProperty(HstNodeTypes.GENERAL_PROPERTY_LOCALE, locale);
             }
         } catch (ChannelException e) {
-            if (contentCreated && contentRootNode != null) {
+            if (contentRootNode != null) {
                 session.refresh(false);     // remove the new configuration
                 contentRootNode.remove();   // remove the new content
                 session.save();
             }
             throw e;
         }
+        return contentRootNode;
     }
 
     private void copyOrCreateChannelNode(final Node configRoot, final String channelId, final Channel channel) throws RepositoryException, ChannelException {
