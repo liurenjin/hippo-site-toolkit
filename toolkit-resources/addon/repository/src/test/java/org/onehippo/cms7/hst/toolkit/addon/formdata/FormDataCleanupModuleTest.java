@@ -24,6 +24,7 @@ import javax.jcr.query.Query;
 import javax.jcr.query.QueryManager;
 
 import org.hippoecm.repository.api.HippoNodeIterator;
+import org.hippoecm.repository.util.NodeIterable;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -35,25 +36,11 @@ import static junit.framework.Assert.assertEquals;
 
 public class FormDataCleanupModuleTest extends RepositoryTestCase {
 
-    @Before
-    public void setUp() throws Exception {
-        super.setUp();
-        NodeIterator nodes = getFormdataNodes();
-        while(nodes.hasNext()) {
-            nodes.nextNode().remove();
-        }
-        Node rootNode = session.getRootNode();
-        rootNode.addNode("formdata", "hst:formdatacontainer");
-        session.save();
-
-    }
-
     @After
     public void tearDown() throws Exception {
         HippoServiceRegistry.getService(RepositoryScheduler.class).deleteJob("FormDataCleanup-test", "default");
-        if (session.nodeExists("/formdata")) {
-            session.getNode("/formdata").remove();
-            session.save();
+        for (Node node : new NodeIterable(session.getNode("/formdata").getNodes())) {
+            node.remove();
         }
         super.tearDown();
     }
