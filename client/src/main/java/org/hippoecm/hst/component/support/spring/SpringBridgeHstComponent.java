@@ -203,7 +203,11 @@ public class SpringBridgeHstComponent extends GenericHstComponent implements App
 
             if (delegatedBean == null) {
                 // fallback to HST core spring component manager
-                delegatedBean = HstServices.getComponentManager().getComponent(beanName);
+                if (contextNames != null) {
+                    delegatedBean = HstServices.getComponentManager().getComponent(beanName, contextNames);
+                } else {
+                    delegatedBean = HstServices.getComponentManager().getComponent(beanName);
+                }
             }
 
             if (delegatedBean == null) {
