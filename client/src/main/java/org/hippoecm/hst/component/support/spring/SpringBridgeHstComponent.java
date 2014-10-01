@@ -26,6 +26,7 @@ import org.hippoecm.hst.core.component.HstRequest;
 import org.hippoecm.hst.core.component.HstResponse;
 import org.hippoecm.hst.core.container.ComponentManager;
 import org.hippoecm.hst.core.request.ComponentConfiguration;
+import org.hippoecm.hst.site.HstServices;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
@@ -199,7 +200,12 @@ public class SpringBridgeHstComponent extends GenericHstComponent implements App
             }
             
             ComponentManager componentManager = null;
-            
+
+            if (delegatedBean == null) {
+                // fallback to HST core spring component manager
+                delegatedBean = HstServices.getComponentManager().getComponent(beanName);
+            }
+
             if (delegatedBean == null) {
                 componentManager = HstFilter.getClientComponentManager(servletContext);
                 
