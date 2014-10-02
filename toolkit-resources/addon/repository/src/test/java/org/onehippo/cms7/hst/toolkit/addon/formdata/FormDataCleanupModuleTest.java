@@ -36,6 +36,17 @@ import static junit.framework.Assert.assertEquals;
 
 public class FormDataCleanupModuleTest extends RepositoryTestCase {
 
+    @Before
+    public void setUp() throws Exception {
+        super.setUp();
+        if (session.getNode("/formdata").hasNodes()) {
+            for (Node child : new NodeIterable(session.getNode("/formdata").getNodes())) {
+                child.remove();
+            }
+            session.save();
+        }
+    }
+
     @After
     public void tearDown() throws Exception {
         HippoServiceRegistry.getService(RepositoryScheduler.class).deleteJob("FormDataCleanup-test", "default");
