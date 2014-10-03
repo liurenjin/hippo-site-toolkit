@@ -27,7 +27,7 @@ import org.hippoecm.hst.core.request.HstRequestContext;
  *      link creation of a {@link javax.jcr.Node} or {@link org.hippoecm.hst.content.beans.standard.HippoBean}
  * </p>
  * <p>
- *     A usecase where this NodeToPathResolver can be used is for example when you have <i>comment</i> documents which have
+ *     A use case where this NodeToPathResolver can be used is for example when you have <i>comment</i> documents which have
  *     a link to the <i>news</i> article they are a comment about. The <i>comment</i> documents themselves do *not* have
  *     a URL. They are only visible in the context of the news article they are a comment about. In this case, when there
  *     is a link to a <i>comment</i> document or when a <i>comment</i> document is found via search, you want to actually
@@ -38,13 +38,19 @@ import org.hippoecm.hst.core.request.HstRequestContext;
  *     can best always logs at debug level how long parts of the method takes to execute (default hst logs the total
  *     time as well). Target time should be around 1/10 to 1 millisecond max.
  * </p>
+ * <p>
+ *     Note that the <code>node</code> argument in {@link #getPath(Node, HstRequestContext, boolean, boolean)} is not necessarily
+ *     the {@link Node} of the backing {@link org.hippoecm.hst.content.beans.standard.HippoBean} for which a link is
+ *     required. The {@link Node} typically might be the parent ({@link org.hippoecm.repository.api.HippoNodeType#NT_HANDLE})
+ *     in case the {@link Node} represents a document.
+ * </p>
  */
 public interface LinkRewritePathResolver {
 
     /**
      * <p>
      * In general, the nodePath with which the link creation is tried is just {@link javax.jcr.Node#getPath()}, however,
-     * if required differently by an end project, it can be done by implementing a custom {@link Node NodeToLinkRewritePathResolver
+     * if required differently by an end project, it can be done by implementing a custom {@link Node NodeToLinkRewritePathResolver}
      * and set this on {@link HstLinkCreator} implementation
      * </p>
      * @param node the jcr node for which a {@link HstLink} is needed
@@ -54,7 +60,15 @@ public interface LinkRewritePathResolver {
      * <code>canonical=true</code> then typically this parameter its value is ignored. Canonical normally has precedence
      * over navigationStateful
      * @return the node path with which the HstLinkCreator will try to create a {@link HstLink}. Returned path is <b>not</b>
-     * allowed to be <code>null</code> and <b>must</b> start with a '/' and is not allowed to end with a '/'.
+     * allowed to be <code>null</code> and <b>must</b> start with a '/' and is not allowed to end with a '/'. If the {@link Node}
+     * for which a link is required is a {@link org.hippoecm.repository.api.HippoNodeType#NT_DOCUMENT} below a
+     * {@link org.hippoecm.repository.api.HippoNodeType#NT_HANDLE} make sure to return the path of the <b>handle node!</b>
+     * @throws LinkPathNotFoundException in case not a proper path can be returned. The {@link org.hippoecm.hst.core.linking.HstLinkCreator}
+     * will in case of this exception return a {@link HstLink#isNotFound() hstLink#isNotFound() == true}.
+     * @throws java.lang.RuntimeException in case if an unexpected runtime exception that cannot be handled with
+     * {@link  LinkPathNotFoundException}
      */
-    String getPath(Node node, HstRequestContext context, boolean canonical, boolean navigationStateful);
+    @SuppressWarnings("DuplicateThrows")
+    String getPath(Node node, HstRequestContext context,
+                   boolean canonical, boolean navigationStateful) throws LinkPathNotFoundException, RuntimeException;
 }
