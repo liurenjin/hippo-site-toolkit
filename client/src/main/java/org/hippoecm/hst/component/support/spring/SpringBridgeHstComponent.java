@@ -83,8 +83,6 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
  * The separator for hierarchical bean factory path can be changed by setting the webapp
  * init parameter, 'hst-spring-context-name-separator-param-name'.
  * </p>
- * 
- * @version $Id$
  */
 public class SpringBridgeHstComponent extends GenericHstComponent implements ApplicationListener {
 
@@ -92,25 +90,25 @@ public class SpringBridgeHstComponent extends GenericHstComponent implements App
 
     protected String delegatedBeanNameParamName = "spring-delegated-bean";
     protected String contextNameSeparator = "::";
-    
+
     protected AbstractApplicationContext delegatedBeanApplicationContext;
     protected HstComponent delegatedBean;
 
     private ServletContext servletContext; 
-    
+
     @Override
     public void init(ServletContext servletContext, ComponentConfiguration componentConfig) throws HstComponentException {
         super.init(servletContext, componentConfig);
 
         this.servletContext = servletContext;
         String param = servletContext.getInitParameter("hst-spring-delegated-bean-param-name");
-        
+
         if (param != null) {
             delegatedBeanNameParamName = param;
         }
-        
+
         param = servletContext.getInitParameter("hst-spring-context-name-separator-param-name");
-        
+
         if (param != null) {
             contextNameSeparator = param;
         }
@@ -119,7 +117,7 @@ public class SpringBridgeHstComponent extends GenericHstComponent implements App
     @Override
     public void destroy() throws HstComponentException {
         this.delegatedBeanApplicationContext = null;
-        
+
         if (delegatedBean != null) {
             delegatedBean.destroy();
             delegatedBean = null;
@@ -127,7 +125,7 @@ public class SpringBridgeHstComponent extends GenericHstComponent implements App
 
         super.destroy();
     }
-    
+
     @Override
     public void doAction(HstRequest request, HstResponse response) throws HstComponentException {
         getDelegatedBean(request).doAction(request, response);
@@ -142,41 +140,41 @@ public class SpringBridgeHstComponent extends GenericHstComponent implements App
     public void doBeforeServeResource(HstRequest request, HstResponse response) throws HstComponentException {
         getDelegatedBean(request).doBeforeServeResource(request, response);
     }
-    
+
     protected String getParameter(String name, HstRequest request) {
         return (String)this.getComponentConfiguration().getParameter(name, request.getRequestContext().getResolvedSiteMapItem());
     }
-    
+
     protected HstComponent getDelegatedBean(HstRequest request) throws HstComponentException {
         if (delegatedBean == null) {
             String beanName = StringUtils.trim(getParameter(delegatedBeanNameParamName, request));
-            
+
             if (beanName == null) {
                 throw new HstComponentException("The name of delegated spring bean is null.");
             }
-            
+
             String [] contextNames = null;
-            
+
             if (beanName.contains(this.contextNameSeparator)) {
                 String [] tempArray = beanName.split(this.contextNameSeparator);
-                
+
                 if (tempArray.length > 1) {
                     contextNames = new String[tempArray.length - 1];
-                    
+
                     for (int i = 0; i < tempArray.length - 1; i++) {
                         contextNames[i] = tempArray[i];
                     }
-                    
+
                     beanName = tempArray[tempArray.length - 1];
                 }
             }
-            
+
             boolean beanFoundFromBeanFactory = false;
             BeanFactory beanFactory = WebApplicationContextUtils.getWebApplicationContext(servletContext);
-            
+
             if (beanFactory != null) {
                 String contextName = null;
-                
+
                 try {
                     if (contextNames != null) {
                         for (int i = 0; i < contextNames.length; i++) {
@@ -191,14 +189,14 @@ public class SpringBridgeHstComponent extends GenericHstComponent implements App
                 } catch (ClassCastException e) {
                     throw new HstComponentException("The bean is not an instance of beanFactory: " + contextName, e);
                 }
-                
+
                 try {
                     delegatedBean = (HstComponent) beanFactory.getBean(beanName);
                     beanFoundFromBeanFactory = (delegatedBean != null);
                 } catch (Exception ignore) {
                 }
             }
-            
+
             ComponentManager componentManager = null;
 
             if (delegatedBean == null) {
@@ -212,7 +210,7 @@ public class SpringBridgeHstComponent extends GenericHstComponent implements App
 
             if (delegatedBean == null) {
                 componentManager = HstFilter.getClientComponentManager(servletContext);
-                
+
                 if (componentManager != null) {
                     delegatedBean = componentManager.getComponent(beanName);
                     if (delegatedBean != null) {
@@ -222,7 +220,7 @@ public class SpringBridgeHstComponent extends GenericHstComponent implements App
                     }
                 }
             }
-            
+
             if (delegatedBean == null) {
                 if (beanFactory == null && componentManager == null) {
                     throw new HstComponentException("Cannot find the root web application context or client component manager.");
@@ -236,27 +234,27 @@ public class SpringBridgeHstComponent extends GenericHstComponent implements App
             }
 
             delegatedBean.init(servletContext, getComponentConfiguration());
-            
+
             if (beanFoundFromBeanFactory && beanFactory instanceof AbstractApplicationContext) {
                 delegatedBeanApplicationContext = (AbstractApplicationContext) beanFactory;
-                
+
                 if (!delegatedBeanApplicationContext.getApplicationListeners().contains(this)) {
                     delegatedBeanApplicationContext.addApplicationListener(this);
                 }
             }
         }
+
         return delegatedBean;
     }
 
     public void onApplicationEvent(ApplicationEvent event) {
         if (event instanceof ContextClosedEvent) {
             this.delegatedBeanApplicationContext = null;
-            
+
             if (delegatedBean != null) {
                 delegatedBean.destroy();
                 delegatedBean = null;
             }
         }
     }
-    
 }
