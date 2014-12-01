@@ -28,20 +28,20 @@ Hippo.Hst.AsyncPage = {
          * @returns {boolean}
          */
         function isExecutableScript(script) {
-            const TEXT_JAVASCRIPT = "text/javascript";
-            const APP_JAVASCRIPT = "application/javascript";
-            const supportedScripts = [TEXT_JAVASCRIPT, APP_JAVASCRIPT];
+            var TEXT_JAVASCRIPT = "text/javascript".
+                APP_JAVASCRIPT = "application/javascript",
+                supportedScripts = [TEXT_JAVASCRIPT, APP_JAVASCRIPT],
+                scriptType = TEXT_JAVASCRIPT;
 
             // default script type is text/javascript in HTML5
-            var scriptType = TEXT_JAVASCRIPT;
             if (script.hasAttribute('type')) {
-                scriptType = script.getAttribute('type');
+                scriptType = script.getAttribute('type').toLowerCase();
             }
+            // find the script type in the list (case insensitive)
             if (Array.prototype.indexOf){
                 return supportedScripts.indexOf(scriptType) > -1;
             } else { // IE8 or less
-                var i, length;
-                for(i = 0, length = supportedScripts.length; i < length; i++) {
+                for(var i = 0, length = supportedScripts.length; i < length; i++) {
                     if (scriptType === supportedScripts[i]){
                         return true;
                     }
