@@ -28,7 +28,7 @@ Hippo.Hst.AsyncPage = {
          * @returns {boolean}
          */
         function isExecutableScript(script) {
-            var TEXT_JAVASCRIPT = "text/javascript".
+            var TEXT_JAVASCRIPT = "text/javascript",
                 APP_JAVASCRIPT = "application/javascript",
                 supportedScripts = [TEXT_JAVASCRIPT, APP_JAVASCRIPT],
                 scriptType = TEXT_JAVASCRIPT;
@@ -41,7 +41,7 @@ Hippo.Hst.AsyncPage = {
             if (Array.prototype.indexOf){
                 return supportedScripts.indexOf(scriptType) > -1;
             } else { // IE8 or less
-                for(var i = 0, length = supportedScripts.length; i < length; i++) {
+                for (var i = 0, length = supportedScripts.length; i < length; i++) {
                     if (scriptType === supportedScripts[i]){
                         return true;
                     }
