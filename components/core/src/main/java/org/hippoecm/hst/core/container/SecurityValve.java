@@ -1,5 +1,5 @@
 /*
- *  Copyright 2008-2013 Hippo B.V. (http://www.onehippo.com)
+ *  Copyright 2008-2015 Hippo B.V. (http://www.onehippo.com)
  * 
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -138,6 +138,8 @@ public class SecurityValve extends AbstractBaseOrderableValve {
             }
 
             try {
+                String path = destinationLink.getPath() + "?" + requestContext.getServletRequest().getQueryString();
+                destinationLink.setPath(path);
                 HttpSession httpSession = servletRequest.getSession(true);
                 httpSession.setAttribute(DESTINATION_ATTR_NAME, destinationLink.toUrlForm(requestContext, true));
                 if(authenticationRequired) {
