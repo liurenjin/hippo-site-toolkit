@@ -93,13 +93,10 @@ public class HstResponseImpl extends HttpServletResponseWrapper implements HstRe
         return this.componentWindow.getReferenceNamespace();
     }
 
-    public void setResponse(HttpServletResponse response) {
-        super.setResponse(response);
-    }
-    
     public String getRedirectLocation() {
         return this.redirectLocation;
     }
+
     @Override
     public void addCookie(Cookie cookie)
     {
