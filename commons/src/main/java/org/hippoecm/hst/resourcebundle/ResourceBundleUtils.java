@@ -1,5 +1,5 @@
 /**
- * Copyright 2013 Hippo B.V. (http://www.onehippo.com)
+ * Copyright 2013-2015 Hippo B.V. (http://www.onehippo.com)
  * 
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,9 +20,9 @@ import java.util.ResourceBundle;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.hippoecm.hst.core.component.HstRequest;
+import org.hippoecm.hst.container.RequestContextProvider;
+import org.hippoecm.hst.core.request.HstRequestContext;
 import org.hippoecm.hst.site.HstServices;
-import org.hippoecm.hst.util.HstRequestUtils;
 
 /**
  * ResourceBundleUtils
@@ -52,28 +52,29 @@ public class ResourceBundleUtils {
     }
 
     /**
-     * Returns resource bundle based on the specified basename and locale.
-     * If the locale is null, then the default locale (Locale.getDefault()) is used.
-     * If the specific resource bundle is not found from the HST ResourceBundleRegistry, then it looks up Java standard resource bundles
-     * when the fallbackToJavaResourceBundle is true.
-     * It may throw java.util.MissingResourceException if a resource is not found when Java standard resource bundle resources are looked up.
+     * Returns resource bundle based on the specified basename and locale. If the locale is null, then the default
+     * locale (Locale.getDefault()) is used. If the specific resource bundle is not found from the HST
+     * ResourceBundleRegistry, then it looks up Java standard resource bundles when the fallbackToJavaResourceBundle is
+     * true. It may throw java.util.MissingResourceException if a resource is not found when Java standard resource
+     * bundle resources are looked up.
+     *
      * @param servletRequest
      * @param basename
      * @param locale
      * @param fallbackToJavaResourceBundle
-     * @throws java.lang.NullPointerException - if baseName is null 
-     * @throws java.util.MissingResourceException - if no Java standard resource bundle for the specified base name can be found
+     * @throws java.lang.NullPointerException     - if baseName is null
+     * @throws java.util.MissingResourceException - if no Java standard resource bundle for the specified base name can
+     *                                            be found
      */
     public static ResourceBundle getBundle(HttpServletRequest servletRequest, String basename, Locale locale, boolean fallbackToJavaResourceBundle) {
         ResourceBundle bundle = null;
-        HstRequest hstRequest = HstRequestUtils.getHstRequest(servletRequest);
-
-        if (hstRequest != null) {
-            ResourceBundleRegistry resourceBundleRegistry = 
+        HstRequestContext context = RequestContextProvider.get();
+        if (context != null) {
+            ResourceBundleRegistry resourceBundleRegistry =
                     HstServices.getComponentManager().getComponent(ResourceBundleRegistry.class.getName());
 
             if (resourceBundleRegistry != null) {
-                boolean preview = hstRequest.getRequestContext().isPreview();
+                boolean preview = context.isPreview();
 
                 if (locale == null) {
                     bundle = (preview ? resourceBundleRegistry.getBundleForPreview(basename) : resourceBundleRegistry.getBundle(basename));
@@ -90,7 +91,6 @@ public class ResourceBundleUtils {
                 bundle = ResourceBundle.getBundle(basename, locale, Thread.currentThread().getContextClassLoader());
             }
         }
-
         return bundle;
     }
 
