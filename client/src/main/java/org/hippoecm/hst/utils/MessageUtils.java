@@ -50,11 +50,9 @@ public class MessageUtils {
      * @return
      */
     public static String replaceMessages(String basename, String text) {
-        HstRequestContext requestContext = RequestContextProvider.get();
         ResourceBundle bundle = null;
-
         try {
-            bundle = ResourceBundleUtils.getBundle(requestContext.getServletRequest(), basename, null);
+            bundle = ResourceBundleUtils.getBundle(null, basename, null);
         } catch (MissingResourceException e) {
             log.warn("Cannot find a resource bundle by the basename, '{}'.", basename);
         }
