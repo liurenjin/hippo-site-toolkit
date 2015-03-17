@@ -109,7 +109,7 @@ public class TestRequestContextDisposed extends AbstractPipelineTestCase {
     }
 
     private static final boolean isGetter(final Method method) {
-        if (method.getParameterCount() > 0) {
+        if (method.getParameters().length > 0) {
             return false;
         }
         final String methodName = method.getName();
