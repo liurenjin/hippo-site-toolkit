@@ -33,9 +33,6 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-/**
- * Created by aschrijvers on 17-3-15.
- */
 public class TestRequestContextDisposed extends AbstractPipelineTestCase {
 
     protected HttpServletRequest servletRequest;
