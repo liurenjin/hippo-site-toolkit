@@ -1,5 +1,5 @@
 /*
- *  Copyright 2008-2013 Hippo B.V. (http://www.onehippo.com)
+ *  Copyright 2008-2015 Hippo B.V. (http://www.onehippo.com)
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -116,6 +116,8 @@ public class HstRequestContextImpl implements HstMutableRequestContext {
 
     private Map<String, Object> unmodifiableAttributes;
 
+    private boolean disposed;
+
     public HstRequestContextImpl(Repository repository) {
         this(repository, null);
     }
@@ -126,10 +128,12 @@ public class HstRequestContextImpl implements HstMutableRequestContext {
     }
 
     public boolean isPreview() {
+        checkStateValidity();
         return this.resolvedMount.getMount().isPreview();
     }
 
     public ServletContext getServletContext() {
+        checkStateValidity();
         return servletContext;
     }
 
@@ -138,6 +142,7 @@ public class HstRequestContextImpl implements HstMutableRequestContext {
     }
 
     public HttpServletRequest getServletRequest() {
+        checkStateValidity();
         return servletRequest;
     }
 
@@ -146,6 +151,7 @@ public class HstRequestContextImpl implements HstMutableRequestContext {
     }
 
     public HttpServletResponse getServletResponse() {
+        checkStateValidity();
         return servletResponse;
     }
 
@@ -154,10 +160,12 @@ public class HstRequestContextImpl implements HstMutableRequestContext {
     }
 
     public void setContextNamespace(String contextNamespace) {
+        checkStateValidity();
         this.contextNamespace = contextNamespace;
     }
 
     public String getContextNamespace() {
+        checkStateValidity();
         return this.contextNamespace;
     }
 
@@ -166,6 +174,8 @@ public class HstRequestContextImpl implements HstMutableRequestContext {
     }
 
     public Session getSession(boolean create) throws RepositoryException {
+        checkStateValidity();
+
         if (this.session == null) {
             if (create) {
                 if (contextCredentialsProvider != null) {
@@ -192,68 +202,84 @@ public class HstRequestContextImpl implements HstMutableRequestContext {
     }
 
     public void setSession(Session session) {
+        checkStateValidity();
         this.session = session;
     }
 
     public void setResolvedMount(ResolvedMount resolvedMount) {
+        checkStateValidity();
         this.resolvedMount = resolvedMount;
     }
 
     public ResolvedMount getResolvedMount() {
+        checkStateValidity();
         return this.resolvedMount;
     }
 
     public void setResolvedSiteMapItem(ResolvedSiteMapItem resolvedSiteMapItem) {
+        checkStateValidity();
         this.resolvedSiteMapItem = resolvedSiteMapItem;
     }
 
     public ResolvedSiteMapItem getResolvedSiteMapItem() {
+        checkStateValidity();
         return this.resolvedSiteMapItem;
     }
 
     public void setBaseURL(HstContainerURL baseURL) {
+        checkStateValidity();
         this.baseURL = baseURL;
     }
 
     public HstContainerURL getBaseURL() {
+        checkStateValidity();
         return this.baseURL;
     }
 
     public void setURLFactory(HstURLFactory urlFactory) {
+        checkStateValidity();
         this.urlFactory = urlFactory;
     }
 
     public HstURLFactory getURLFactory() {
+        checkStateValidity();
         return this.urlFactory;
     }
 
     public HstContainerURLProvider getContainerURLProvider() {
+        checkStateValidity();
         return urlFactory != null ? urlFactory.getContainerURLProvider() : null;
     }
 
     public void setSiteMapMatcher(HstSiteMapMatcher siteMapMatcher) {
+        checkStateValidity();
         this.siteMapMatcher = siteMapMatcher;
     }
 
     public HstSiteMapMatcher getSiteMapMatcher() {
+        checkStateValidity();
         return this.siteMapMatcher;
     }
 
     public void setLinkCreator(HstLinkCreator linkCreator) {
+        checkStateValidity();
         this.linkCreator = linkCreator;
     }
 
     public HstLinkCreator getHstLinkCreator() {
+        checkStateValidity();
         return this.linkCreator;
     }
 
     @Override
     public void setParameterInfoProxyFactory(HstParameterInfoProxyFactory parameterInfoProxyFactory) {
+        checkStateValidity();
         this.parameterInfoProxyFactory = parameterInfoProxyFactory;
     }
 
     @Override
     public HstParameterInfoProxyFactory getParameterInfoProxyFactory() {
+        checkStateValidity();
         if (parameterInfoProxyFactory == null) {
             return HST_PARAMETER_INFO_PROXY_FACTORY;
         }
@@ -261,22 +287,28 @@ public class HstRequestContextImpl implements HstMutableRequestContext {
     }
 
     public void setHstSiteMenus(HstSiteMenus siteMenus) {
+        checkStateValidity();
         this.siteMenus = siteMenus;
     }
 
     public HstSiteMenus getHstSiteMenus() {
+        checkStateValidity();
         return this.siteMenus;
     }
 
     public HstQueryManagerFactory getHstQueryManagerFactory() {
+        checkStateValidity();
         return hstQueryManagerFactory;
     }
 
     public void setHstQueryManagerFactory(HstQueryManagerFactory hstQueryManagerFactory) {
+        checkStateValidity();
         this.hstQueryManagerFactory = hstQueryManagerFactory;
     }
 
     public Object getAttribute(String name) {
+        checkStateValidity();
+
         if (name == null) {
             throw new IllegalArgumentException("attribute name cannot be null.");
         }
@@ -291,6 +323,7 @@ public class HstRequestContextImpl implements HstMutableRequestContext {
     }
 
     public Enumeration<String> getAttributeNames() {
+        checkStateValidity();
 
         if (this.attributes != null) {
             return Collections.enumeration(attributes.keySet());
@@ -301,6 +334,8 @@ public class HstRequestContextImpl implements HstMutableRequestContext {
     }
 
     public void removeAttribute(String name) {
+        checkStateValidity();
+
         if (name == null) {
             throw new IllegalArgumentException("attribute name cannot be null.");
         }
@@ -311,6 +346,8 @@ public class HstRequestContextImpl implements HstMutableRequestContext {
     }
 
     public void setAttribute(String name, Object object) {
+        checkStateValidity();
+
         if (name == null) {
             throw new IllegalArgumentException("attribute name cannot be null.");
         }
@@ -331,6 +368,8 @@ public class HstRequestContextImpl implements HstMutableRequestContext {
     }
 
     public Map<String, Object> getAttributes() {
+        checkStateValidity();
+
         if (unmodifiableAttributes == null && attributes != null) {
             unmodifiableAttributes = Collections.unmodifiableMap(attributes);
         }
@@ -343,42 +382,53 @@ public class HstRequestContextImpl implements HstMutableRequestContext {
     }
 
     public ContainerConfiguration getContainerConfiguration() {
+        checkStateValidity();
         return this.containerConfiguration;
     }
 
     public void setContainerConfiguration(ContainerConfiguration containerConfiguration) {
+        checkStateValidity();
         this.containerConfiguration = containerConfiguration;
     }
 
     public VirtualHost getVirtualHost() {
+        checkStateValidity();
         return resolvedMount.getMount().getVirtualHost();
     }
 
     public ContextCredentialsProvider getContextCredentialsProvider() {
+        checkStateValidity();
         return contextCredentialsProvider;
     }
 
     public void setSubject(Subject subject) {
+        checkStateValidity();
         this.subject = subject;
     }
 
     public Subject getSubject() {
+        checkStateValidity();
         return subject;
     }
 
     public void setPreferredLocale(Locale preferredLocale) {
+        checkStateValidity();
         this.preferredLocale = preferredLocale;
     }
 
     public Locale getPreferredLocale() {
+        checkStateValidity();
         return preferredLocale;
     }
 
     public void setLocales(List<Locale> locales) {
+        checkStateValidity();
         this.locales = locales;
     }
 
     public Enumeration<Locale> getLocales() {
+        checkStateValidity();
+
         if (locales != null) {
             return Collections.enumeration(locales);
         }
@@ -387,20 +437,24 @@ public class HstRequestContextImpl implements HstMutableRequestContext {
     }
 
     public void setPathSuffix(String pathSuffix) {
+        checkStateValidity();
         this.pathSuffix = pathSuffix;
     }
 
     public String getPathSuffix() {
+        checkStateValidity();
         return pathSuffix;
     }
 
     @Override
     public void setComponentFilterTags(final Set<String> componentFilterTags) {
+        checkStateValidity();
         this.componentFilterTags = componentFilterTags;
     }
 
     @Override
     public Set<String> getComponentFilterTags() {
+        checkStateValidity();
         if (componentFilterTags == null) {
             return Collections.emptySet();
         }
@@ -408,6 +462,7 @@ public class HstRequestContextImpl implements HstMutableRequestContext {
     }
 
     public Mount getMount(String alias) {
+        checkStateValidity();
         if (alias == null) {
             throw new IllegalArgumentException("Alias is not allowed to be null");
         }
@@ -426,6 +481,7 @@ public class HstRequestContextImpl implements HstMutableRequestContext {
     }
 
     public Mount getMount(String alias, String type) {
+        checkStateValidity();
         if (alias == null || type == null) {
             throw new IllegalArgumentException("Alias and type are not allowed to be null");
         }
@@ -520,26 +576,31 @@ public class HstRequestContextImpl implements HstMutableRequestContext {
 
     @Override
     public void setFullyQualifiedURLs(boolean fullyQualifiedURLs) {
+        checkStateValidity();
         this.fullyQualifiedURLs = fullyQualifiedURLs;
     }
 
     @Override
     public boolean isFullyQualifiedURLs() {
+        checkStateValidity();
         return fullyQualifiedURLs;
     }
 
     @Override
     public void setRenderHost(String renderHost) {
+        checkStateValidity();
         this.renderHost = renderHost;
     }
 
     @Override
     public String getRenderHost() {
+        checkStateValidity();
         return renderHost;
     }
 
     @Override
     public List<HstComponentWindowFilter> getComponentWindowFilters() {
+        checkStateValidity();
         if (filters == null) {
             return Collections.emptyList();
         }
@@ -548,6 +609,7 @@ public class HstRequestContextImpl implements HstMutableRequestContext {
 
     @Override
     public void addComponentWindowFilter(HstComponentWindowFilter filter) {
+        checkStateValidity();
         if (filters == null) {
             filters = new ArrayList<HstComponentWindowFilter>();
         }
@@ -556,31 +618,37 @@ public class HstRequestContextImpl implements HstMutableRequestContext {
 
     @Override
     public boolean isCmsRequest() {
+        checkStateValidity();
         return cmsRequest;
     }
 
     @Override
     public void setCmsRequest(final boolean cmsRequest) {
+        checkStateValidity();
         this.cmsRequest = cmsRequest;
     }
 
     @Override
     public ContentBeansTool getContentBeansTool() {
+        checkStateValidity();
         return contentBeansTool;
     }
 
     @Override
     public void setContentBeansTool(ContentBeansTool contentBeansTool) {
+        checkStateValidity();
         this.contentBeansTool = contentBeansTool;
     }
 
     @Override
     public void setCachingObjectConverter(final boolean enabled) {
+        checkStateValidity();
         this.cachingObjectConverterEnabled = enabled;
     }
 
     @Override
     public HippoBean getContentBean() {
+        checkStateValidity();
         HstRequestContext requestContext = RequestContextProvider.get();
         if (requestContext == null) {
             return null;
@@ -602,6 +670,7 @@ public class HstRequestContextImpl implements HstMutableRequestContext {
 
     @Override
     public <T extends HippoBean> T getContentBean(final Class<T> beanMappingClass) {
+        checkStateValidity();
         HippoBean bean = getContentBean();
         if (bean == null) {
             return null;
@@ -615,6 +684,7 @@ public class HstRequestContextImpl implements HstMutableRequestContext {
 
     @Override
     public String getSiteContentBasePath() {
+        checkStateValidity();
         HstRequestContext requestContext = RequestContextProvider.get();
 
         if (requestContext == null) {
@@ -626,6 +696,7 @@ public class HstRequestContextImpl implements HstMutableRequestContext {
 
     @Override
     public HippoBean getSiteContentBaseBean() {
+        checkStateValidity();
         String base = getSiteContentBasePath();
         try {
             return (HippoBean) getObjectBeanManager().getObject("/" + base);
@@ -664,6 +735,7 @@ public class HstRequestContextImpl implements HstMutableRequestContext {
 
     @Override
     public ObjectBeanManager getObjectBeanManager() {
+        checkStateValidity();
         try {
             return getObjectBeanManager(getSession());
         } catch (RepositoryException e) {
@@ -673,6 +745,7 @@ public class HstRequestContextImpl implements HstMutableRequestContext {
 
     @Override
     public ObjectBeanManager getObjectBeanManager(final Session session) {
+        checkStateValidity();
         if (objectBeanManagers == null) {
             objectBeanManagers = new IdentityHashMap<>();
         }
@@ -686,6 +759,7 @@ public class HstRequestContextImpl implements HstMutableRequestContext {
 
     @Override
     public HstQueryManager getQueryManager() throws IllegalStateException {
+        checkStateValidity();
         try {
             return getQueryManager(getSession());
         } catch (RepositoryException e) {
@@ -695,6 +769,7 @@ public class HstRequestContextImpl implements HstMutableRequestContext {
 
     @Override
     public HstQueryManager getQueryManager(final Session session) throws IllegalStateException {
+        checkStateValidity();
         if (hstQueryManagers == null) {
             hstQueryManagers = new IdentityHashMap<>();
         }
@@ -708,12 +783,49 @@ public class HstRequestContextImpl implements HstMutableRequestContext {
 
     @Override
     public void clearObjectAndQueryManagers() {
+        checkStateValidity();
         if (objectBeanManagers != null) {
             objectBeanManagers.clear();
         }
         if (hstQueryManagers != null) {
             hstQueryManagers.clear();
         }
+    }
+
+    @Override
+    public void dispose() {
+
+        servletContext = null;
+        servletRequest = null;
+        servletResponse = null;
+        repository = null;
+        contextCredentialsProvider = null;
+        session = null;
+        resolvedMount = null;
+        resolvedSiteMapItem = null;
+        urlFactory = null;
+        baseURL = null;
+        contextNamespace = null;
+        linkCreator = null;
+        parameterInfoProxyFactory = null;
+        siteMapMatcher = null;
+        siteMenus = null;
+        hstQueryManagerFactory = null;
+        contentBeansTool = null;
+        attributes = null;
+        containerConfiguration = null;
+        subject = null;
+        preferredLocale = null;
+        locales = null;
+        pathSuffix = null;
+        componentFilterTags = null;
+        filters = null;
+        renderHost = null;
+        objectBeanManagers = null;
+        hstQueryManagers = null;
+        unmodifiableAttributes = null;
+
+        disposed = true;
     }
 
     private ObjectBeanManager createObjectBeanManager(Session session) {
@@ -732,5 +844,11 @@ public class HstRequestContextImpl implements HstMutableRequestContext {
         return converter;
     }
 
-
+    private void checkStateValidity() {
+        if (disposed) {
+            throw new IllegalStateException("Invocation on an invalid HstRequestContext instance. \n" +
+                    "An HstRequestContext instance MUST not be used after a request processing cycle.\n" +
+                    "Check if your component implementation is thread-safe!!!");
+        }
+    }
 }

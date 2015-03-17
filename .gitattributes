@@ -767,6 +767,7 @@ components/core/src/test/java/org/hippoecm/hst/core/container/TestHstSitePipelin
 components/core/src/test/java/org/hippoecm/hst/core/container/TestPageCacheContextAndKey.java -text
 components/core/src/test/java/org/hippoecm/hst/core/container/TestPageCachingValve.java -text
 components/core/src/test/java/org/hippoecm/hst/core/container/TestPageErrors.java svneol=native#text/plain
+components/core/src/test/java/org/hippoecm/hst/core/container/TestRequestContextDisposed.java -text
 components/core/src/test/java/org/hippoecm/hst/core/container/TestSecurityValveImpl.java -text
 components/core/src/test/java/org/hippoecm/hst/core/container/session/TestHttpSessionEventPublisher.java -text
 components/core/src/test/java/org/hippoecm/hst/core/hosting/TestCustomMountAndVirtualCmsHostAugmenter.java -text
@@ -841,6 +842,7 @@ components/core/src/test/resources/org/hippoecm/hst/core/container/TestContainer
 components/core/src/test/resources/org/hippoecm/hst/core/container/TestDefaultPipeline.xml svneol=native#text/plain
 components/core/src/test/resources/org/hippoecm/hst/core/container/TestFactoryComponentInstanceCreation.xml -text
 components/core/src/test/resources/org/hippoecm/hst/core/container/TestPageCachingValve.xml -text
+components/core/src/test/resources/org/hippoecm/hst/core/container/TestRequestContextDisposed.xml svneol=native#text/plain
 components/core/src/test/resources/org/hippoecm/hst/test/AbstractTestConfigurations.xml -text
 components/core/src/test/resources/org/hippoecm/hst/test/GeneralMultiplePoolingRepository.xml -text
 components/core/src/test/resources/org/hippoecm/repository/repository.xml svneol=native#text/plain

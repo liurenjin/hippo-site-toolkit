@@ -1,5 +1,5 @@
 /*
- *  Copyright 2008-2013 Hippo B.V. (http://www.onehippo.com)
+ *  Copyright 2008-2015 Hippo B.V. (http://www.onehippo.com)
  * 
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -37,8 +37,8 @@ public class TestDefaultPipeline extends AbstractPipelineTestCase {
     @Override
     public void setUp() throws Exception{
         super.setUp();
-        this.servletRequest = (HttpServletRequest) getComponent(HttpServletRequest.class.getName());
-        this.servletResponse = (HttpServletResponse) getComponent(HttpServletResponse.class.getName());
+        this.servletRequest = getComponent(HttpServletRequest.class.getName());
+        this.servletResponse = getComponent(HttpServletResponse.class.getName());
 
     }
     

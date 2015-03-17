@@ -1,5 +1,5 @@
 /*
- *  Copyright 2010-2013 Hippo B.V. (http://www.onehippo.com)
+ *  Copyright 2010-2015 Hippo B.V. (http://www.onehippo.com)
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -138,4 +138,11 @@ public interface HstMutableRequestContext extends HstRequestContext {
     public void setCachingObjectConverter(boolean enabled);
 
     public void clearObjectAndQueryManagers();
+
+    /**
+     * Dispose all the internal objects maintained for the current request processing state.
+     * After disposed, this request context will be in an illegal state to use.
+     */
+    public void dispose();
+
 }
