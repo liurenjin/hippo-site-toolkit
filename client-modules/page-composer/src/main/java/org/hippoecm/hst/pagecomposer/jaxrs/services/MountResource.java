@@ -37,6 +37,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.jackrabbit.util.ISO9075;
 import org.hippoecm.hst.configuration.HstNodeTypes;
 import org.hippoecm.hst.configuration.channel.Channel;
@@ -70,6 +71,8 @@ public class MountResource extends AbstractConfigResource {
     private static Logger log = LoggerFactory.getLogger(MountResource.class);
 
     private static final String PUBLISH_ACTION = "publishMount";
+
+    private static final String DISCARD_ACTION = "discardMount";
 
     private SiteMapHelper siteMapHelper;
     private SiteMenuHelper siteMenuHelper;
@@ -269,7 +272,7 @@ public class MountResource extends AbstractConfigResource {
             siteMenuHelper.publishChanges(userIds);
             HstConfigurationUtils.persistChanges(session);
 
-            postPublicationEvent(liveConfigurationPath);
+            postPublishEvent(liveConfigurationPath, previewConfigurationPath, userIds);
 
             log.info("Site is published");
             return ok("Site is published");
@@ -440,6 +443,9 @@ public class MountResource extends AbstractConfigResource {
             siteMenuHelper.discardChanges(userIds);
 
             HstConfigurationUtils.persistChanges(session);
+
+            postDiscardEvent(liveConfigurationPath, previewConfigurationPath, userIds);
+
             log.info("Changes of user '{}' for site '{}' are discarded.", session.getUserID(), editingPreviewSite.getName());
             return ok("Changes of user '"+session.getUserID()+"' for site '"+editingPreviewSite.getName()+"' are discarded.");
         } catch (RepositoryException e) {
@@ -623,7 +629,7 @@ public class MountResource extends AbstractConfigResource {
         JcrUtils.copy(session, fromConfig, toConfig);
     }
 
-    private void postPublicationEvent(final String liveConfigurationPath) {
+    private void postPublishEvent(final String liveConfigurationPath, final String previewConfigurationPath, final List<String> contributors) {
         final HippoEventBus eventBus = HippoServiceRegistry.getService(HippoEventBus.class);
 
         if (eventBus != null) {
@@ -631,7 +637,10 @@ public class MountResource extends AbstractConfigResource {
                 Session session = getPageComposerContextService().getRequestContext().getSession();
                 String currentUserId = session.getUserID();
                 final HippoEvent event = new HippoEvent("channel-manager");
-                event.category("channel-manager").action(PUBLISH_ACTION).user(currentUserId).set("liveConfigurationPath", liveConfigurationPath);
+                event.category("channel-manager").action(PUBLISH_ACTION).user(currentUserId)
+                    .set("liveConfigurationPath", liveConfigurationPath)
+                    .set("previewConfigurationPath", previewConfigurationPath)
+                    .set("contributors", StringUtils.join(contributors, ','));
                 eventBus.post(event);
             } catch (RepositoryException e) {
                 log.warn("Failed to get the current jcr session ID from request context.", e);
@@ -639,4 +648,22 @@ public class MountResource extends AbstractConfigResource {
         }
     }
 
+    private void postDiscardEvent(final String liveConfigurationPath, final String previewConfigurationPath, final List<String> contributors) {
+        final HippoEventBus eventBus = HippoServiceRegistry.getService(HippoEventBus.class);
+
+        if (eventBus != null) {
+            try {
+                Session session = getPageComposerContextService().getRequestContext().getSession();
+                String currentUserId = session.getUserID();
+                final HippoEvent event = new HippoEvent("channel-manager");
+                event.category("channel-manager").action(DISCARD_ACTION).user(currentUserId)
+                    .set("liveConfigurationPath", liveConfigurationPath)
+                    .set("previewConfigurationPath", previewConfigurationPath)
+                    .set("contributors", StringUtils.join(contributors, ','));
+                eventBus.post(event);
+            } catch (RepositoryException e) {
+                log.warn("Failed to get the current jcr session ID from request context.", e);
+            }
+        }
+    }
 }
