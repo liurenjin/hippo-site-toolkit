@@ -108,7 +108,7 @@ public class HstFreemarkerServlet extends FreemarkerServlet {
      * this value is 'classpath' or 'jcr' to load a template from a classpath or repository
      */
     @Override 
-    protected String requestUrlToTemplatePath(HttpServletRequest request)
+    protected String requestUrlToTemplatePath(HttpServletRequest request) throws ServletException
     {
         String path = super.requestUrlToTemplatePath(request);
         if(request.getAttribute(ContainerConstants.DISPATCH_URI_SCHEME) != null){            
