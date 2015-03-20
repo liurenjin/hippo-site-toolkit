@@ -272,7 +272,7 @@ public class MountResource extends AbstractConfigResource {
             siteMenuHelper.publishChanges(userIds);
             HstConfigurationUtils.persistChanges(session);
 
-            postPublishEvent(liveConfigurationPath, previewConfigurationPath, userIds);
+            postChannelEvent(PUBLISH_ACTION, liveConfigurationPath, previewConfigurationPath, userIds);
 
             log.info("Site is published");
             return ok("Site is published");
@@ -444,7 +444,7 @@ public class MountResource extends AbstractConfigResource {
 
             HstConfigurationUtils.persistChanges(session);
 
-            postDiscardEvent(liveConfigurationPath, previewConfigurationPath, userIds);
+            postChannelEvent(DISCARD_ACTION, liveConfigurationPath, previewConfigurationPath, userIds);
 
             log.info("Changes of user '{}' for site '{}' are discarded.", session.getUserID(), editingPreviewSite.getName());
             return ok("Changes of user '"+session.getUserID()+"' for site '"+editingPreviewSite.getName()+"' are discarded.");
@@ -629,7 +629,7 @@ public class MountResource extends AbstractConfigResource {
         JcrUtils.copy(session, fromConfig, toConfig);
     }
 
-    private void postPublishEvent(final String liveConfigurationPath, final String previewConfigurationPath, final List<String> contributors) {
+    private void postChannelEvent(final String action, final String liveConfigurationPath, final String previewConfigurationPath, final List<String> contributors) {
         final HippoEventBus eventBus = HippoServiceRegistry.getService(HippoEventBus.class);
 
         if (eventBus != null) {
@@ -637,26 +637,7 @@ public class MountResource extends AbstractConfigResource {
                 Session session = getPageComposerContextService().getRequestContext().getSession();
                 String currentUserId = session.getUserID();
                 final HippoEvent event = new HippoEvent("channel-manager");
-                event.category("channel-manager").action(PUBLISH_ACTION).user(currentUserId)
-                    .set("liveConfigurationPath", liveConfigurationPath)
-                    .set("previewConfigurationPath", previewConfigurationPath)
-                    .set("contributors", StringUtils.join(contributors, ','));
-                eventBus.post(event);
-            } catch (RepositoryException e) {
-                log.warn("Failed to get the current jcr session ID from request context.", e);
-            }
-        }
-    }
-
-    private void postDiscardEvent(final String liveConfigurationPath, final String previewConfigurationPath, final List<String> contributors) {
-        final HippoEventBus eventBus = HippoServiceRegistry.getService(HippoEventBus.class);
-
-        if (eventBus != null) {
-            try {
-                Session session = getPageComposerContextService().getRequestContext().getSession();
-                String currentUserId = session.getUserID();
-                final HippoEvent event = new HippoEvent("channel-manager");
-                event.category("channel-manager").action(DISCARD_ACTION).user(currentUserId)
+                event.category("channel-manager").action(action).user(currentUserId)
                     .set("liveConfigurationPath", liveConfigurationPath)
                     .set("previewConfigurationPath", previewConfigurationPath)
                     .set("contributors", StringUtils.join(contributors, ','));
