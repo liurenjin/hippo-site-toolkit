@@ -534,17 +534,26 @@ public class HstFilter implements Filter {
                 log.warn("Unknown error encountered while processing request '{}': {}", req.getRequestURI(), e.toString());
             }
             sendError(req, res, HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-    	}
-    	finally {
-    	    // clears up the current thread's active request context object.
-    	    if (requestContextSetToProvider) {
-    	        RequestContextProvider.clear();
-    	    }
+        } finally {
+            // clears up the current thread's active request context object.
+            if (requestContextSetToProvider) {
+                disposeHstRequestContext();
+                RequestContextProvider.clear();
+            }
 
             if (rootTask != null) {
                 HDC.cleanUp();
             }
     	}
+    }
+
+    private void disposeHstRequestContext() {
+        final HstRequestContext requestContext = RequestContextProvider.get();
+
+        if (requestContext != null) {
+            final HstRequestContextComponent rcc = HstServices.getComponentManager().getComponent(HstRequestContextComponent.class.getName());
+            rcc.release(requestContext);
+        }
     }
 
     private void setHstServletPath(final GenericHttpServletRequestWrapper request, final ResolvedMount resolvedMount) {
