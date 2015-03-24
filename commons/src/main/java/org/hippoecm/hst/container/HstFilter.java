@@ -471,6 +471,7 @@ public class HstFilter implements Filter {
                 if(resolvedMount.getNamedPipeline() == null) {
                     log.warn(hostName + "' and '" + containerRequest.getRequestURI() + "' could not be processed by the HST: No hstSite and no custom namedPipeline for Mount");
                     sendError(req, res, HttpServletResponse.SC_NOT_FOUND);
+                    return;
                 }
                 else {
                     if (!isSupportedScheme(requestContext, resolvedMount, farthestRequestScheme)) {
@@ -535,6 +536,7 @@ public class HstFilter implements Filter {
             }
             sendError(req, res, HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
         } finally {
+            request.removeAttribute(ContainerConstants.HST_REQUEST_CONTEXT);
             // clears up the current thread's active request context object.
             if (requestContextSetToProvider) {
                 disposeHstRequestContext();
@@ -768,7 +770,6 @@ public class HstFilter implements Filter {
      * @param errorCode the error code to send
      */
     private static void sendError(HttpServletRequest request, HttpServletResponse response, int errorCode) throws IOException {
-        request.removeAttribute(ContainerConstants.HST_REQUEST_CONTEXT);
         response.sendError(errorCode);
     }
 
