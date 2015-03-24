@@ -15,6 +15,9 @@
  */
 package org.hippoecm.hst.core.container;
 
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Method;
 
@@ -29,9 +32,6 @@ import org.hippoecm.hst.core.search.HstQueryManagerFactory;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletRequest;
-
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
 
 public class TestRequestContextDisposed extends AbstractPipelineTestCase {
 
@@ -89,20 +89,6 @@ public class TestRequestContextDisposed extends AbstractPipelineTestCase {
         } finally {
             this.defaultPipeline.cleanup(this.requestContainerConfig, requestContext, this.servletRequest, this.servletResponse);
         }
-
-        for (Method method : methods) {
-            if (isGetter(method)) {
-                try {
-                    method.invoke(requestContext);
-                    fail(String.format("Getters on request context should throw exception 'IllegalStateException' for '%s' after cleanup",
-                            method.getName()));
-                } catch (Exception e) {
-                    assertTrue(e.getCause() instanceof IllegalStateException);
-                    assertTrue(e.getCause().getMessage().contains("Invocation on an invalid HstRequestContext instance"));
-                }
-            }
-        }
-
     }
 
     private static final boolean isGetter(final Method method) {
