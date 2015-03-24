@@ -27,8 +27,10 @@ import javax.servlet.http.HttpServletResponse;
 import org.hippoecm.hst.container.ModifiableRequestContextProvider;
 import org.hippoecm.hst.content.tool.DefaultContentBeansTool;
 import org.hippoecm.hst.core.internal.HstMutableRequestContext;
+import org.hippoecm.hst.core.internal.HstRequestContextComponent;
 import org.hippoecm.hst.core.request.HstRequestContext;
 import org.hippoecm.hst.core.search.HstQueryManagerFactory;
+import org.hippoecm.hst.site.HstServices;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.mock.web.MockHttpServletRequest;
@@ -49,7 +51,7 @@ public class TestRequestContextDisposed extends AbstractPipelineTestCase {
 
 
     @Test
-    public void testDefaultPipeline_disposes_requestContext() throws ContainerException, UnsupportedEncodingException {
+    public void disposed_requestContext_throws_IllegalStateException_after_disposal() throws ContainerException, UnsupportedEncodingException {
 
         ((MockHttpServletRequest) servletRequest).setPathInfo("/news");
         ((MockHttpServletRequest) servletRequest).addHeader("Host", servletRequest.getServerName());
@@ -88,6 +90,33 @@ public class TestRequestContextDisposed extends AbstractPipelineTestCase {
             throw new ContainerException(e);
         } finally {
             this.defaultPipeline.cleanup(this.requestContainerConfig, requestContext, this.servletRequest, this.servletResponse);
+        }
+
+        for (Method method : methods) {
+            if (isGetter(method)) {
+                try {
+                    method.invoke(requestContext);
+                } catch (Exception e) {
+                    fail(String.format("Getters on request context should not throw exception for '%s' direct after pipeline cleanup invocation",
+                            method.getName()));
+
+                }
+            }
+        }
+
+        final HstRequestContextComponent rcc = HstServices.getComponentManager().getComponent(HstRequestContextComponent.class.getName());
+        rcc.release(requestContext);
+        for (Method method : methods) {
+            if (isGetter(method)) {
+                try {
+                    method.invoke(requestContext);
+                    fail(String.format("Getters on request context should throw exception 'IllegalStateException' for '%s' after disposal",
+                            method.getName()));
+                } catch (Exception e) {
+                    assertTrue(e.getCause() instanceof IllegalStateException);
+                    assertTrue(e.getCause().getMessage().contains("Invocation on an invalid HstRequestContext instance"));
+                }
+            }
         }
     }
 
