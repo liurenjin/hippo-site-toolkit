@@ -220,12 +220,95 @@ public class DefaultHstLinkCreator implements HstLinkCreator {
         log.debug("Target Mount found for mountAlias '{}'. Create link for target Mount", mountAlias);
         return create(node, targetMount);
     }
-    public HstLink create(String path, Mount mount) {
-        return postProcess(new HstLinkImpl(PathUtils.normalizePath(path), mount));
+
+    public HstLink create(final String path, final Mount mount) {
+        final String normalizedPath = PathUtils.normalizePath(path);
+        HstLink hstLink = null;
+        if (normalizedPath.startsWith(binariesPrefix.substring(1) + "/")) {
+            String nodePath = normalizedPath.substring(binariesPrefix.length() -1);
+            if (isBinaryLocation(nodePath)) {
+                hstLink = createHstLinkForBinaryLocation(nodePath, mount);
+            }
+        }
+        if (hstLink == null) {
+            hstLink = new HstLinkImpl(normalizedPath, mount);
+        }
+        return postProcess(hstLink);
     }
 
+
+
     public HstLink create(String path, Mount mount, boolean containerResource) {
-        return postProcess(new HstLinkImpl(PathUtils.normalizePath(path), mount, containerResource));
+        final String normalizedPath = PathUtils.normalizePath(path);
+        HstLink hstLink = null;
+        if (normalizedPath.startsWith(binariesPrefix.substring(1) + "/")) {
+            String nodePath = normalizedPath.substring(binariesPrefix.length() -1);
+            if (isBinaryLocation(nodePath)) {
+                hstLink = createHstLinkForBinaryLocation(nodePath, mount);
+            }
+        }
+        if (hstLink == null) {
+            hstLink = new HstLinkImpl(normalizedPath, mount, containerResource);
+        }
+        return postProcess(hstLink);
+    }
+
+    private HstLink createHstLinkForBinaryLocation(final String nodePath, final Mount mount) {
+        try {
+            final Node node = RequestContextProvider.get().getSession().getNode(nodePath);
+            Node resourceNode = null;
+            Node resourceContainerNode = null;
+            if (node.isNodeType(HippoNodeType.NT_RESOURCE)) {
+                resourceNode = node;
+            } else if (node.isNodeType(HippoNodeType.NT_HANDLE)){
+                resourceContainerNode = node.getNode(node.getName());
+            } else if (node.isNodeType(HippoNodeType.NT_DOCUMENT) &&  node.getParent().isNodeType(HippoNodeType.NT_HANDLE)) {
+                resourceContainerNode = node;
+            }
+            if (resourceNode == null && resourceContainerNode == null) {
+                return new HstLinkImpl(nodePath, mount, true);
+            }
+
+            if (resourceNode != null) {
+                for (LocationResolver resolver : locationResolvers) {
+                    if (resourceNode.isNodeType(resolver.getNodeType())) {
+                        HstLink hstLink = resolver.resolve(resourceNode, mount, mount.getHstSite().getLocationMapTree());
+                        if (hstLink != null) {
+                            log.debug("Location resolved for nodetype '{}' is able to create link for node '{}'.",
+                                    resolver.getNodeType(), nodePath);
+                            return hstLink;
+                        } else {
+                            log.debug("Location resolved for nodetype '{}' is not able to create link for node '{}'. Try next location resolver",
+                                    resolver.getNodeType(), nodePath);
+                        }
+                    }
+                }
+            } else if (resourceContainerNode != null) {
+                // find the primary resource item
+                for (LocationResolver resolver : locationResolvers) {
+                    if (!(resolver instanceof ResourceLocationResolver)) {
+                        continue;
+                    }
+                    for (ResourceContainer container : ((ResourceLocationResolver)resolver).getResourceContainers()) {
+                        if (resourceContainerNode.isNodeType(container.getNodeType()) && container.getPrimaryItem() != null) {
+                            if (resourceContainerNode.hasNode(container.getPrimaryItem())) {
+                                resourceNode = resourceContainerNode.getNode(container.getPrimaryItem());
+                                final String pathInfo = container.resolveToPathInfo(resourceContainerNode, resourceNode, mount);
+                                if (pathInfo != null) {
+                                    log.debug("Resource Container resolved for nodetype '{}' is able to create link for node '{}'.",
+                                            container.getNodeType(), nodePath);
+                                    return new HstLinkImpl(binariesPrefix + pathInfo, mount, true);
+                                }
+                            }
+                            log.debug("resourceContainer for '{}' unable to create a HstLink for path '{}'. Try next", container.getNodeType(), nodePath);
+                        }
+                    }
+                }
+            }
+        } catch (RepositoryException e) {
+            log.debug("Could not find '{}' node for '{}'. Return plain path link.", HippoNodeType.NT_RESOURCE, nodePath);
+        }
+        return new HstLinkImpl(nodePath, mount, true);
     }
 
     @Override
@@ -752,10 +835,13 @@ public class DefaultHstLinkCreator implements HstLinkCreator {
                 ResolvedLocationMapTreeItem resolvedLocation = resolveToLocationMapTreeItem(relPath, tryMount, resolverProperties);
                 return (resolvedLocation == null || resolvedLocation.getPath() == null) ? null : new LinkInfo(resolvedLocation, false, tryMount);
             } else if (isBinaryLocation(nodePath)) {
-                log.debug("Binary path, return hstLink prefixing this path with '{}'", DefaultHstLinkCreator.this.getBinariesPrefix());
-                // Do not postProcess binary locations, as the BinariesServlet is not aware about preprocessing links
-                String pathInfo = DefaultHstLinkCreator.this.getBinariesPrefix() + nodePath;
-                return pathInfo == null ? null : new LinkInfo(pathInfo, true, tryMount);
+                final HstLink hstLinkForBinaryLocation = createHstLinkForBinaryLocation(nodePath, tryMount);
+                if (hstLinkForBinaryLocation != null) {
+                    return new LinkInfo(hstLinkForBinaryLocation.getPath(), true, tryMount);
+                }
+                log.debug("Binary path, return hstLink prefixing this path with '{}'", binariesPrefix);
+                String pathInfo = binariesPrefix+nodePath;
+                return new LinkInfo(pathInfo, true, tryMount);
             }
             return null;
         }
