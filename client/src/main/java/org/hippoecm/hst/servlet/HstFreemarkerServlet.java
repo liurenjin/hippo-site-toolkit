@@ -58,36 +58,23 @@ public class HstFreemarkerServlet extends FreemarkerServlet {
 
     private static final String ATTR_JSP_TAGLIBS_MODEL = ".freemarker.JspTaglibs";
 
-    private boolean lookupVirtualWebappLibResourcePathsChecked;
-
     private boolean lookupVirtualWebappLibResourcePathsEnabled;
 
-    private boolean taglibModelInitialized;
-    
     private RepositoryTemplateLoader repositoryTemplateLoader;
-
-    @Override
-    public void init() throws ServletException {
-        super.init();
-
-        Configuration conf = super.getConfiguration();
-
-        if (!hasInitParameter(Configurable.TEMPLATE_EXCEPTION_HANDLER_KEY)) {
-            log.info("No '"+Configurable.TEMPLATE_EXCEPTION_HANDLER_KEY+"' init param set. HST will set FreeMarker servlet to log and *continue* " +
-                    "(TemplateExceptionHandler.IGNORE_HANDLER) rendering in case of template exceptions. ");
-            conf.setTemplateExceptionHandler(TemplateExceptionHandler.IGNORE_HANDLER);
-        }
-
-        conf.setLocalizedLookup(false);
-        
-    }
 
     @Override
     public void init(final ServletConfig config) throws ServletException {
         super.init(config);
 
-        ServletContext servletContext = config.getServletContext();
+        Configuration conf = super.getConfiguration();
+        if (!hasInitParameter(Configurable.TEMPLATE_EXCEPTION_HANDLER_KEY)) {
+            log.info("No '"+Configurable.TEMPLATE_EXCEPTION_HANDLER_KEY+"' init param set. HST will set FreeMarker servlet to log and *continue* " +
+                    "(TemplateExceptionHandler.IGNORE_HANDLER) rendering in case of template exceptions. ");
+            conf.setTemplateExceptionHandler(TemplateExceptionHandler.IGNORE_HANDLER);
+        }
+        conf.setLocalizedLookup(false);
 
+        ServletContext servletContext = config.getServletContext();
         Set libPaths = servletContext.getResourcePaths("/WEB-INF/lib");
         lookupVirtualWebappLibResourcePathsEnabled = (libPaths == null || libPaths.isEmpty());
 
