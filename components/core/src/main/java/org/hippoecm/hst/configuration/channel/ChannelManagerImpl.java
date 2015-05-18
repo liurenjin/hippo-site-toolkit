@@ -985,9 +985,9 @@ public class ChannelManagerImpl implements MutableChannelManager {
             throw new ChannelException("Invalid channel URL: '" + channel.getUrl() + "'");
         }
 
-        if (!"http".equals(uri.getScheme())) {
+        if (!isSupportedScheme(uri.getScheme())) {
             throw new ChannelException(
-                    "Illegal channel URL scheme: '" + uri.getScheme() + "'. Only 'http' is currently supported");
+                    "Illegal channel URL scheme: '" + uri.getScheme() + "'. Only 'http' and 'https' is currently supported");
         }
 
         if (StringUtils.isBlank(uri.getHost())) {
@@ -995,6 +995,16 @@ public class ChannelManagerImpl implements MutableChannelManager {
         }
 
         return uri;
+    }
+
+    private boolean isSupportedScheme(final String scheme) {
+        if (scheme == null) {
+            return false;
+        }
+        if (scheme.equals("http") || scheme.equals("https")) {
+            return true;
+        }
+        return false;
     }
 
     /**
