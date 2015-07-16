@@ -16,6 +16,10 @@ package org.hippoecm.hst.util;
  * limitations under the License.
  */
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import org.apache.commons.lang.StringUtils;
 import org.hippoecm.hst.site.HstServices;
 
@@ -28,6 +32,13 @@ public final class SearchInputParsingUtils {
     private static final String FQCN = SearchInputParsingUtils.class.getName();
     
     private static final String WHITESPACE_PATTERN = "\\s+";
+
+    private static final List<Character> specialCharsOriginal = new ArrayList<Character>(Arrays.asList(
+            '(', ')', '^', '[', ']', '{',
+            '}', '~', '*', '?', '|', '&',
+            '!', '-', '\"', '\'', ' '));
+
+    private static List<Character> specialChars = new ArrayList<Character>(specialCharsOriginal);
 
     private SearchInputParsingUtils() {
 
@@ -194,9 +205,15 @@ public final class SearchInputParsingUtils {
     }
 
     public static boolean isSpecialChar(final char c) {
-        return c == '(' || c == ')' || c == '^' || c == '[' || c == ']' || c == '{'
-                || c == '}' || c == '~' || c == '*' || c == '?' || c == '|' || c == '&'
-                || c =='!' || c == '-' || c == '\"' || c == '\'' || c == ' ';
+        return specialChars.contains((Character) c);
+    }
+
+    public static void removeSpecialChar(final char c) {
+        specialChars.remove((Character) c);
+    }
+
+    public static void resetSpecialChars() {
+        specialChars = specialCharsOriginal;
     }
 
     /**
