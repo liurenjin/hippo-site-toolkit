@@ -160,10 +160,8 @@ public class TestSearchInputParsingUtils {
     public void testSearchInputParsingUtils_parse_excludeAmpersand() throws Exception {
         assertEquals("The quick brown fox jumps over the lazy dog", SearchInputParsingUtils.parse("The &quick brown& fox jumps o&ver &&the l&&azy dog&&", true));
         assertEquals("The quick brown fox jumps over the lazy dog", SearchInputParsingUtils.parse("The &quick brown& fox jumps o&ver &&the l&&azy dog&&", false));
-        SearchInputParsingUtils.removeSpecialChar('&');
-        assertEquals("The &quick brown& fox jumps o&ver &&the l&&azy dog&&", SearchInputParsingUtils.parse("The &quick brown& fox jumps o&ver &&the l&&azy dog&&", true));
-        assertEquals("The &quick brown& fox jumps o&ver &&the l&&azy dog&&", SearchInputParsingUtils.parse("The &quick brown& fox jumps o&ver &&the l&&azy dog&&", false));
-        SearchInputParsingUtils.resetSpecialChars();
+        assertEquals("The &quick brown& fox jumps o&ver &&the l&&azy dog&&", SearchInputParsingUtils.parse("The &quick brown& fox jumps o&ver &&the l&&azy dog&&", true, new char[]{'&'}));
+        assertEquals("The &quick brown& fox jumps o&ver &&the l&&azy dog&&", SearchInputParsingUtils.parse("The &quick brown& fox jumps o&ver &&the l&&azy dog&&", false, new char[]{'&'}));
     }
 
 }

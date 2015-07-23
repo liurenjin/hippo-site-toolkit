@@ -1,7 +1,7 @@
 package org.hippoecm.hst.util;
 
 /**
- * Copyright 2011-2013 Hippo B.V. (http://www.onehippo.com)
+ * Copyright 2011-2015 Hippo B.V. (http://www.onehippo.com)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,29 +16,17 @@ package org.hippoecm.hst.util;
  * limitations under the License.
  */
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
 import org.apache.commons.lang.StringUtils;
 import org.hippoecm.hst.site.HstServices;
 
 /**
  * Input utilities for user searches.
- *
  */
 public final class SearchInputParsingUtils {
 
     private static final String FQCN = SearchInputParsingUtils.class.getName();
-    
+
     private static final String WHITESPACE_PATTERN = "\\s+";
-
-    private static final List<Character> specialCharsOriginal = new ArrayList<Character>(Arrays.asList(
-            '(', ')', '^', '[', ']', '{',
-            '}', '~', '*', '?', '|', '&',
-            '!', '-', '\"', '\'', ' '));
-
-    private static List<Character> specialChars = new ArrayList<Character>(specialCharsOriginal);
 
     private SearchInputParsingUtils() {
 
@@ -46,16 +34,33 @@ public final class SearchInputParsingUtils {
 
     /**
      * Returns a parsed version of the input
-     * @param input the user input
-     * @param allowSingleNonLeadingWildCardPerTerm if there is allowed one wildcard (* or ?) per term (however, still not allowed as leading for a term)
-     * @return the parsed version of the <code>input</code>. When <code>input</code> is <code>null</code>, <code>null</code> is returned
+     *
+     * @param input                                the user input
+     * @param allowSingleNonLeadingWildCardPerTerm if there is allowed one wildcard (* or ?) per term (however, still
+     *                                             not allowed as leading for a term)
+     * @return the parsed version of the <code>input</code>. When <code>input</code> is <code>null</code>,
+     * <code>null</code> is returned
      */
-    public static String parse(final String input,final boolean allowSingleNonLeadingWildCardPerTerm) {
-        if(input == null) {
+    public static String parse(final String input, final boolean allowSingleNonLeadingWildCardPerTerm) {
+        return parse(input, allowSingleNonLeadingWildCardPerTerm, null);
+    }
+
+    /**
+     * Returns a parsed version of the input
+     *
+     * @param input                                the user input
+     * @param allowSingleNonLeadingWildCardPerTerm if there is allowed one wildcard (* or ?) per term (however, still
+     *                                             not allowed as leading for a term)
+     * @param ignore                               the chars that should not be parsed
+     * @return the parsed version of the <code>input</code>. When <code>input</code> is <code>null</code>,
+     * <code>null</code> is returned
+     */
+    public static String parse(final String input, final boolean allowSingleNonLeadingWildCardPerTerm, final char[] ignore) {
+        if (input == null) {
             return null;
-        }        
+        }
         String parsed = compressWhitespace(input);
-        parsed = removeInvalidAndEscapeChars(parsed, allowSingleNonLeadingWildCardPerTerm);
+        parsed = removeInvalidAndEscapeChars(parsed, allowSingleNonLeadingWildCardPerTerm, ignore);
         parsed = removeLeadingOrTrailingOrOperator(parsed);
         parsed = rewriteNotOperatorsToMinus(parsed);
         parsed = removeLeadingAndTrailingAndReplaceWithSpaceAndOperators(parsed);
@@ -63,20 +68,38 @@ public final class SearchInputParsingUtils {
         HstServices.getLogger(FQCN, FQCN).debug("Rewrote input '{}' to '{}'", input, parsed);
         return parsed;
     }
-    
+
     /**
      * Returns a parsed version of the input
-     * @param input the user input
-     * @param allowSingleNonLeadingWildCardPerTerm if there is allowed one wildcard (* or ?) per term (however, still not allowed as leading for a term)
-     * @param maxLength the maxLength of the returned parsed input
-     * @return the parsed version of the <code>input</code>. When <code>input</code> is <code>null</code>, <code>null</code> is returned
+     *
+     * @param input                                the user input
+     * @param allowSingleNonLeadingWildCardPerTerm if there is allowed one wildcard (* or ?) per term (however, still
+     *                                             not allowed as leading for a term)
+     * @param maxLength                            the maxLength of the returned parsed input
+     * @return the parsed version of the <code>input</code>. When <code>input</code> is <code>null</code>,
+     * <code>null</code> is returned
      */
-    public static String parse(final String input,final boolean allowSingleNonLeadingWildCardPerTerm, int maxLength) {
-        if(input == null) {
+    public static String parse(final String input, final boolean allowSingleNonLeadingWildCardPerTerm, int maxLength) {
+        return parse(input, allowSingleNonLeadingWildCardPerTerm, maxLength, null);
+    }
+
+    /**
+     * Returns a parsed version of the input
+     *
+     * @param input                                the user input
+     * @param allowSingleNonLeadingWildCardPerTerm if there is allowed one wildcard (* or ?) per term (however, still
+     *                                             not allowed as leading for a term)
+     * @param maxLength                            the maxLength of the returned parsed input
+     * @param ignore                               the chars that should not be parsed
+     * @return the parsed version of the <code>input</code>. When <code>input</code> is <code>null</code>,
+     * <code>null</code> is returned
+     */
+    public static String parse(final String input, final boolean allowSingleNonLeadingWildCardPerTerm, final int maxLength, final char[] ignore) {
+        if (input == null) {
             return null;
         }
-        String parsed = parse(input, allowSingleNonLeadingWildCardPerTerm);
-        if(parsed.length() > maxLength) {
+        String parsed = parse(input, allowSingleNonLeadingWildCardPerTerm, ignore);
+        if (parsed.length() > maxLength) {
             parsed = parsed.substring(0, maxLength);
         }
         HstServices.getLogger(FQCN, FQCN).debug("Rewrote input '{}' to '{}'", input, parsed);
@@ -84,14 +107,14 @@ public final class SearchInputParsingUtils {
     }
 
     public static String removeLeadingWildCardsFromWords(final String input) {
-        if(input == null) {
+        if (input == null) {
             throw new IllegalArgumentException("Input is not allowed to be null");
         }
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < input.length(); i++) {
-          char c = input.charAt(i);
-          // Some of these characters break the jcr query and others like * and ? have a very negative impact 
-          // on performance. 
+            char c = input.charAt(i);
+            // Some of these characters break the jcr query and others like * and ? have a very negative impact
+            // on performance.
             if (c == '*' || c == '?') {
                 if (sb.length() > 0) {
                     char prevChar = sb.charAt(sb.length() - 1);
@@ -104,27 +127,51 @@ public final class SearchInputParsingUtils {
             }
         }
         String output = sb.toString();
-        if(!input.equals(output)) {
+        if (!input.equals(output)) {
             HstServices.getLogger(FQCN, FQCN).debug("Rewrote input '{}' to '{}'", input, output);
         }
         return output;
     }
-    
+
     /**
      * <p>
-     * Removes invalid chars, escapes some chars. If <code>allowSingleNonLeadingWildCard</code> is <code>true</code>, there 
-     * is one single non leading <code>*</code> or <code>?</code> allowed. Note, that this wildcard is not allowed to be 
+     * Removes invalid chars, escapes some chars. If <code>allowSingleNonLeadingWildCard</code> is <code>true</code>,
+     * there
+     * is one single non leading <code>*</code> or <code>?</code> allowed. Note, that this wildcard is not allowed to
+     * be
      * leading of a new word.
      * </p>
      * <p>
      * Recommended is to remove all wildcards
-     * </p> 
+     * </p>
+     *
      * @param input
      * @param allowSingleNonLeadingWildCardPerTerm
      * @return formatted version of <code>input</code>
      */
     public static String removeInvalidAndEscapeChars(final String input, final boolean allowSingleNonLeadingWildCardPerTerm) {
-        if(input == null) {
+        return removeInvalidAndEscapeChars(input, allowSingleNonLeadingWildCardPerTerm, null);
+    }
+
+    /**
+     * <p>
+     * Removes invalid chars, escapes some chars. If <code>allowSingleNonLeadingWildCard</code> is <code>true</code>,
+     * there
+     * is one single non leading <code>*</code> or <code>?</code> allowed. Note, that this wildcard is not allowed to
+     * be
+     * leading of a new word.
+     * </p>
+     * <p>
+     * Recommended is to remove all wildcards
+     * </p>
+     *
+     * @param input
+     * @param allowSingleNonLeadingWildCardPerTerm
+     * @param ignore                               the chars that should not be parsed
+     * @return formatted version of <code>input</code>
+     */
+    public static String removeInvalidAndEscapeChars(final String input, final boolean allowSingleNonLeadingWildCardPerTerm, final char[] ignore) {
+        if (input == null) {
             throw new IllegalArgumentException("Input is not allowed to be null");
         }
         StringBuffer sb = new StringBuffer();
@@ -132,10 +179,10 @@ public final class SearchInputParsingUtils {
 
         boolean prevCharIsSpecialOrRemoved = false;
         for (int i = 0; i < input.length(); i++) {
-          char c = input.charAt(i);
+            char c = input.charAt(i);
             // Some of these characters break the jcr query and others like * and ? have a very negative impact
             // on performance.
-            if (isSpecialChar(c)) {
+            if (!ignoreChar(c, ignore) && isSpecialChar(c)) {
                 if (c == '\"') {
                     sb.append('\\');
                     sb.append(c);
@@ -191,11 +238,23 @@ public final class SearchInputParsingUtils {
             }
         }
         String output = sb.toString();
-        if(!input.equals(output)) {
+        if (!input.equals(output)) {
             HstServices.getLogger(FQCN, FQCN).debug("Rewrote input '{}' to '{}'", input, output);
         }
         return output;
-      }
+    }
+
+    private static boolean ignoreChar(final char c, final char[] ignore) {
+        if (ignore == null) {
+            return false;
+        }
+        for (char ignoreChar : ignore) {
+            if (c == ignoreChar) {
+                return true;
+            }
+        }
+        return false;
+    }
 
     private static boolean containsNextCharAndIsNotSpecial(final String input, final int cursor) {
         if ((input.length() > cursor + 1) && !isSpecialChar(input.charAt(cursor + 1))) {
@@ -205,15 +264,9 @@ public final class SearchInputParsingUtils {
     }
 
     public static boolean isSpecialChar(final char c) {
-        return specialChars.contains((Character) c);
-    }
-
-    public static void removeSpecialChar(final char c) {
-        specialChars.remove((Character) c);
-    }
-
-    public static void resetSpecialChars() {
-        specialChars = specialCharsOriginal;
+        return c == '(' || c == ')' || c == '^' || c == '[' || c == ']' || c == '{'
+                || c == '}' || c == '~' || c == '*' || c == '?' || c == '|' || c == '&'
+                || c == '!' || c == '-' || c == '\"' || c == '\'' || c == ' ';
     }
 
     /**
@@ -225,7 +278,7 @@ public final class SearchInputParsingUtils {
      * @return rewritten input
      */
     private static String rewriteNotOperatorsToMinus(String input) {
-        if(input == null) {
+        if (input == null) {
             throw new IllegalArgumentException("Input is not allowed to be null");
         }
         return input.replace("NOT ", "-");
@@ -240,7 +293,7 @@ public final class SearchInputParsingUtils {
      * @return rewritten input
      */
     private static String removeLeadingAndTrailingAndReplaceWithSpaceAndOperators(String input) {
-        if(input == null) {
+        if (input == null) {
             throw new IllegalArgumentException("Input is not allowed to be null");
         }
         String output = input;
@@ -248,15 +301,16 @@ public final class SearchInputParsingUtils {
         output = StringUtils.removeEnd(output, " AND");
         return output.replace(" AND ", " ");
     }
-    
+
     /**
-     * Removes the logical operator "OR" at the end of the query. Otherwise this will result in a Lucene parse exception.
+     * Removes the logical operator "OR" at the end of the query. Otherwise this will result in a Lucene parse
+     * exception.
      *
      * @param input the original (possibly invalid) query string
      * @return a valid query string
      */
     public static String removeLeadingOrTrailingOrOperator(String input) {
-        if(input == null) {
+        if (input == null) {
             throw new IllegalArgumentException("Input is not allowed to be null");
         }
         String output = input;
@@ -264,7 +318,7 @@ public final class SearchInputParsingUtils {
         output = StringUtils.removeEnd(output, " OR");
         return output;
     }
-    
+
     /**
      * Compress whitespace (tab, newline, multiple spaces) by removing leading and trailing whitespace, and reducing
      * inbetween whitespace to one space.
