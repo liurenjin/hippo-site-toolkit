@@ -1,5 +1,5 @@
 /*
- *  Copyright 2011-2013 Hippo B.V. (http://www.onehippo.com)
+ *  Copyright 2011-2015 Hippo B.V. (http://www.onehippo.com)
  * 
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -153,7 +153,15 @@ public class TestSearchInputParsingUtils {
         assertEquals("The qui*ck brown fox jumps over the lazy dog", SearchInputParsingUtils.removeLeadingWildCardsFromWords("The qui*ck brown fox jumps over the lazy dog"));
         assertEquals("The qui*ck brown* fox jumps* over the lazy dog", SearchInputParsingUtils.removeLeadingWildCardsFromWords("The qui*ck brown* fox jumps* over the lazy dog"));
         assertEquals("The qui*ck brown* fox jumps* over the lazy dog", SearchInputParsingUtils.removeLeadingWildCardsFromWords("The *qui*ck *brown* fox jumps* over the lazy dog"));
-        
+    }
+
+    @Test
+    public void testSearchInputParsingUtils_parse_excludeAmpersand() throws Exception {
+        assertEquals("The quick brown fox jumps over the lazy dog", SearchInputParsingUtils.parse("The &quick brown& fox jumps o&ver &&the l&&azy dog&&", true));
+        assertEquals("The quick brown fox jumps over the lazy dog", SearchInputParsingUtils.parse("The &quick brown& fox jumps o&ver &&the l&&azy dog&&", false));
+        assertEquals("The &quick brown& fox jumps o&ver &&the l&&azy dog&&", SearchInputParsingUtils.parse("The &quick brown& fox jumps o&ver &&the l&&azy dog&&", true, new char[]{'&'}));
+        assertEquals("The &quick brown& fox jumps o&ver &&the l&&azy dog&&", SearchInputParsingUtils.parse("The &quick brown& fox jumps o&ver &&the l&&azy dog&&", false, new char[]{'&'}));
     }
 
 }
+
