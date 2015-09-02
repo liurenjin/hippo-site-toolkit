@@ -1,0 +1,24 @@
+#########################################################
+#                                                       #
+#  Copyright 2015 Hippo B.V. (http://www.onehippo.com)  #
+#                                                       #
+#########################################################
+
+# is marked as comment and skipped
+
+/css/test
+foo
+
+js/
+
+test.txt
+
+font/
+foo/123/b_ar
+
+/lux/test/#bar
+/lux/test#bar
+
+# lux/ /foo is interpreted as one folder since we do not tokenize on space
+lux/ /foo
+
