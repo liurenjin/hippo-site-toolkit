@@ -376,10 +376,6 @@ public class TestWebFileValve {
         assertTrue("Next valve should have been invoked", valveContext.isNextValveInvoked());
     }
 
-
-
-
-
     private void assertCssIsWritten(final WebFile styleCss) throws UnsupportedEncodingException {
         final Map<String, List<Object>> headers = response.getHeaders();
         assertEquals("Content-Length header", String.valueOf(styleCss.getBinary().getSize()), headers.get("Content-Length").get(0));
