@@ -15,34 +15,51 @@
  */
 package org.hippoecm.hst.core.webfiles;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.io.StreamTokenizer;
+import java.io.UnsupportedEncodingException;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import static org.apache.commons.io.IOUtils.readLines;
 
 public class WhitelistingReader {
 
     private static final Logger log = LoggerFactory.getLogger(WhitelistingReader.class);
-    private static final String EOF = "eof";
 
     private final Set<String> whitelist = new HashSet<>();
 
     public WhitelistingReader(final InputStream is) {
         try {
-            final Lexer lexer = new Lexer(is);
-            String nextToken = lexer.getNextToken();
-            while (!EOF.equals(nextToken)) {
-                whitelist.add(nextToken);
-                nextToken = lexer.getNextToken();
+            final List<String> list = readLines(is, "UTF-8");
+            for (String line : list) {
+                if (StringUtils.isBlank(line)) {
+                    continue;
+                }
+                final int hashIndex = line.indexOf('#');
+                if (hashIndex == 0) {
+                    // comment
+                    continue;
+                } else if (hashIndex > 0) {
+                    final String beforeComment = line.substring(0, hashIndex);
+                    if (StringUtils.isBlank(beforeComment)) {
+                        continue;
+                    }
+                    whitelist.add(beforeComment);
+                } else {
+                    whitelist.add(line);
+                }
             }
+        } catch (UnsupportedEncodingException e) {
+            log.error("Could not read InputStream due to wrong encoding. Return empty whitelist", e);
+        } catch (IOException e) {
+            log.error("Error during reading InputStream. Return empty whitelist", e);
         } finally {
             IOUtils.closeQuietly(is);
         }
@@ -52,48 +69,5 @@ public class WhitelistingReader {
         return whitelist;
     }
 
-    private class Lexer {
-
-        private final StreamTokenizer st;
-
-        private Lexer(final InputStream is) {
-            this(new BufferedReader(new InputStreamReader(is)));
-        }
-
-        private Lexer(final Reader reader) {
-            st = new StreamTokenizer(reader);
-            st.eolIsSignificant(false);
-            st.lowerCaseMode(false);
-            st.slashSlashComments(true);
-            st.slashStarComments(true);
-            st.commentChar('#');
-            st.commentChar('*');
-            st.ordinaryChar('/');
-            st.wordChars(' ', ' ');
-            st.wordChars('a', 'z');
-            st.wordChars('A', 'Z');
-            st.wordChars('_', '_');
-            st.wordChars('/', '/');
-        }
-
-        private String getNextToken() {
-            try {
-                int tokenType = st.nextToken();
-                if (tokenType == StreamTokenizer.TT_EOF) {
-                    return EOF;
-                } else if (tokenType == StreamTokenizer.TT_WORD) {
-                    return st.sval;
-                } else if (tokenType == StreamTokenizer.TT_NUMBER) {
-                    return String.valueOf(st.nval);
-                } else {
-                    return new String(new char[]{(char)tokenType});
-                }
-            } catch (IOException e) {
-                log.warn("IOException while attempting to read input stream. ", e);
-                return null;
-            }
-        }
-
-    }
 
 }
