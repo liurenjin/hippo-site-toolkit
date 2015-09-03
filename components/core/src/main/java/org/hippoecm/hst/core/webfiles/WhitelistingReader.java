@@ -33,12 +33,7 @@ public class WhitelistingReader {
     private static final Logger log = LoggerFactory.getLogger(WhitelistingReader.class);
     private static final String EOF = "eof";
 
-    public static final WhitelistingReader emptyWhitelistingReader = new WhitelistingReader();
     private final Set<String> whitelist = new HashSet<>();
-
-
-    private WhitelistingReader() {
-    }
 
     public WhitelistingReader(final InputStream is) {
         try {

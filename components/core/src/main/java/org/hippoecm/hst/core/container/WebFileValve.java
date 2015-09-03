@@ -43,8 +43,6 @@ import org.onehippo.cms7.services.webfiles.WebFilesService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static org.hippoecm.hst.core.webfiles.WhitelistingReader.emptyWhitelistingReader;
-
 public class WebFileValve extends AbstractBaseOrderableValve {
 
     private static final Logger log = LoggerFactory.getLogger(WebFileValve.class);
@@ -98,14 +96,18 @@ public class WebFileValve extends AbstractBaseOrderableValve {
             throw new WebFileException("Cannot serve web file for empty relative content path.");
         }
 
-        final Set<String> whitelist = getWhitelistingReader(requestContext).getWhitelist();
-
         boolean isWhitelisted = false;
-        for (String whitelisted : whitelist) {
-            if (relativeContentPath.startsWith(whitelisted) || relativeContentPath.equals(whitelisted)) {
-                isWhitelisted = true;
-                break;
+        try {
+            final Set<String> whitelist = getWhitelistingReader(requestContext).getWhitelist();
+            for (String whitelisted : whitelist) {
+                if (relativeContentPath.startsWith(whitelisted) || relativeContentPath.equals(whitelisted)) {
+                    isWhitelisted = true;
+                    break;
+                }
             }
+        } catch (WebFileNotFoundException e) {
+            // will be changed to false for the 3.0.2
+            isWhitelisted = true;
         }
 
         if (!isWhitelisted) {
@@ -149,11 +151,12 @@ public class WebFileValve extends AbstractBaseOrderableValve {
             final CacheElement whiteListingReaderElement = webFileCache.createElement(cacheKey, whiteListingReader);
             webFileCache.put(whiteListingReaderElement);
             return whiteListingReader;
-        } catch (WebFileNotFoundException e) {
-            log.info("No '{}' configured in web files for '{}'. No web files will be public.", WHITE_LISTING_CONTENT_PATH, bundleName);
-            clearBlockingLock(cacheKey);
-            return emptyWhitelistingReader;
         } catch (Exception e) {
+            if (e instanceof WebFileNotFoundException) {
+                log.info("No '{}' configured in web files for '{}'. All web files will be whitelisted. In the next PATCH version " +
+                                "(HST 3.0.2) all web files will be blacklisted if there is no '{}' configured in web files.",
+                        WHITE_LISTING_CONTENT_PATH, bundleName, WHITE_LISTING_CONTENT_PATH);
+            }
             clearBlockingLock(cacheKey);
             throw e;
         }
