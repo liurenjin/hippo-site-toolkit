@@ -27,8 +27,6 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static org.apache.commons.io.IOUtils.readLines;
-
 public class WhitelistingReader {
 
     private static final Logger log = LoggerFactory.getLogger(WhitelistingReader.class);
@@ -37,7 +35,7 @@ public class WhitelistingReader {
 
     public WhitelistingReader(final InputStream is) {
         try {
-            final List<String> list = readLines(is, "UTF-8");
+            final List<String> list = IOUtils.readLines(is, "UTF-8");
             for (String line : list) {
                 if (StringUtils.isBlank(line)) {
                     continue;
