@@ -46,6 +46,8 @@ import org.hippoecm.hst.util.HstSiteMapUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static org.hippoecm.hst.util.PathUtils.FULLY_QUALIFIED_URL_PREFIXES;
+
 /**
  * Abstract supporting class for Hst Link tags
  */
@@ -248,7 +250,18 @@ public class HstLinkTag extends ParamContainerTag {
             if(this.link == null && this.path != null) {
                 VirtualHost virtualHost = reqContext.getVirtualHost();
                 boolean containerResource = (virtualHost != null && virtualHost.getVirtualHosts().isExcluded(this.path));
-                this.link = reqContext.getHstLinkCreator().create(this.path, mount, containerResource);
+
+                String before = path;
+                String result = stripForbiddenPrefixes(path);
+                while (!result.equals(before)) {
+                    // keep stripping
+                    log.debug("Stripping illegal prefixes from '{}'", path);
+                    before = result;
+                    result = stripForbiddenPrefixes(result);
+            }
+
+                link = reqContext.getHstLinkCreator().create(result, mount, containerResource);
+
             }
 
             if(this.link == null && this.siteMapItemRefId != null) {
@@ -358,6 +371,15 @@ public class HstLinkTag extends ParamContainerTag {
                }
                pageContext.setAttribute(var, url, varScope);
            }
+    }
+
+    private String stripForbiddenPrefixes(String pathInfo) {
+        for (String fullyQualifiedUrlPrefix : FULLY_QUALIFIED_URL_PREFIXES) {
+            if (pathInfo.startsWith(fullyQualifiedUrlPrefix)) {
+                return pathInfo.substring(fullyQualifiedUrlPrefix.length());
+            }
+        }
+        return pathInfo;
     }
 
     @Override

@@ -657,6 +657,7 @@ components/core/src/main/java/org/hippoecm/hst/core/sitemenu/HstSiteMenuUtils.ja
 components/core/src/main/java/org/hippoecm/hst/core/sitemenu/HstSiteMenusImpl.java svneol=native#text/plain
 components/core/src/main/java/org/hippoecm/hst/core/sitemenu/HstSiteMenusManagerImpl.java svneol=native#text/plain
 components/core/src/main/java/org/hippoecm/hst/core/util/DOMUtils.java svneol=native#text/plain
+components/core/src/main/java/org/hippoecm/hst/core/util/PathEncoder.java -text
 components/core/src/main/java/org/hippoecm/hst/core/util/PropertyParser.java svneol=native#text/plain
 components/core/src/main/java/org/hippoecm/hst/proxy/DynaBeanMethodInvoker.java svneol=native#text/plain
 components/core/src/main/java/org/hippoecm/hst/proxy/DynaBeanProxyUtils.java svneol=native#text/plain
@@ -773,10 +774,12 @@ components/core/src/test/java/org/hippoecm/hst/core/container/session/TestHttpSe
 components/core/src/test/java/org/hippoecm/hst/core/hosting/TestCustomMountAndVirtualCmsHostAugmenter.java -text
 components/core/src/test/java/org/hippoecm/hst/core/jcr/TestLazySessionDelegatingRepository.java -text
 components/core/src/test/java/org/hippoecm/hst/core/jcr/TestSessionSecurityDelegation.java -text
+components/core/src/test/java/org/hippoecm/hst/core/linking/HstLinkImplTest.java -text
 components/core/src/test/java/org/hippoecm/hst/core/linking/TestHstLinkForCmsRequest.java -text
 components/core/src/test/java/org/hippoecm/hst/core/linking/TestHstLinkRewriting.java -text svneol=unset#text/plain
 components/core/src/test/java/org/hippoecm/hst/core/linking/TestHstLinkRewritingCrossScheme.java -text
 components/core/src/test/java/org/hippoecm/hst/core/order/TestObjectOrderer.java -text
+components/core/src/test/java/org/hippoecm/hst/core/util/PathEncoderTest.java -text
 components/core/src/test/java/org/hippoecm/hst/proxy/IPersonInfo.java svneol=native#text/plain
 components/core/src/test/java/org/hippoecm/hst/proxy/TestDynaBeanProxyUtils.java svneol=native#text/plain
 components/core/src/test/java/org/hippoecm/hst/site/container/AlwaysFailingOnStartBean.java -text
