@@ -1,5 +1,5 @@
 /*
- *  Copyright 2008-2013 Hippo B.V. (http://www.onehippo.com)
+ *  Copyright 2008-2015 Hippo B.V. (http://www.onehippo.com)
  * 
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -15,14 +15,14 @@
  */
 package org.hippoecm.hst.core.linking;
 
-import javax.jcr.PathNotFoundException;
+import java.io.UnsupportedEncodingException;
 
 import org.apache.commons.lang.StringUtils;
 import org.hippoecm.hst.configuration.hosting.MatchException;
 import org.hippoecm.hst.configuration.hosting.Mount;
-import org.hippoecm.hst.configuration.hosting.NotFoundException;
 import org.hippoecm.hst.configuration.hosting.VirtualHost;
 import org.hippoecm.hst.configuration.sitemap.HstSiteMapItem;
+import org.hippoecm.hst.core.component.HstComponentException;
 import org.hippoecm.hst.core.component.HstURL;
 import org.hippoecm.hst.core.container.ContainerConstants;
 import org.hippoecm.hst.core.container.HstContainerURL;
@@ -30,6 +30,7 @@ import org.hippoecm.hst.core.request.HstRequestContext;
 import org.hippoecm.hst.core.request.ResolvedMount;
 import org.hippoecm.hst.core.request.ResolvedSiteMapItem;
 import org.hippoecm.hst.core.request.ResolvedVirtualHost;
+import org.hippoecm.hst.core.util.PathEncoder;
 import org.hippoecm.hst.site.request.ResolvedMountImpl;
 import org.hippoecm.hst.util.HstRequestUtils;
 import org.hippoecm.hst.util.HstSiteMapUtils;
@@ -47,7 +48,7 @@ public class HstLinkImpl implements HstLink {
     private HstSiteMapItem siteMapItem;
     private boolean containerResource;
     private boolean notFound = false;
-    private final static String[] FULLY_QUALIFIED_URL_PREFIXES = {"//", "http:", "https:"};
+    final static String[] FULLY_QUALIFIED_URL_PREFIXES = {"//", "http:", "https:"};
     
     public HstLinkImpl(String path, Mount mount) {
         this(path, mount,false);
@@ -137,7 +138,16 @@ public class HstLinkImpl implements HstLink {
 
         for (String s : FULLY_QUALIFIED_URL_PREFIXES) {
             if (path.startsWith(s)) {
-                return path;
+                try {
+                    final String encoded = PathEncoder.encode(path,
+                            requestContext.getBaseURL().getCharacterEncoding(),
+                            FULLY_QUALIFIED_URL_PREFIXES);
+                    return encoded;
+                } catch (UnsupportedEncodingException e) {
+                    // same exception as used by org.hippoecm.hst.core.component.HstURLImpl.toString() although
+                    // not perse from a HstComponent invocation, but this is not the case for HstURLImpl either.
+                    throw new HstComponentException(e);
+                }
             }
         }
 
