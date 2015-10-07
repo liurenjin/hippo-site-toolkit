@@ -1,5 +1,5 @@
 /*
- *  Copyright 2010-2013 Hippo B.V. (http://www.onehippo.com)
+ *  Copyright 2010-2015 Hippo B.V. (http://www.onehippo.com)
  * 
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -46,6 +46,8 @@ import org.hippoecm.hst.util.HstSiteMapUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.helpers.MessageFormatter;
+
+import static org.hippoecm.hst.core.linking.HstLink.FULLY_QUALIFIED_URL_PREFIXES;
 
 /**
  * Abstract supporting class for Hst Link tags
@@ -252,7 +254,18 @@ public class HstLinkTag extends ParamContainerTag {
             if(this.link == null && this.path != null) {
                 VirtualHost virtualHost = reqContext.getVirtualHost();
                 boolean containerResource = (virtualHost != null && virtualHost.getVirtualHosts().isExcluded(this.path));
-                this.link = reqContext.getHstLinkCreator().create(this.path, mount, containerResource);
+
+                String before = path;
+                String result = stripForbiddenPrefixes(path);
+                while (!result.equals(before)) {
+                    // keep stripping
+                    log.debug("Stripping illegal prefixes from '{}'", path);
+                    before = result;
+                    result = stripForbiddenPrefixes(result);
+                }
+
+                link = reqContext.getHstLinkCreator().create(result, mount, containerResource);
+
             }
 
             if(this.link == null && this.siteMapItemRefId != null) {
@@ -362,6 +375,15 @@ public class HstLinkTag extends ParamContainerTag {
                }
                pageContext.setAttribute(var, url, varScope);
            }
+    }
+
+    private String stripForbiddenPrefixes(String pathInfo) {
+        for (String fullyQualifiedUrlPrefix : FULLY_QUALIFIED_URL_PREFIXES) {
+            if (pathInfo.startsWith(fullyQualifiedUrlPrefix)) {
+                return pathInfo.substring(fullyQualifiedUrlPrefix.length());
+            }
+        }
+        return pathInfo;
     }
 
     @Override
