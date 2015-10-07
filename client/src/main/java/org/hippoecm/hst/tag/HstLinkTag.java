@@ -47,7 +47,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.helpers.MessageFormatter;
 
-import static org.hippoecm.hst.core.linking.HstLink.FULLY_QUALIFIED_URL_PREFIXES;
+import static org.hippoecm.hst.util.PathUtils.FULLY_QUALIFIED_URL_PREFIXES;
 
 /**
  * Abstract supporting class for Hst Link tags

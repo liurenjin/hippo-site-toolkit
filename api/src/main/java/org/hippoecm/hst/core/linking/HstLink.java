@@ -16,7 +16,6 @@
 package org.hippoecm.hst.core.linking;
 
 import org.hippoecm.hst.configuration.hosting.Mount;
-import org.hippoecm.hst.configuration.model.HstManager;
 import org.hippoecm.hst.configuration.site.HstSite;
 import org.hippoecm.hst.core.request.HstRequestContext;
 
@@ -38,8 +37,6 @@ import org.hippoecm.hst.core.request.HstRequestContext;
  * </p>
  */
 public interface HstLink {
-
-    final static String[] FULLY_QUALIFIED_URL_PREFIXES = {"//", "http:", "https:"};
 
     /**
      * Note: This is *not* a url!

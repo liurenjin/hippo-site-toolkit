@@ -29,10 +29,12 @@ import org.hippoecm.repository.api.NodeNameCodec;
  */
 public class PathUtils {
 
+    public static String[] FULLY_QUALIFIED_URL_PREFIXES = {"//", "http:", "https:"};
+
     private static final String LOGGER_CATEGORY_NAME = PathUtils.class.getName();
     private static final String HTML_SUFFIX = ".html";
     private static final String SLASH_ENCODED = "__slash__";
-    
+
     private PathUtils() {
         
     }
