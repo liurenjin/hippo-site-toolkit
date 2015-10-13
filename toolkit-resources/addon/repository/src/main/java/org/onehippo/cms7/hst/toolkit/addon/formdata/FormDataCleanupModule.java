@@ -16,6 +16,8 @@
 package org.onehippo.cms7.hst.toolkit.addon.formdata;
 
 import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Properties;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -72,7 +74,7 @@ public class FormDataCleanupModule implements ConfigurableDaemonModule {
         SCHEDULER_FACTORY_PROPERTIES.put(StdSchedulerFactory.PROP_JOB_STORE_CLASS, RAMJobStore.class);
     }
 
-    private static String FORMDATA_QUERY = "SELECT * FROM hst:formdata ORDER BY hst:creationtime ASC";
+    private static final String FORMDATA_QUERY = "SELECT * FROM hst:formdata ORDER BY hst:creationtime ASC";
 
     private static final AtomicBoolean busy = new AtomicBoolean(false);
 
@@ -233,12 +235,13 @@ public class FormDataCleanupModule implements ConfigurableDaemonModule {
             final NodeIterator nodes = query.execute().getNodes();
             final long tooOldTimeStamp = System.currentTimeMillis() - minutesToLive * 60 * 1000L;
             int count = 0;
+            final Collection<Node> remove = new ArrayList<Node>();
             outer:
             while (nodes.hasNext()) {
                 try {
                     final Node node = nodes.nextNode();
                     if (node.getProperty("hst:creationtime").getDate().getTimeInMillis() > tooOldTimeStamp) {
-                        break outer;
+                        break;
                     }
                     for (String path : excludePaths) {
                         if (!"".equals(path) && node.getPath().startsWith(path)) {
@@ -248,19 +251,18 @@ public class FormDataCleanupModule implements ConfigurableDaemonModule {
                     if (log.isDebugEnabled()) {
                         log.debug("Removing form data item at " + node.getPath());
                     }
-                    remove(node, 2);
-                    if (count++ % 10 == 0) {
-                        session.save();
-                        try { Thread.sleep(100); } catch (InterruptedException ignored) {}
-                    }
+                    remove.add(node);
                 } catch (RepositoryException e) {
                     log.error("Error while cleaning up form data", e);
                 }
             }
+            for (Node node : remove) {
+                remove(node, 2);
+            }
             if (session.hasPendingChanges()) {
                 session.save();
             }
-            if (count > 0) {
+            if (remove.size() > 0) {
                 log.info("Done cleaning " + count + " items");
             } else {
                 log.info("No timed out items");
