@@ -21,6 +21,7 @@ import java.util.Collection;
 import java.util.Properties;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import javax.jcr.ItemNotFoundException;
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
 import javax.jcr.RepositoryException;
@@ -235,7 +236,7 @@ public class FormDataCleanupModule implements ConfigurableDaemonModule {
             final NodeIterator nodes = query.execute().getNodes();
             final long tooOldTimeStamp = System.currentTimeMillis() - minutesToLive * 60 * 1000L;
             int count = 0;
-            final Collection<Node> remove = new ArrayList<Node>();
+            final Collection<String> remove = new ArrayList<String>();
             outer:
             while (nodes.hasNext()) {
                 try {
@@ -251,13 +252,13 @@ public class FormDataCleanupModule implements ConfigurableDaemonModule {
                     if (log.isDebugEnabled()) {
                         log.debug("Removing form data item at " + node.getPath());
                     }
-                    remove.add(node);
+                    remove.add(node.getIdentifier());
                 } catch (RepositoryException e) {
                     log.error("Error while cleaning up form data", e);
                 }
             }
-            for (Node node : remove) {
-                remove(node, 2);
+            for (String id : remove) {
+                remove(id, 2, session);
             }
             if (session.hasPendingChanges()) {
                 session.save();
@@ -269,11 +270,16 @@ public class FormDataCleanupModule implements ConfigurableDaemonModule {
             }
         }
 
-        private void remove(final Node node, int ancestorsToRemove) throws RepositoryException {
-            final Node parent = node.getParent();
-            node.remove();
-            if (ancestorsToRemove > 0 && parent != null && parent.getName().length() == 1 && parent.isNodeType("hst:formdatacontainer") && parent.getNodes().getSize() == 0) {
-                remove(parent, ancestorsToRemove - 1);
+        private void remove(final String identifier, int ancestorsToRemove, final Session session) throws RepositoryException {
+            try {
+                final Node node = session.getNodeByIdentifier(identifier);
+                final Node parent = node.getParent();
+                node.remove();
+                if (ancestorsToRemove > 0 && parent != null && parent.getName().length() == 1 && parent.isNodeType("hst:formdatacontainer") && parent.getNodes().getSize() == 0) {
+                    remove(parent.getIdentifier(), ancestorsToRemove - 1, session);
+                }
+            } catch (ItemNotFoundException e) {
+                log.info("Node no longer exists: '{}'", identifier);
             }
         }
 
