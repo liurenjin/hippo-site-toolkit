@@ -1,5 +1,5 @@
 /*
- *  Copyright 2008-2013 Hippo B.V. (http://www.onehippo.com)
+ *  Copyright 2008-2015 Hippo B.V. (http://www.onehippo.com)
  * 
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -368,10 +368,10 @@ public class SimpleContentRewriter extends AbstractContentRewriter<String> {
                             log.info("Unable to rewrite path '{}' for node '{}' to proper binary url for imageVariant '{}'.", new String[]{relPath, nodePath, imageVariant.getName()});
                             return null;
                         }
-                        return createLink(binary, reqContext, targetMount);
+                        return createInternalLink(binary, reqContext, targetMount);
                     } else {
                         Node binary = binaryDocument.getNode(binaryPathSegments[2]);
-                        return createLink(binary, reqContext, targetMount);
+                        return createInternalLink(binary, reqContext, targetMount);
                     }
 
                 } else {
@@ -387,7 +387,7 @@ public class SimpleContentRewriter extends AbstractContentRewriter<String> {
                             }
                             referencedNode = referencedNode.getNode(referencedNode.getName());
                         }
-                        return createLink(referencedNode, reqContext, targetMount);
+                        return createInternalLink(referencedNode, reqContext, targetMount);
                     } else {
                         log.info("For '{}' a node of type hippo:mirror of hippo:facetselect is expected but was of type '{}'. Cannot " +
                                 "create a link for that node type.", mirrorNode.getPath(), mirrorNode.getPrimaryNodeType().getName());
@@ -404,7 +404,7 @@ public class SimpleContentRewriter extends AbstractContentRewriter<String> {
         return null;
     }
 
-    private HstLink createLink(final Node node, final HstRequestContext reqContext, final Mount targetMount) throws RepositoryException {
+    protected HstLink createInternalLink(final Node node, final HstRequestContext reqContext, final Mount targetMount) throws RepositoryException {
         if (isCanonicalLinks()) {
             if (targetMount != null) {
                 log.info("TargetMount is defined to create a link for, but target mount is ignored in case a canonical link is " +
