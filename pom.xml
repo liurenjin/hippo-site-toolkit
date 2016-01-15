@@ -111,9 +111,9 @@
      This is used by normal plugins, but also to autogenerate documentation in .../target/site/source-repository.html
   -->
   <scm>
-    <connection>scm:svn:http://svn.onehippo.org/repos/hippo/hippo-cms7/site-toolkit/tags/hst-2.28.14</connection>
-    <developerConnection>scm:svn:https://svn.onehippo.org/repos/hippo/hippo-cms7/site-toolkit/tags/hst-2.28.14</developerConnection>
-    <url>http://svn.onehippo.org/repos/hippo/hippo-cms7/site-toolkit/tags/hst-2.28.14</url>
+    <connection>scm:svn:http://svn.onehippo.org/repos/hippo/hippo-cms7/site-toolkit/branches/hst-2.28.xx-hdc-logging</connection>
+    <developerConnection>scm:svn:https://svn.onehippo.org/repos/hippo/hippo-cms7/site-toolkit/branches/hst-2.28.xx-hdc-logging</developerConnection>
+    <url>http://svn.onehippo.org/repos/hippo/hippo-cms7/site-toolkit/branches/hst-2.28.xx-hdc-logging</url>
   </scm>
 
   <mailingLists>
