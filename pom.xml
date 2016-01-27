@@ -85,7 +85,7 @@
 
     <jackrabbit-ocm.version>1.5.3</jackrabbit-ocm.version>
 
-    <hippo.commons.version>1.04.02-hdc-logging-SNAPSHOT</hippo.commons.version>
+    <hippo.commons.version>1.04.02-hdc-logging</hippo.commons.version>
     <hippo.repository.version>2.26.03</hippo.repository.version>
     <hippo.utilities.version>1.03.00</hippo.utilities.version>
     <hippo.services.version>1.04.00</hippo.services.version>
