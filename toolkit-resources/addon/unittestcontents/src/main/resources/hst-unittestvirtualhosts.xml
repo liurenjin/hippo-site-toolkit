@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-    Copyright 2008-2014 Hippo B.V. (http://www.onehippo.com)
+    Copyright 2008-2016 Hippo B.V. (http://www.onehippo.com)
     
     Licensed under the Apache License, Version 2.0 (the  "License");
     you may not use this file except in compliance with the License.
@@ -57,6 +57,23 @@
         <sv:property sv:name="hst:alias" sv:type="String">
           <sv:value>root</sv:value>
         </sv:property>
+        <sv:node sv:name="api">
+          <sv:property sv:name="jcr:primaryType" sv:type="Name">
+            <sv:value>hst:mount</sv:value>
+          </sv:property>
+          <sv:property sv:name="hst:alias" sv:type="String">
+            <sv:value>api</sv:value>
+          </sv:property>
+          <sv:property sv:name="hst:ismapped" sv:type="Boolean">
+            <sv:value>false</sv:value>
+          </sv:property>
+          <sv:property sv:name="hst:namedpipeline" sv:type="String">
+            <sv:value>JaxrsPipeline</sv:value>
+          </sv:property>
+          <sv:property sv:name="hst:types" sv:type="String" sv:multiple="true">
+            <sv:value>rest</sv:value>
+          </sv:property>
+        </sv:node>
         <sv:node sv:name="intranet">
           <sv:property sv:name="jcr:primaryType" sv:type="Name">
             <sv:value>hst:mount</sv:value>
