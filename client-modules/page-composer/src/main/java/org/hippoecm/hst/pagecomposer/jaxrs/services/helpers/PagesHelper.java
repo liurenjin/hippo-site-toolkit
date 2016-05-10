@@ -34,6 +34,7 @@ import org.slf4j.LoggerFactory;
 import static org.hippoecm.hst.configuration.HstNodeTypes.GENERAL_PROPERTY_LOCKED_BY;
 import static org.hippoecm.hst.configuration.HstNodeTypes.NODENAME_HST_PAGES;
 import static org.hippoecm.hst.configuration.HstNodeTypes.NODETYPE_HST_ABSTRACT_COMPONENT;
+import static org.hippoecm.hst.configuration.HstNodeTypes.NODETYPE_HST_CONTAINERCOMPONENT;
 import static org.hippoecm.hst.configuration.HstNodeTypes.PROTOTYPE_META_PROPERTY_PRIMARY_CONTAINER;
 import static org.hippoecm.hst.configuration.HstNodeTypes.SITEMAPITEM_PROPERTY_COMPONENTCONFIGURATIONID;
 import static org.hippoecm.repository.util.JcrUtils.getStringProperty;
@@ -117,11 +118,13 @@ public class PagesHelper extends AbstractHelper {
         for (Node existingContainer : existingContainers) {
             String targetContainerPath = existingContainer.getPath().replace(oldPagePathPrefix, newPagePathPrefix);
             if (session.nodeExists(targetContainerPath)) {
-                Node targetContainer = session.getNode(targetContainerPath);
-                moveContainerItems(existingContainer, targetContainer);
-            } else {
-                nonRelocatedContainers.add(existingContainer);
+                Node targetNode = session.getNode(targetContainerPath);
+                if (targetNode.isNodeType(NODETYPE_HST_CONTAINERCOMPONENT)) {
+                    moveContainerItems(existingContainer, targetNode);
+                    continue;
+                }
             }
+            nonRelocatedContainers.add(existingContainer);
         }
 
         if (!nonRelocatedContainers.isEmpty()) {
@@ -195,7 +198,7 @@ public class PagesHelper extends AbstractHelper {
     }
 
     private void findContainers(final Node node, List<Node> containers) throws RepositoryException {
-        if (node.isNodeType(HstNodeTypes.NODETYPE_HST_CONTAINERCOMPONENT)) {
+        if (node.isNodeType(NODETYPE_HST_CONTAINERCOMPONENT)) {
             containers.add(node);
             // container component nodes never have container component children
             return;
@@ -248,7 +251,7 @@ public class PagesHelper extends AbstractHelper {
                 if (current == null) {
                     log.warn("Could not find hst component configuration for component reference node '{}', hence we " +
                             "cannot denormalize the reference. Instead, replace the reference with a empty container node.", absPath);
-                    Node container = newPage.addNode(relPath, HstNodeTypes.NODETYPE_HST_CONTAINERCOMPONENT);
+                    Node container = newPage.addNode(relPath, NODETYPE_HST_CONTAINERCOMPONENT);
                     container.setProperty(HstNodeTypes.COMPONENT_PROPERTY_XTYPE, "HST.vBox");
                 } else {
                     // current now contains the component that we need to denormalize
