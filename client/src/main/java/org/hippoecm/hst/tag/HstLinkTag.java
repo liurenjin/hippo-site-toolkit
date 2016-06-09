@@ -53,7 +53,7 @@ import static org.hippoecm.hst.util.PathUtils.FULLY_QUALIFIED_URL_PREFIXES;
  */
 
 public class HstLinkTag extends ParamContainerTag {
-    
+
 
     private final static Logger log = LoggerFactory.getLogger(HstLinkTag.class);
     
@@ -116,7 +116,7 @@ public class HstLinkTag extends ParamContainerTag {
      * URL
      */
     protected boolean linkForAttributeSet = false;
-    
+
     /* (non-Javadoc)
      * @see javax.servlet.jsp.tagext.TagSupport#doStartTag()
      */
@@ -251,17 +251,7 @@ public class HstLinkTag extends ParamContainerTag {
                 VirtualHost virtualHost = reqContext.getVirtualHost();
                 boolean containerResource = (virtualHost != null && virtualHost.getVirtualHosts().isExcluded(this.path));
 
-                String before = path;
-                String result = stripForbiddenPrefixes(path);
-                while (!result.equals(before)) {
-                    // keep stripping
-                    log.debug("Stripping illegal prefixes from '{}'", path);
-                    before = result;
-                    result = stripForbiddenPrefixes(result);
-            }
-
-                link = reqContext.getHstLinkCreator().create(result, mount, containerResource);
-
+                link = reqContext.getHstLinkCreator().create(path, mount);
             }
 
             if(this.link == null && this.siteMapItemRefId != null) {
@@ -322,7 +312,7 @@ public class HstLinkTag extends ParamContainerTag {
         }
     }
 
-   
+
 
     private String getQueryString(String characterEncoding) throws UnsupportedEncodingException {
         boolean firstParamDone = false;
@@ -347,17 +337,17 @@ public class HstLinkTag extends ParamContainerTag {
         return queryString.toString();
     }
 
-    
+
     private void writeOrSetVar(String url) throws JspException {
         if (var == null) {
-               try {               
+               try {
                    JspWriter writer = pageContext.getOut();
                    writer.print(url);
                } catch (IOException ioe) {
                    throw new JspException(
                        "ResourceURL-Tag Exception: cannot write to the output writer.");
                }
-           } 
+           }
            else {
                int varScope = PageContext.PAGE_SCOPE;
                if (this.scope != null) {
@@ -431,7 +421,7 @@ public class HstLinkTag extends ParamContainerTag {
     public IdentifiableContentBean getHippobean(){
         return this.identifiableContentBean;
     }
-    
+
     public String getPath(){
         return this.path;
     }
@@ -495,7 +485,7 @@ public class HstLinkTag extends ParamContainerTag {
          linkForAttributeSet = true;
         this.identifiableContentBean = identifiableContentBean;
     }
-    
+
     public void setMount(String mount) {
         this.mountAlias = mount;
     }
@@ -524,8 +514,8 @@ public class HstLinkTag extends ParamContainerTag {
     public void setScope(String scope) {
         this.scope = scope;
     }
-    
-    
+
+
     /* -------------------------------------------------------------------*/
         
     /**
