@@ -255,17 +255,7 @@ public class HstLinkTag extends ParamContainerTag {
                 VirtualHost virtualHost = reqContext.getVirtualHost();
                 boolean containerResource = (virtualHost != null && virtualHost.getVirtualHosts().isExcluded(this.path));
 
-                String before = path;
-                String result = stripForbiddenPrefixes(path);
-                while (!result.equals(before)) {
-                    // keep stripping
-                    log.debug("Stripping illegal prefixes from '{}'", path);
-                    before = result;
-                    result = stripForbiddenPrefixes(result);
-                }
-
-                link = reqContext.getHstLinkCreator().create(result, mount, containerResource);
-
+                link = reqContext.getHstLinkCreator().create(path, mount);
             }
 
             if(this.link == null && this.siteMapItemRefId != null) {
