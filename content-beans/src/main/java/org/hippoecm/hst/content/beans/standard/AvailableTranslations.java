@@ -104,7 +104,7 @@ public class AvailableTranslations<K extends HippoBean> implements HippoAvailabl
         translations = new LinkedHashMap<String,K>();
         if (!node.hasProperty(HippoTranslationNodeType.ID)) {
             log.debug("No translations for '{}' since property '{}' not available", node.getPath(), HippoTranslationNodeType.ID);
-            translations = Collections.EMPTY_MAP;
+            translations = Collections.emptyMap();
             return;
         }
         String id = node.getProperty(HippoTranslationNodeType.ID).getString();
