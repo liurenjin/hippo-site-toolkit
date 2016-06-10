@@ -1,5 +1,5 @@
 /*
- *  Copyright 2012-2013 Hippo B.V. (http://www.onehippo.com)
+ *  Copyright 2012-2016 Hippo B.V. (http://www.onehippo.com)
  * 
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 package org.hippoecm.hst.content.beans.standard;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -103,6 +104,7 @@ public class AvailableTranslations<K extends HippoBean> implements HippoAvailabl
         translations = new LinkedHashMap<String,K>();
         if (!node.hasProperty(HippoTranslationNodeType.ID)) {
             log.debug("No translations for '{}' since property '{}' not available", node.getPath(), HippoTranslationNodeType.ID);
+            translations = Collections.EMPTY_MAP;
             return;
         }
         String id = node.getProperty(HippoTranslationNodeType.ID).getString();
