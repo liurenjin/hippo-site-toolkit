@@ -24,6 +24,8 @@ import org.hippoecm.hst.cache.HstCacheException;
 import org.hippoecm.hst.cache.HstPageInfo;
 import org.hippoecm.hst.cache.UncacheableHstPageInfo;
 import org.hippoecm.hst.core.request.HstRequestContext;
+import org.hippoecm.hst.diagnosis.HDC;
+import org.hippoecm.hst.diagnosis.Task;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
