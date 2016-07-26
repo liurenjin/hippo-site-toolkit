@@ -1,5 +1,5 @@
 /*
- *  Copyright 2008-2013 Hippo B.V. (http://www.onehippo.com)
+ *  Copyright 2008-2016 Hippo B.V. (http://www.onehippo.com)
  * 
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -25,12 +25,10 @@ import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.TagSupport;
 
 import org.apache.commons.lang.StringUtils;
-import org.hippoecm.hst.container.RequestContextProvider;
 import org.hippoecm.hst.core.component.HeadElement;
 import org.hippoecm.hst.core.component.HeadElementImpl;
 import org.hippoecm.hst.core.component.HstResponse;
 import org.hippoecm.hst.core.container.ContainerConstants;
-import org.hippoecm.hst.core.request.ResolvedSiteMapItem;
 import org.hippoecm.hst.util.HeadElementUtils;
 import org.w3c.dom.Element;
 
@@ -96,6 +94,7 @@ public class HeadContributionsTag extends TagSupport {
             for (Element headElement : headElements) {
                 if (shouldBeIncludedInOutput(headElement)) {
                     outputHeadElement(headElement);
+                    hstResponse.addProcessedHeadElement(headElement);
                 }
             }
 
@@ -132,8 +131,9 @@ public class HeadContributionsTag extends TagSupport {
         return shouldInclude && !shouldExclude;
     }
 
-    private void outputHeadElement(Element headElement) throws JspException {
-        HeadElement outHeadElement = new HeadElementImpl(headElement);
+    private void outputHeadElement(final Element headElement) throws JspException {
+        final Element clone = (Element)headElement.cloneNode(true);
+        HeadElement outHeadElement = new HeadElementImpl(clone);
         if (outHeadElement.hasAttribute(ContainerConstants.HEAD_ELEMENT_CONTRIBUTION_CATEGORY_HINT_ATTRIBUTE)) {
             outHeadElement.removeAttribute(ContainerConstants.HEAD_ELEMENT_CONTRIBUTION_CATEGORY_HINT_ATTRIBUTE);
         }
