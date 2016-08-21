@@ -34,7 +34,7 @@
 
   <groupId>org.onehippo.cms7.hst</groupId>
   <artifactId>hst</artifactId>
-  <version>4.0.2-SNAPSHOT</version>
+  <version>4.0.2-rc-1</version>
   <packaging>pom</packaging>
   <inceptionYear>2008</inceptionYear>
   <issueManagement>
@@ -81,7 +81,7 @@
     <jackrabbit-ocm.version>1.5.3</jackrabbit-ocm.version>
 
     <hippo.commons.version>3.0.0</hippo.commons.version>
-    <hippo.repository.version>4.0.2-SNAPSHOT</hippo.repository.version>
+    <hippo.repository.version>4.0.2-rc-1</hippo.repository.version>
     <hippo.cms.version>4.0.1</hippo.cms.version>
     <hippo.utilities.version>3.0.0</hippo.utilities.version>
     <hippo.services.version>3.0.0</hippo.services.version>
