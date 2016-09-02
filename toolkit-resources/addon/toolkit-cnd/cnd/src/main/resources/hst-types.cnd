@@ -463,3 +463,6 @@
 [hst:formdatacontainer] 
 + * (hst:formdatacontainer)
 + * (hst:formdata)
+
+[hst:formdatapayload] mixin
+- hst:payload (string)
