@@ -1,5 +1,5 @@
 /*
- *  Copyright 2008-2014 Hippo B.V. (http://www.onehippo.com)
+ *  Copyright 2008-2016 Hippo B.V. (http://www.onehippo.com)
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -66,6 +66,7 @@ import org.hippoecm.hst.site.HstServices;
 import org.hippoecm.hst.util.GenericHttpServletRequestWrapper;
 import org.hippoecm.hst.util.HstRequestUtils;
 import org.hippoecm.hst.util.ServletConfigUtils;
+import org.onehippo.cms7.services.cmscontext.CmsSessionContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -386,7 +387,7 @@ public class HstFilter implements Filter {
                     if (renderingHost != null) {
                         requestContext.setRenderHost(renderingHost);
                         HttpSession session = containerRequest.getSession(false);
-                        if (requestComesFromCms(vHosts, resolvedMount) && session != null && Boolean.TRUE.equals(session.getAttribute(ContainerConstants.CMS_SSO_AUTHENTICATED))) {
+                        if (requestComesFromCms(vHosts, resolvedMount) && session != null && CmsSessionContext.getContext(session) != null) {
                             requestContext.setCmsRequest(true);
                             session.setAttribute(ContainerConstants.CMS_REQUEST_RENDERING_MOUNT_ID, resolvedMount.getMount().getIdentifier());
                             session.setAttribute(ContainerConstants.RENDERING_HOST, renderingHost);
@@ -630,7 +631,7 @@ public class HstFilter implements Filter {
             }
             return true;
         }
-        if (Boolean.TRUE.equals(session.getAttribute(ContainerConstants.CMS_SSO_AUTHENTICATED))) {
+        if (CmsSessionContext.getContext(session) != null) {
             return false;
         }
         return true;

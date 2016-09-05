@@ -1,5 +1,5 @@
 /*
- *  Copyright 2014 Hippo B.V. (http://www.onehippo.com)
+ *  Copyright 2014-2016 Hippo B.V. (http://www.onehippo.com)
  * 
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -19,7 +19,6 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.servlet.http.HttpSession;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspWriter;
 import javax.servlet.jsp.tagext.TagData;
@@ -32,6 +31,8 @@ import org.hippoecm.hst.configuration.internal.ConfigurationLockInfo;
 import org.hippoecm.hst.configuration.site.HstSite;
 import org.hippoecm.hst.configuration.sitemenu.HstSiteMenuConfiguration;
 import org.hippoecm.hst.container.RequestContextProvider;
+import org.hippoecm.hst.core.channelmanager.ChannelManagerConstants;
+import org.hippoecm.hst.core.container.ContainerConstants;
 import org.hippoecm.hst.core.request.HstRequestContext;
 import org.hippoecm.hst.core.sitemenu.CommonMenu;
 import org.slf4j.Logger;
@@ -40,7 +41,7 @@ import org.slf4j.LoggerFactory;
 import static org.hippoecm.hst.core.channelmanager.ChannelManagerConstants.HST_LOCKED_BY;
 import static org.hippoecm.hst.core.channelmanager.ChannelManagerConstants.HST_LOCKED_BY_CURRENT_USER;
 import static org.hippoecm.hst.core.channelmanager.ChannelManagerConstants.HST_LOCKED_ON;
-import static org.hippoecm.hst.core.container.ContainerConstants.CMS_USER_ID_ATTR;
+import static org.hippoecm.hst.core.container.ContainerConstants.CMS_REQUEST_USER_ID_ATTR;
 import static org.hippoecm.hst.utils.TagUtils.encloseInHTMLComment;
 import static org.hippoecm.hst.utils.TagUtils.toJSONMap;
 
@@ -149,11 +150,7 @@ public class HstCmsEditMenuTag extends TagSupport {
 
 
     private static String getCurrentCmsUser() {
-        final HttpSession httpSession = RequestContextProvider.get().getServletRequest().getSession(false);
-        if (httpSession == null) {
-            return null;
-        }
-        return (String) httpSession.getAttribute(CMS_USER_ID_ATTR);
+        return (String)RequestContextProvider.get().getServletRequest().getAttribute(CMS_REQUEST_USER_ID_ATTR);
     }
 
     public CommonMenu getMenu() {

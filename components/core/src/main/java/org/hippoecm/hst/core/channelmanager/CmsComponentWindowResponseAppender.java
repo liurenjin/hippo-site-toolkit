@@ -1,5 +1,5 @@
 /*
- *  Copyright 2013 Hippo B.V. (http://www.onehippo.com)
+ *  Copyright 2013-2016 Hippo B.V. (http://www.onehippo.com)
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -117,7 +117,7 @@ public class CmsComponentWindowResponseAppender extends AbstractComponentWindowR
             if (compConfig instanceof ConfigurationLockInfo) {
                 ConfigurationLockInfo lockInfo = (ConfigurationLockInfo)compConfig;
                 if (lockInfo.getLockedBy() != null) {
-                    String cmsUserId = (String)session.getAttribute(ContainerConstants.CMS_USER_ID_ATTR);
+                    String cmsUserId = (String) request.getAttribute(ContainerConstants.CMS_REQUEST_USER_ID_ATTR);
                     attributes.put(ChannelManagerConstants.HST_LOCKED_BY, lockInfo.getLockedBy());
                     if (lockInfo.getLockedBy().equals(cmsUserId)) {
                         attributes.put(ChannelManagerConstants.HST_LOCKED_BY_CURRENT_USER, "true");

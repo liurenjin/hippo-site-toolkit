@@ -88,7 +88,7 @@
     <hippo.commons.version>1.04.00</hippo.commons.version>
     <hippo.repository.version>2.26.03</hippo.repository.version>
     <hippo.utilities.version>1.03.00</hippo.utilities.version>
-    <hippo.services.version>1.04.00</hippo.services.version>
+    <hippo.services.version>1.04.05-SNAPSHOT</hippo.services.version>
     <hippo.services.eventbus.version>1.04.00</hippo.services.eventbus.version>
 
     <htmlcleaner.version>2.2</htmlcleaner.version>
