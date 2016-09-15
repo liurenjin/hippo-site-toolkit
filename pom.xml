@@ -19,7 +19,7 @@
   <parent>
     <groupId>org.onehippo.cms7</groupId>
     <artifactId>hippo-cms7-project</artifactId>
-    <version>27.7-SNAPSHOT</version>
+    <version>27.7</version>
   </parent>
 
   <name>Hippo Site Toolkit</name>
@@ -34,7 +34,7 @@
 
   <groupId>org.onehippo.cms7.hst</groupId>
   <artifactId>hst</artifactId>
-  <version>3.2.2-SNAPSHOT</version>
+  <version>3.2.2</version>
   <packaging>pom</packaging>
   <inceptionYear>2008</inceptionYear>
   <issueManagement>
@@ -81,9 +81,9 @@
     <jackrabbit-ocm.version>1.5.3</jackrabbit-ocm.version>
 
     <hippo.commons.version>2.2.0</hippo.commons.version>
-    <hippo.repository.version>3.2.0</hippo.repository.version>
-    <hippo.cms.version>3.2.0</hippo.cms.version>
-    <hippo.utilities.version>2.2.0</hippo.utilities.version>
+    <hippo.repository.version>3.2.5</hippo.repository.version>
+    <hippo.cms.version>3.2.4</hippo.cms.version>
+    <hippo.utilities.version>2.2.1</hippo.utilities.version>
     <hippo.services.version>2.2.0</hippo.services.version>
     <hippo.services.eventbus.version>2.2.0</hippo.services.eventbus.version>
     <hippo.services.search.version>2.2.0</hippo.services.search.version>
