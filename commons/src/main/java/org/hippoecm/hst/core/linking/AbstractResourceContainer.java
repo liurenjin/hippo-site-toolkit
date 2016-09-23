@@ -173,9 +173,13 @@ public abstract class AbstractResourceContainer implements ResourceContainer {
        } catch (PathNotFoundException e) {
            log.debug("Cannot find resource node for path '{}' beloning to pathInfo '{}'", actualPath, pathInfo);
        } catch (RepositoryException e) {
-           log.warn("RepositoryException: '{}'", e.getMessage());
+           final String message = e.getMessage();
+           if (log.isDebugEnabled()) {
+               log.warn("RepositoryException: '{}'", message);
+           } else if (message != null && !message.startsWith("Invalid path:")) {
+               log.warn("RepositoryException: '{}'", message);
+           }
        }
-        
         return null;
     }
 
