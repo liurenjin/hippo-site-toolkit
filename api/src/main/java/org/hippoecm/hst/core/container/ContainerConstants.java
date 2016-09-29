@@ -19,8 +19,6 @@ import org.hippoecm.hst.core.request.ResolvedMount;
 
 /**
  * HstComponent container constants
- *
- * @version $Id$
  */
 public interface ContainerConstants {
 
@@ -92,7 +90,7 @@ public interface ContainerConstants {
 
     /**
      * Subject's repository credentials session attribute name
-     * @deprecated since 4.0.2 (cms v11.0 GA), will be removed with 5.0.
+     * @deprecated since 3.2.5 (cms v10.2.3), will be removed with 5.0.
      * Use (request!) attribute {@link #CMS_REQUEST_REPO_CREDS_ATTR}
      */
     @Deprecated
@@ -146,7 +144,7 @@ public interface ContainerConstants {
 
     /**
      * http session attribute to indicate a single sign on session is created through the cms
-     * @deprecated since 4.0.2 (CMS v11.0 GA), will be removed with 5.0.
+     * @deprecated since 3.2.5 (CMS v10.2.3), will be removed with 5.0.
      * Use ({@link org.onehippo.cms7.services.cmscontext.CmsSessionContext#getContext(javax.servlet.http.HttpSession)} != null) instead.
      */
     @Deprecated
@@ -154,7 +152,7 @@ public interface ContainerConstants {
 
     /**
      * If there is a correct cms sso authentication, then on the HttpSession we store the user id with this attribute name
-     * @deprecated Since 4.0.2 (CMS v11.0 GA). Will be removed in 5.0.
+     * @deprecated since 3.2.5 (CMS v10.2.3). Will be removed in 5.0.
      */
     @Deprecated
     String CMS_USER_ID_ATTR = "org.hippoecm.hst.container.cms_user_id";
