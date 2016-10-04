@@ -255,7 +255,7 @@ public class HstLinkTag extends ParamContainerTag {
                 VirtualHost virtualHost = reqContext.getVirtualHost();
                 boolean containerResource = (virtualHost != null && virtualHost.getVirtualHosts().isExcluded(this.path));
 
-                link = reqContext.getHstLinkCreator().create(path, mount);
+                link = reqContext.getHstLinkCreator().create(path, mount, containerResource);
             }
 
             if(this.link == null && this.siteMapItemRefId != null) {
