@@ -1,5 +1,5 @@
 /*
- *  Copyright 2010-2013 Hippo B.V. (http://www.onehippo.com)
+ *  Copyright 2010-2016 Hippo B.V. (http://www.onehippo.com)
  * 
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -250,8 +250,7 @@ public class HstLinkTag extends ParamContainerTag {
             if(this.link == null && this.path != null) {
                 VirtualHost virtualHost = reqContext.getVirtualHost();
                 boolean containerResource = (virtualHost != null && virtualHost.getVirtualHosts().isExcluded(this.path));
-
-                link = reqContext.getHstLinkCreator().create(path, mount);
+                link = reqContext.getHstLinkCreator().create(path, mount, containerResource);
             }
 
             if(this.link == null && this.siteMapItemRefId != null) {
