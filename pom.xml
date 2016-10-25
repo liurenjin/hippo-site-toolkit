@@ -34,7 +34,7 @@
 
   <groupId>org.onehippo.cms7.hst</groupId>
   <artifactId>hst</artifactId>
-  <version>2.28.17-SNAPSHOT</version>
+  <version>2.28.17</version>
   <packaging>pom</packaging>
   <inceptionYear>2008</inceptionYear>
   <issueManagement>
@@ -114,6 +114,7 @@
     <connection>scm:git:https://code.onehippo.org/cms-community/hippo-site-toolkit.git</connection>
     <developerConnection>scm:git:git@code.onehippo.org:cms-community/hippo-site-toolkit.git</developerConnection>
     <url>https://code.onehippo.org/cms-community/hippo-site-toolkit</url>
+    <tag>hst-2.28.17</tag>
   </scm>
 
   <mailingLists>
