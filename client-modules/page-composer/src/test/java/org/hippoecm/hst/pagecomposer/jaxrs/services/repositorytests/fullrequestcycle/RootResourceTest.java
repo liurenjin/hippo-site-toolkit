@@ -44,7 +44,7 @@ public class RootResourceTest extends AbstractFullRequestCycleTest {
     }
 
     private void assertions(final SimpleCredentials admin) throws IOException, ServletException {
-        final RequestResponseMock requestResponse = mockGetRequestResponse(
+        final RequestResponseMock requestResponse = mockRequestResponse(
                 "http", "localhost", "/_rp/cafebabe-cafe-babe-cafe-babecafebabe./keepalive", null, "GET");
 
         final MockHttpServletResponse response = render(requestResponse, admin);

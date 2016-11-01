@@ -80,7 +80,7 @@ public class MountResourceTest extends AbstractFullRequestCycleTest {
 
     private Map<String, Object> startEdit(final Credentials creds) throws RepositoryException, IOException, ServletException {
         final String mountId = getNodeId("/hst:hst/hst:hosts/dev-localhost/localhost/hst:root");
-        final RequestResponseMock requestResponse = mockGetRequestResponse(
+        final RequestResponseMock requestResponse = mockRequestResponse(
                 "http", "localhost", "/_rp/"+ mountId + "./edit", null, "POST");
 
         final MockHttpServletResponse response = render(mountId, requestResponse, creds);
@@ -122,7 +122,7 @@ public class MountResourceTest extends AbstractFullRequestCycleTest {
         final String mountId = getNodeId("/hst:hst/hst:hosts/dev-localhost/localhost/hst:root");
         final String siteMapId = getNodeId("/hst:hst/hst:configurations/unittestproject-preview/hst:sitemap");
         final String siteMapItemToCopyId = getNodeId("/hst:hst/hst:configurations/unittestproject-preview/hst:sitemap/home");
-        final RequestResponseMock requestResponse = mockGetRequestResponse(
+        final RequestResponseMock requestResponse = mockRequestResponse(
                 "http", "localhost", "/_rp/"+ siteMapId + "./copy", null, "POST");
 
         requestResponse.getRequest().addHeader("mountId", mountId);
@@ -163,7 +163,7 @@ public class MountResourceTest extends AbstractFullRequestCycleTest {
 
     private Map<String, Object> publish(final Credentials creds) throws Exception {
         final String mountId = getNodeId("/hst:hst/hst:hosts/dev-localhost/localhost/hst:root");
-        final RequestResponseMock requestResponse = mockGetRequestResponse(
+        final RequestResponseMock requestResponse = mockRequestResponse(
                 "http", "localhost", "/_rp/"+ mountId + "./publish", null, "POST");
 
         final MockHttpServletResponse response = render(mountId, requestResponse, creds);
@@ -195,7 +195,7 @@ public class MountResourceTest extends AbstractFullRequestCycleTest {
 
     private Map<String, Object> discard(final Credentials creds) throws Exception {
         final String mountId = getNodeId("/hst:hst/hst:hosts/dev-localhost/localhost/hst:root");
-        final RequestResponseMock requestResponse = mockGetRequestResponse(
+        final RequestResponseMock requestResponse = mockRequestResponse(
                 "http", "localhost", "/_rp/"+ mountId + "./discard", null, "POST");
 
         final MockHttpServletResponse response = render(mountId, requestResponse, creds);
@@ -250,7 +250,7 @@ public class MountResourceTest extends AbstractFullRequestCycleTest {
 
     private MockHttpServletResponse publish(final Credentials publishCreds, final SimpleCredentials changesCreds) throws Exception {
         final String mountId = getNodeId("/hst:hst/hst:hosts/dev-localhost/localhost/hst:root");
-        final RequestResponseMock requestResponse = mockGetRequestResponse(
+        final RequestResponseMock requestResponse = mockRequestResponse(
                 "http", "localhost", "/_rp/"+ mountId + "./userswithchanges/publish", null, "POST");
 
         final MockHttpServletRequest request = requestResponse.getRequest();
@@ -312,7 +312,7 @@ public class MountResourceTest extends AbstractFullRequestCycleTest {
 
     private MockHttpServletResponse discard(final Credentials publishCreds, final SimpleCredentials changesCreds) throws Exception {
         final String mountId = getNodeId("/hst:hst/hst:hosts/dev-localhost/localhost/hst:root");
-        final RequestResponseMock requestResponse = mockGetRequestResponse(
+        final RequestResponseMock requestResponse = mockRequestResponse(
                 "http", "localhost", "/_rp/"+ mountId + "./userswithchanges/discard", null, "POST");
 
         final MockHttpServletRequest request = requestResponse.getRequest();

@@ -25,12 +25,14 @@
 
   <name>Hippo Site Toolkit Integration</name>
   <description>Hippo Site Toolkit Integration</description>
-  <artifactId>toolkit-integration</artifactId>
+  <artifactId>hst-integration</artifactId>
   <packaging>pom</packaging>
 
   <modules>
     <module>tests</module>
     <module>war</module>
+    <module>support</module>
+    <module>endproject</module>
   </modules>
 
 </project>

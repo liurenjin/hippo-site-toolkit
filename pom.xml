@@ -41,7 +41,6 @@
     <system>Jira</system>
     <url>http://issues.onehippo.com/browse/HSTTWO</url>
   </issueManagement>
-
   <properties>
     <!-- use root project name for all project modules NOTICE files, should be the same as in the root NOTICE file -->
     <notice.project.name>Hippo Site Toolkit</notice.project.name>
