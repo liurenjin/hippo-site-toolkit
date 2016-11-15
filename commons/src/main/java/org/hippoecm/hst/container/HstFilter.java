@@ -839,6 +839,7 @@ public class HstFilter implements Filter {
 				}
 			}
 			// we're done:
+			cleanupResourceLifecycleManagements();
 			return;
 		}
 
