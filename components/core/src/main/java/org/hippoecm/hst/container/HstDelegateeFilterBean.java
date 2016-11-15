@@ -658,6 +658,7 @@ public class HstDelegateeFilterBean extends AbstractFilterBean implements Servle
                 }
             }
             // we're done:
+            cleanupResourceLifecycleManagements();
             return;
         }
 
