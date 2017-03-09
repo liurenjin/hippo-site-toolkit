@@ -1,5 +1,5 @@
 /*
- * Copyright 2013-2015 Hippo B.V. (http://www.onehippo.com)
+ * Copyright 2013-2017 Hippo B.V. (http://www.onehippo.com)
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,6 +47,8 @@ public class MountSiteMapConfiguration {
     private int hashCode;
     private final String mountContentPath;
     private final String mountContextPath;
+    private final String[] campaigns;
+    private final String activeCampaign;
 
     public MountSiteMapConfiguration(Mount mount) {
         parameters = mount.getParameters();
@@ -61,6 +63,8 @@ public class MountSiteMapConfiguration {
         hashCode = computeHashCode();
         mountContentPath = mount.getContentPath();
         mountContextPath = mount.getContextPath();
+        campaigns = mount.getCampaigns();
+        activeCampaign = mount.getActiveCampaign();
     }
 
     public Map<String, String> getParameters() {
@@ -107,6 +111,14 @@ public class MountSiteMapConfiguration {
         return mountContextPath;
     }
 
+    public String[] getCampaigns() {
+        return campaigns;
+    }
+
+    public String getActiveCampaign() {
+        return activeCampaign;
+    }
+
     @Override
     public boolean equals(final Object o) {
         if (this == o) {
@@ -151,6 +163,12 @@ public class MountSiteMapConfiguration {
         if (mountContextPath != null ? !mountContextPath.equals(that.mountContextPath) : that.mountContextPath != null) {
             return false;
         }
+        if (!Arrays.equals(campaigns, that.campaigns)) {
+            return false;
+        }
+        if (activeCampaign != null ? !activeCampaign.equals(that.activeCampaign) : that.activeCampaign != null) {
+            return false;
+        }
 
         return true;
     }
@@ -172,6 +190,8 @@ public class MountSiteMapConfiguration {
         result = 31 * result + (defaultResourceBundleIds != null ? Arrays.hashCode(defaultResourceBundleIds) : 0);
         result = 31 * result + (mountContentPath != null ? mountContentPath.hashCode() : 0);
         result = 31 * result + (mountContextPath != null ? mountContextPath.hashCode() : 0);
+        result = 31 * result + (campaigns != null ? Arrays.hashCode(campaigns) : 0);
+        result = 31 * result + (activeCampaign != null ? activeCampaign.hashCode() : 0);
         return result;
     }
 }

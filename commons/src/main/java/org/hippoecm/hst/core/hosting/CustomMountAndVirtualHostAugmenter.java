@@ -751,6 +751,15 @@ public class CustomMountAndVirtualHostAugmenter implements HstConfigurationAugme
             return Collections.emptyList();
         }
 
+        @Override
+        public String[] getCampaigns() {
+            return null;
+        }
+
+        @Override
+        public String getActiveCampaign() {
+            return null;
+        }
     }
 
 }

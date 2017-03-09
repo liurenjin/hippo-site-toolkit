@@ -340,6 +340,8 @@
 - hst:cacheable (boolean)
 // to hold all the 'free defined properties'
 - hst:defaultresourcebundleid (string)
+- hst:campaigns (string) multiple
+- hst:activecampaign (string)
 - * (string)
 
 [hst:portmount] > nt:base, mix:referenceable

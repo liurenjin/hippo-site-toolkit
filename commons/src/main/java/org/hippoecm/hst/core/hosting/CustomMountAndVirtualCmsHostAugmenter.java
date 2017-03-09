@@ -940,6 +940,15 @@ public class CustomMountAndVirtualCmsHostAugmenter implements HstConfigurationAu
             }
         }
 
+        @Override
+        public String[] getCampaigns() {
+            return null;
+        }
+
+        @Override
+        public String getActiveCampaign() {
+            return null;
+        }
     }
 
 }

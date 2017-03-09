@@ -1,5 +1,5 @@
 /*
- *  Copyright 2008-2015 Hippo B.V. (http://www.onehippo.com)
+ *  Copyright 2008-2017 Hippo B.V. (http://www.onehippo.com)
  * 
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@ package org.hippoecm.hst.configuration.site;
 
 import com.google.common.base.Optional;
 
+import org.apache.commons.lang.StringUtils;
 import org.hippoecm.hst.configuration.HstNodeTypes;
 import org.hippoecm.hst.configuration.cache.CompositeConfigurationNodes;
 import org.hippoecm.hst.configuration.cache.HstConfigurationLoadingCache;
@@ -56,41 +57,46 @@ public class HstSiteService implements HstSite {
     private HstConfigurationLoadingCache configLoadingCache;
     private final Object hstModelMutex;
 
-    public static HstSiteService createLiveSiteService(final HstNode site,
-                                                       final MountSiteMapConfiguration mountSiteMapConfiguration,
-                                                       final HstNodeLoadingCache hstNodeLoadingCache) throws ModelLoadingException {
-        return new HstSiteService(site, mountSiteMapConfiguration, hstNodeLoadingCache, false);
+
+
+    HstSiteService(final HstNode site,
+                   final MountSiteMapConfiguration mountSiteMapConfiguration,
+                   final HstNodeLoadingCache hstNodeLoadingCache,
+                   final boolean isPreviewSite) throws ModelLoadingException {
+        this(site, mountSiteMapConfiguration, hstNodeLoadingCache, null, isPreviewSite);
     }
 
-    public static HstSiteService createPreviewSiteService(final HstNode site,
-                                                       final MountSiteMapConfiguration mountSiteMapConfiguration,
-                                                       final HstNodeLoadingCache hstNodeLoadingCache) throws ModelLoadingException {
-        return new HstSiteService(site, mountSiteMapConfiguration, hstNodeLoadingCache, true);
-    }
-
-    private HstSiteService(final HstNode site,
+    HstSiteService(final HstNode site,
                            final MountSiteMapConfiguration mountSiteMapConfiguration,
                            final HstNodeLoadingCache hstNodeLoadingCache,
+                           final String campaign,
                            final boolean isPreviewSite) throws ModelLoadingException {
         hstModelMutex = HstServices.getComponentManager().getComponent("hstModelMutex");
         configLoadingCache = HstServices.getComponentManager().getComponent(HstConfigurationLoadingCache.class.getName());
         name = site.getValueProvider().getName();
         canonicalIdentifier = site.getValueProvider().getIdentifier();
         this.mountSiteMapConfiguration = mountSiteMapConfiguration;
-        findAndSetConfigurationPath(site, hstNodeLoadingCache, isPreviewSite);
+        findAndSetConfigurationPath(site, hstNodeLoadingCache, campaign, isPreviewSite);
         init();
     }
 
     private void findAndSetConfigurationPath(final HstNode site,
                                              final HstNodeLoadingCache hstNodeLoadingCache,
+                                             final String campaign,
                                              final boolean isPreviewSite
-                                             ) {
+    ) {
         if (site.getValueProvider().hasProperty(HstNodeTypes.SITE_CONFIGURATIONPATH)) {
             configurationPath = site.getValueProvider().getString(HstNodeTypes.SITE_CONFIGURATIONPATH);
         } else {
             configurationPath = hstNodeLoadingCache.getRootPath() + "/" +
-                    HstNodeTypes.NODENAME_HST_CONFIGURATIONS + "/" +site.getValueProvider().getName();
+                    HstNodeTypes.NODENAME_HST_CONFIGURATIONS + "/" + site.getValueProvider().getName();
         }
+
+        if (StringUtils.isNotBlank(campaign)) {
+            log.info("HstSiteService for campaign '{}'", campaign);
+            configurationPath += "-" + campaign;
+        }
+
         if (isPreviewSite) {
             String previewConfigurationPath = configurationPath + "-preview";
             HstNode previewConfig = hstNodeLoadingCache.getNode(previewConfigurationPath);
@@ -162,7 +168,7 @@ public class HstSiteService implements HstSite {
         }
         synchronized (hstModelMutex) {
             if (siteMap != null) {
-                 return siteMap.get();
+                return siteMap.get();
             }
             try {
                 long start = System.currentTimeMillis();
@@ -217,7 +223,7 @@ public class HstSiteService implements HstSite {
             }
         }
     }
-    
+
     public String getCanonicalIdentifier() {
         return canonicalIdentifier;
     }
@@ -229,7 +235,7 @@ public class HstSiteService implements HstSite {
     public long getVersion() {
         return -1;
     }
-    
+
     public boolean hasPreviewConfiguration() {
         return hasPreviewConfiguration;
     }
@@ -237,7 +243,7 @@ public class HstSiteService implements HstSite {
     public String getName() {
         return name;
     }
-    
+
     public LocationMapTree getLocationMapTree() {
         if (locationMapTree != null) {
             return locationMapTree;
@@ -296,7 +302,7 @@ public class HstSiteService implements HstSite {
      */
     private void checkAndLogAccessibleRootComponents(final HstComponentsConfiguration hstComponentsConfiguration,
                                                      final HstSiteMap sm) {
-        for(HstSiteMapItem hstSiteMapItem : sm.getSiteMapItems()){
+        for (HstSiteMapItem hstSiteMapItem : sm.getSiteMapItems()) {
             sanitizeSiteMapItem(hstSiteMapItem, hstComponentsConfiguration);
         }
     }
@@ -304,22 +310,22 @@ public class HstSiteService implements HstSite {
     private void sanitizeSiteMapItem(final HstSiteMapItem hstSiteMapItem,
                                      final HstComponentsConfiguration hstComponentsConfiguration) {
         HstComponentConfiguration hstComponentConfiguration = hstComponentsConfiguration.getComponentConfiguration(hstSiteMapItem.getComponentConfigurationId());
-        if(hstComponentConfiguration == null) {
+        if (hstComponentConfiguration == null) {
             log.info("HST Configuration info: The sitemap item '{}' does not point to a HST Component.", hstSiteMapItem.getId());
         } else {
             sanitizeHstComponentConfiguration(hstComponentConfiguration);
         }
-        for(HstSiteMapItem child : hstSiteMapItem.getChildren()) {
+        for (HstSiteMapItem child : hstSiteMapItem.getChildren()) {
             sanitizeSiteMapItem(child, hstComponentsConfiguration);
         }
     }
 
     private void sanitizeHstComponentConfiguration(HstComponentConfiguration hstComponentConfiguration) {
         String renderPath = hstComponentConfiguration.getRenderPath();
-        if(renderPath == null) {
-            log.info("HST Configuration info: the component '{}' does not have a render path. Component id = '{}'",hstComponentConfiguration.getName(),  hstComponentConfiguration.getId());
+        if (renderPath == null) {
+            log.info("HST Configuration info: the component '{}' does not have a render path. Component id = '{}'", hstComponentConfiguration.getName(), hstComponentConfiguration.getId());
         }
-        for(HstComponentConfiguration child : hstComponentConfiguration.getChildren().values()) {
+        for (HstComponentConfiguration child : hstComponentConfiguration.getChildren().values()) {
             sanitizeHstComponentConfiguration(child);
         }
     }

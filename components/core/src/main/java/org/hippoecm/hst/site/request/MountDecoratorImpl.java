@@ -408,6 +408,16 @@ public class MountDecoratorImpl implements MountDecorator {
         }
 
         @Override
+        public String[] getCampaigns() {
+            return delegatee.getCampaigns();
+        }
+
+        @Override
+        public String getActiveCampaign() {
+            return delegatee.getActiveCampaign();
+        }
+
+        @Override
         public String toString() {
             StringBuilder builder = new StringBuilder("MountAsPreviewDecorator for Mount [");
             builder.append(delegatee.toString());

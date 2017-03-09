@@ -501,5 +501,14 @@ public interface Mount {
      */
     List<String> getCmsLocations();
 
+    /**
+     * @return Array of campaigns or {@code null} when not configured
+     */
+    String[] getCampaigns();
+
+    /**
+     * @return the active campaign and {@code null} when not configured
+     */
+    String getActiveCampaign();
 
 }

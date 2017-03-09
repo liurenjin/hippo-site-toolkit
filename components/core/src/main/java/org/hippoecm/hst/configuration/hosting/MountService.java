@@ -1,5 +1,5 @@
 /*
- *  Copyright 2009-2016 Hippo B.V. (http://www.onehippo.com)
+ *  Copyright 2009-2017 Hippo B.V. (http://www.onehippo.com)
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -39,6 +39,7 @@ import org.hippoecm.hst.configuration.model.HstManager;
 import org.hippoecm.hst.configuration.model.HstNode;
 import org.hippoecm.hst.configuration.model.ModelLoadingException;
 import org.hippoecm.hst.configuration.site.HstSite;
+import org.hippoecm.hst.configuration.site.HstSiteFactory;
 import org.hippoecm.hst.configuration.site.HstSiteService;
 import org.hippoecm.hst.configuration.site.MountSiteMapConfiguration;
 import org.hippoecm.hst.configuration.sitemap.HstSiteMapItem;
@@ -235,6 +236,10 @@ public class MountService implements ContextualizableMount, MutableMount {
     private Map<String, String> parameters;
 
     private HstSiteMapMatcher matcher;
+
+    private String[] campaigns;
+
+    private String activeCampaign;
 
     public MountService(final HstNode mount,
                         final Mount parent,
@@ -539,6 +544,13 @@ public class MountService implements ContextualizableMount, MutableMount {
             }
         }
 
+        if (mount.getValueProvider().hasProperty("hst:campaigns")) {
+            campaigns = mount.getValueProvider().getStrings("hst:campaigns");
+        } else {
+            campaigns = null;
+        }
+        activeCampaign = mount.getValueProvider().getString("hst:activecampaign");
+
         try {
             if (mountPoint == null) {
                 log.info("Mount '{}' at '{}' does have an empty mountPoint. This means the Mount is not using a HstSite and does not have a content path", getName(), mount.getValueProvider().getPath());
@@ -585,13 +597,14 @@ public class MountService implements ContextualizableMount, MutableMount {
 
                 MountSiteMapConfiguration mountSiteMapConfiguration = new MountSiteMapConfiguration(this);
                 long start = System.currentTimeMillis();
+
                 if (Mount.PREVIEW_NAME.equals(type)) {
                     // explicit preview
-                    previewHstSite = HstSiteService.createPreviewSiteService(hstSiteNodeForMount, mountSiteMapConfiguration, hstNodeLoadingCache);
+                    previewHstSite = new HstSiteFactory().createPreviewSiteService(hstSiteNodeForMount, mountSiteMapConfiguration, hstNodeLoadingCache);
                     hstSite = previewHstSite;
                 } else {
-                    hstSite = HstSiteService.createLiveSiteService(hstSiteNodeForMount, mountSiteMapConfiguration, hstNodeLoadingCache);
-                    previewHstSite = HstSiteService.createPreviewSiteService(hstSiteNodeForMount, mountSiteMapConfiguration, hstNodeLoadingCache);
+                    hstSite = new HstSiteFactory().createLiveSiteService(hstSiteNodeForMount, mountSiteMapConfiguration, hstNodeLoadingCache);
+                    previewHstSite = new HstSiteFactory().createPreviewSiteService(hstSiteNodeForMount, mountSiteMapConfiguration, hstNodeLoadingCache);
                 }
 
                 assertContentPathNotEmpty(mount, contentPath);
@@ -854,6 +867,16 @@ public class MountService implements ContextualizableMount, MutableMount {
 
     public List<String> getCmsLocations() {
         return cmsLocations;
+    }
+
+    @Override
+    public String[] getCampaigns() {
+        return campaigns;
+    }
+
+    @Override
+    public String getActiveCampaign() {
+        return activeCampaign;
     }
 
     public String getNamedPipeline(){
