@@ -1,5 +1,5 @@
 /*
- *  Copyright 2008-2013 Hippo B.V. (http://www.onehippo.com)
+ *  Copyright 2008-2017 Hippo B.V. (http://www.onehippo.com)
  * 
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -42,35 +42,35 @@ import org.junit.Test;
  * @version $Id$
  */
 public class TestHstRequestUtils {
-    
+
     @Test
     public void testRequestPath() throws Exception {
         String contextPath = "/site";
         String pathInfo = "/news/headlines";
         String matrixParams = ";JSESSIONID=abc;foo=bar";
         String requestURI = contextPath + pathInfo;
-        
+
         HttpServletRequest request = createNiceMock(HttpServletRequest.class);
         expect(request.getRequestURI()).andReturn(requestURI).anyTimes();
         expect(request.getContextPath()).andReturn(contextPath).anyTimes();
         replay(request);
-        
+
         String requestPath = HstRequestUtils.getRequestPath(request);
-        
+
         assertEquals(pathInfo, requestPath);
-        
+
         requestURI = contextPath + pathInfo + ";" + matrixParams;
-        
+
         reset(request);
         expect(request.getRequestURI()).andReturn(requestURI).anyTimes();
         expect(request.getContextPath()).andReturn(contextPath).anyTimes();
         replay(request);
-        
+
         requestPath = HstRequestUtils.getRequestPath(request);
-        
+
         assertEquals(pathInfo, requestPath);
     }
-    
+
     @Test
     public void testParseQueryStringFromRequest() throws Exception {
         String queryString = "foo=bar&lux=bar&foo=foo";
@@ -93,6 +93,20 @@ public class TestHstRequestUtils {
     }
 
     @Test
+    public void testParseQueryStringFromRequestContainingChinese() throws Exception {
+        String queryString = "key-%E4%BA%BA=value-%E4%BA%BA"; // %E4%BA%BA == 人
+        HttpServletRequest request = createNiceMock(HttpServletRequest.class);
+        expect(request.getQueryString()).andReturn(queryString).anyTimes();
+        replay(request);
+
+        Map<String, String[]> parsedQueryStringMap = HstRequestUtils.parseQueryString(request);
+
+        assertTrue("parsedQueryStringMap must contain 'key-人'.", parsedQueryStringMap.containsKey("key-人"));
+        assertTrue("parsedQueryStringMap must have 1 value for 'key-人'.", parsedQueryStringMap.get("key-人").length == 1);
+        assertEquals("value-人", parsedQueryStringMap.get("key-人")[0]);
+    }
+
+    @Test
     public void testParseQueryStringFromURI() throws Exception {
         URI uri = URI.create("http://www.example.com/?foo=bar&lux=bar&foo=foo+bar");
         Map<String, String[]> parsedQueryStringMap =  HstRequestUtils.parseQueryString(uri, "UTF-8");
@@ -104,6 +118,26 @@ public class TestHstRequestUtils {
         assertTrue("parsedQueryStringMap must contain lux.", parsedQueryStringMap.containsKey("lux"));
         assertTrue("parsedQueryStringMap must have 1 value for lux.", parsedQueryStringMap.get("lux").length == 1);
         assertEquals("bar", parsedQueryStringMap.get("lux")[0]);
+    }
+
+    @Test
+    public void testParseQueryStringFromURIContainingChinese() throws Exception {
+        URI uri = URI.create("http://www.example.com/?key-%E4%BA%BA=value-%E4%BA%BA"); // %E4%BA%BA == 人
+        Map<String, String[]> parsedQueryStringMap = HstRequestUtils.parseQueryString(uri, "UTF-8");
+
+        assertTrue("parsedQueryStringMap must contain 'key-人'.", parsedQueryStringMap.containsKey("key-人"));
+        assertTrue("parsedQueryStringMap must have 1 value for 'key-人'.", parsedQueryStringMap.get("key-人").length == 1);
+        assertEquals("value-人", parsedQueryStringMap.get("key-人")[0]);
+    }
+
+    @Test
+    public void testParseQueryStringFromURIUsingISO8859dash1() throws Exception {
+        URI uri = URI.create("http://www.example.com/?key-%E4=value-%E4"); // %E4 == ä
+        Map<String, String[]> parsedQueryStringMap = HstRequestUtils.parseQueryString(uri, "ISO-8859-1");
+
+        assertTrue("parsedQueryStringMap must contain 'key-ä'.", parsedQueryStringMap.containsKey("key-ä"));
+        assertTrue("parsedQueryStringMap must have 1 value for 'key-ä'.", parsedQueryStringMap.get("key-ä").length == 1);
+        assertEquals("value-ä", parsedQueryStringMap.get("key-ä")[0]);
     }
 
     @Test
