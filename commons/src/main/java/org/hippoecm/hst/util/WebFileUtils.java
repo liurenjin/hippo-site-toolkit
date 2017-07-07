@@ -15,41 +15,64 @@
  */
 package org.hippoecm.hst.util;
 
+import javax.jcr.RepositoryException;
+
+import org.hippoecm.hst.configuration.site.HstSite;
 import org.hippoecm.hst.container.RequestContextProvider;
-import org.hippoecm.hst.core.container.ContainerConstants;
 import org.hippoecm.hst.core.request.HstRequestContext;
-import org.onehippo.cms7.services.webfiles.WebFilesService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import static org.hippoecm.hst.core.container.ContainerConstants.FREEMARKER_WEB_FILE_TEMPLATE_PROTOCOL;
+import static org.onehippo.cms7.services.webfiles.WebFilesService.JCR_ROOT_PATH;
 
 public class WebFileUtils {
+
+    private static final Logger log = LoggerFactory.getLogger(WebFileUtils.class);
 
     public static final String DEFAULT_BUNDLE_NAME = "site";
 
     public static String getBundleName(HstRequestContext requestContext) {
         String bundleName = requestContext.getResolvedMount().getMount().getContextPath();
+
         if (bundleName == null || bundleName.length() == 0) {
             bundleName = DEFAULT_BUNDLE_NAME;
         } else if (bundleName.startsWith("/")) {
             bundleName = bundleName.substring(1);
         }
+
+        HstSite hstSite = requestContext.getResolvedMount().getMount().getHstSite();
+        if (hstSite != null && hstSite.getChannel() != null && hstSite.getChannel().getBranchId() != null) {
+            final String branchBundleName = bundleName + "-" + hstSite.getChannel().getBranchId();
+            try {
+                if (requestContext.getSession().nodeExists(JCR_ROOT_PATH + "/" + branchBundleName)) {
+                    log.info("Using branch bundle name '{}'", branchBundleName);
+                    return branchBundleName;
+                }
+            } catch (RepositoryException e) {
+                log.warn("RepositoryException ", e);
+            }
+        }
+
         return bundleName;
     }
 
     public static String webFilePathToJcrPath(final String templateSource) {
         final String webFilePath = "/" + PathUtils.normalizePath(templateSource.substring(
-                ContainerConstants.FREEMARKER_WEB_FILE_TEMPLATE_PROTOCOL.length()));
+                FREEMARKER_WEB_FILE_TEMPLATE_PROTOCOL.length()));
         final String bundleName = getBundleName();
-        return WebFilesService.JCR_ROOT_PATH + "/" + bundleName + webFilePath;
+        return JCR_ROOT_PATH + "/" + bundleName + webFilePath;
     }
 
     public static String jcrPathToWebFilePath(final String variantJcrPath) {
         final String bundleName = getBundleName();
-        final String requiredPrefix = WebFilesService.JCR_ROOT_PATH + "/" + bundleName + "/";
+        final String requiredPrefix = JCR_ROOT_PATH + "/" + bundleName + "/";
         if (!variantJcrPath.startsWith(requiredPrefix)) {
             final String msg = String.format("Cannot translate '%s' to web file path because '%s' does not start" +
                     " with '%s'", variantJcrPath, variantJcrPath, requiredPrefix);
             throw new IllegalArgumentException(msg);
         }
-        return ContainerConstants.FREEMARKER_WEB_FILE_TEMPLATE_PROTOCOL + "/" + variantJcrPath.substring(requiredPrefix.length());
+        return FREEMARKER_WEB_FILE_TEMPLATE_PROTOCOL + "/" + variantJcrPath.substring(requiredPrefix.length());
     }
 
     private static String getBundleName() {
