@@ -229,14 +229,18 @@ public interface VirtualHosts {
     boolean isChannelMngrSiteAuthenticationSkipped();
 
     /**
+     * In case there are multiple HST webapps running, only the channels are returned that have a matching
+     * {@link Channel#getContextPath()}
      * @param hostGroup the name of the host group to get the channels for
-     * @return all managed channels for the <code></code>hostGroup</code>. Empty List in case the hostGroup does not
-     * exist or has no channel. The keys in the map are the {@link Channel#getId()}'s
+     * @return all managed channels for this webapp for the <code></code>hostGroup</code>. Empty List in case the hostGroup does not
+     * exist or for this webapp has no channel. The keys in the map are the {@link Channel#getId()}'s
      */
     Map<String, Channel> getChannels(String hostGroup);
 
     /**
-     * @return The map of all {@code hostGroup} names to the map of all the channels for that hostgroup
+     * In case there are multiple HST webapps running, only the channels are returned that have a matching
+     * {@link Channel#getContextPath()}
+     * @return The map of all {@code hostGroup} names to the map of all the channels for that hostgroup for this webapp
      */
     Map<String, Map<String, Channel>> getChannels();
 

@@ -17,8 +17,10 @@
 package org.hippoecm.hst.cmsrest.services;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Properties;
 
 import org.onehippo.cms7.services.hst.Channel;
@@ -39,37 +41,31 @@ public class ChannelsResource extends BaseResource implements ChannelService {
 
     @Override
     public List<Channel> getChannels() {
-        final List<Channel> channels = new ArrayList<>();
-        // do not use HstServices.getComponentManager().getComponent(HstManager.class.getName()) to get to
-        // virtualhosts object since we REALLY need the hst model instance for the current request!!
 
-        final List<Mount> mountsForHostGroup = getVirtualHosts().getMountsByHostGroup(getHostGroupNameForCmsHost());
-        for (Mount mount : mountsForHostGroup) {
-            if (!Mount.PREVIEW_NAME.equals(mount.getType())) {
-                log.debug("Skipping non preview mount '{}'. This can be for example the 'composer' auto augmented mount.",
-                        mount.toString());
-                continue;
+        Map<String, Channel> allChannels = getVirtualHosts().getChannels(getHostGroupNameForCmsHost());
+        // allChannels contains live and preview channels. Filter out the preview channels by the fact that
+        // they reference the same hst:mount
+        Map<String, Channel> mountToChannel = new HashMap<>();
+        for (Channel channel : allChannels.values()) {
+            if (channelFilter != null ) {
+                if (channelFilter.apply(channel)) {
+                    log.debug("Including channel '{}' because passes filters.", channel.toString());
+                } else {
+                    log.info("Skipping channel '{}' because filtered out by channel filters.", channel.toString());
+                    continue;
+                }
             }
-            String requestContextPath = RequestContextProvider.get().getServletRequest().getContextPath();
-            if (mount.getContextPath() == null || !mount.getContextPath().equals(requestContextPath)) {
-                log.debug("Skipping mount '{}' because it can only be rendered for webapp '{}' and not for webapp '{}'",
-                        mount.toString(), mount.getContextPath(), requestContextPath);
-                continue;
-            }
-            final Channel channel = mount.getChannel();
-            if (channel == null) {
-                log.debug("Skipping link for mount '{}' since it does not have a channel", mount.getName());
-                continue;
-            }
-            if (channelFilter.apply(channel)) {
-                log.debug("Including channel '{}' because passes filters.", channel.toString());
-                channels.add(channel);
+            Channel existing = mountToChannel.get(channel.getMountId());
+            if (existing == null) {
+                mountToChannel.put(channel.getMountId(), channel);
+            } else if (!existing.isPreview()){
+                // replace with the preview otherwise the 'branch selection dropdown' in channel manager does not work!
+                mountToChannel.put(channel.getMountId(), channel);
             } else {
-                log.info("Skipping channel '{}' because filtered out by channel filters.", channel.toString());
+                // already the preview in mountToChannel
             }
         }
-
-        return channels;
+        return new ArrayList<>(mountToChannel.values());
     }
 
     @Override
