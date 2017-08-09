@@ -18,6 +18,7 @@ package org.hippoecm.hst.configuration.channel;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Set;
 import java.util.function.Predicate;
 
@@ -80,6 +81,7 @@ public class ChannelLazyLoadingChangedBySet implements Set<String> {
         delegatee.addAll(getAllUsersWithComponentLock(previewHstSite));
         delegatee.addAll(getAllUsersWithSiteMapItemLock(previewHstSite));
         delegatee.addAll(getAllUsersWithSiteMenuLock(previewHstSite));
+        delegatee.addAll(getAllUsersWithPrototypeLock(previewHstSite));
 
         // check preview channel node itself
         if (channel.getChannelNodeLockedBy() != null) {
@@ -110,6 +112,15 @@ public class ChannelLazyLoadingChangedBySet implements Set<String> {
             }
         }
 
+    }
+
+    private Set<String> getAllUsersWithPrototypeLock(final HstSite previewHstSite) {
+        final Set<String> usersWithLock = new HashSet<>();
+        final Map<String, HstComponentConfiguration> prototypePages = previewHstSite.getComponentsConfiguration().getPrototypePages();
+        for (HstComponentConfiguration prototype : prototypePages.values()) {
+            addUsersWithComponentLock(prototype, usersWithLock);
+        }
+        return usersWithLock;
     }
 
     private static Set<String> getAllUsersWithSiteMapItemLock(final HstSite previewHstSite) {

@@ -18,6 +18,7 @@ package org.hippoecm.hst.pagecomposer.jaxrs.services.helpers;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.function.Predicate;
 
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
@@ -36,7 +37,10 @@ import org.slf4j.LoggerFactory;
 
 import static org.apache.commons.lang.StringUtils.isNotBlank;
 import static org.hippoecm.hst.configuration.HstNodeTypes.COMPONENT_PROPERTY_REFERECENCECOMPONENT;
+import static org.hippoecm.hst.configuration.HstNodeTypes.MIXINTYPE_HST_PROTOTYPE_META;
+import static org.hippoecm.hst.configuration.HstNodeTypes.NODENAME_HST_ABSTRACTPAGES;
 import static org.hippoecm.hst.configuration.HstNodeTypes.NODENAME_HST_PAGES;
+import static org.hippoecm.hst.configuration.HstNodeTypes.NODENAME_HST_PROTOTYPEPAGES;
 import static org.hippoecm.hst.configuration.HstNodeTypes.NODETYPE_HST_ABSTRACT_COMPONENT;
 import static org.hippoecm.hst.configuration.HstNodeTypes.NODETYPE_HST_CONTAINERCOMPONENT;
 import static org.hippoecm.hst.configuration.HstNodeTypes.NODETYPE_HST_PAGES;
@@ -90,8 +94,8 @@ public class PagesHelper extends AbstractHelper {
         final String validTargetPageNodeName = getValidTargetPageNodeName(previewWorkspacePagesPath, targetPageNodeName, session);
         final Node newPage = JcrUtils.copy(session, pageOrPrototype.getPath(), previewWorkspacePagesPath + "/" + validTargetPageNodeName);
 
-        if (newPage.isNodeType(HstNodeTypes.MIXINTYPE_HST_PROTOTYPE_META)) {
-            newPage.removeMixin(HstNodeTypes.MIXINTYPE_HST_PROTOTYPE_META);
+        if (newPage.isNodeType(MIXINTYPE_HST_PROTOTYPE_META)) {
+            newPage.removeMixin(MIXINTYPE_HST_PROTOTYPE_META);
         }
         if (skipContainerItems) {
             removeContainerItems(newPage);
@@ -118,6 +122,18 @@ public class PagesHelper extends AbstractHelper {
         final String liveWorkspacePath = previewWorkspacePath.replace("-preview/","/");
         if (!session.nodeExists(liveWorkspacePath + "/" + NODENAME_HST_PAGES)) {
             session.getNode(liveWorkspacePath).addNode(NODENAME_HST_PAGES, NODETYPE_HST_PAGES);
+        }
+    }
+
+    private void createWorkspaceRootNodesInPreviewAndLive(
+            final String previewWorkspacePath,
+            final Session session,
+            final String nodeName,
+            final String nodeType) throws RepositoryException {
+        session.getNode(previewWorkspacePath).addNode(nodeName, nodeType);
+        final String liveWorkspacePath = previewWorkspacePath.replace("-preview","");
+        if (!session.nodeExists(liveWorkspacePath + "/" + nodeName)) {
+            session.getNode(liveWorkspacePath).addNode(nodeName, nodeType);
         }
     }
 
@@ -533,6 +549,120 @@ public class PagesHelper extends AbstractHelper {
         return refCounter;
     }
 
+
+    public void abstractify(final Node sitemapItemNodeToAbstractify, final String prototypeName) throws RepositoryException {
+        final String componentConfigId = getStringProperty(sitemapItemNodeToAbstractify, SITEMAPITEM_PROPERTY_COMPONENTCONFIGURATIONID, null);
+        if (componentConfigId == null) {
+            log.debug("No component id configured for '{}'. No page to abstractify.", sitemapItemNodeToAbstractify.getPath());
+            return;
+        }
+        final String pageNodePath = getPreviewWorkspacePath() + "/" + componentConfigId;
+        final Session session = pageComposerContextService.getRequestContext().getSession();
+        if (!session.nodeExists(pageNodePath)) {
+            log.info("No page found in hst:workspace for '{}' which is referenced by sitemap item '{}'. Skip deleting the page",
+                    pageNodePath, sitemapItemNodeToAbstractify.getPath());
+            return;
+        }
+        final Node pageNode = session.getNode(pageNodePath);
+
+        if (!session.nodeExists(getPreviewWorkspaceAbstractPagesPath())) {
+            createWorkspaceRootNodesInPreviewAndLive(getPreviewWorkspacePath(), session, NODENAME_HST_ABSTRACTPAGES, NODETYPE_HST_PAGES);
+        }
+        if (!session.nodeExists(getPreviewWorkspacePrototypePagesPath())) {
+            createWorkspaceRootNodesInPreviewAndLive(getPreviewWorkspacePath(), session, NODENAME_HST_PROTOTYPEPAGES, NODETYPE_HST_PAGES);
+        }
+
+        // TODO getValidTargetPageNodeName for pageNode.getName for prototype (checking both preview workspace AND live non workspace)
+        // NOTE that we use sitemapItemNodeToAbstractify and not pageNode because the page node frequently already got the original prototype in its name
+        final Node prototype = JcrUtils.copy(session, pageNode.getPath(), getPreviewWorkspacePrototypePagesPath() + "/" + getURLDecodedJcrEncodedName(prototypeName.toLowerCase()));
+
+        // extract the non-empty containers into an abstractpage and inherit from that abstractpage
+
+        final Node abstractPage = extractAbstractPart(prototype);
+
+        // TODO now the page we are abstractifying needs to start using the newly created abstractPage AND it must GET RID
+        // TODO OF its own non-empty containers SINCE they are now managed in the abstract page: However, *HOW* to publish
+        // TODO removed containers? Via locking the entire page? OR VIA marking them deleted and make it possible to publish?
+
+        prototype.addMixin(MIXINTYPE_HST_PROTOTYPE_META);
+        // TODO nice name
+        prototype.setProperty(HstNodeTypes.PROTOTYPE_META_PROPERTY_DISPLAY_NAME, prototypeName);
+
+        lockHelper.acquireLock(prototype, 0);
+        lockHelper.acquireLock(abstractPage, 0);
+
+        // TODO the abstractify can be done from a page that has component references. Do we then
+        // TODO want to denormalize this? denormalizeContainerComponentReferences(newPage, pageInstance);
+    }
+
+    /**
+     * @return the new Abstract page node
+     */
+    private Node extractAbstractPart(final Node prototype) throws RepositoryException {
+        final String origReference;
+        if (prototype.hasProperty(COMPONENT_PROPERTY_REFERECENCECOMPONENT)) {
+            origReference = prototype.getProperty(COMPONENT_PROPERTY_REFERECENCECOMPONENT).getString();
+        } else {
+            origReference = null;
+        }
+        // TODO getValidTargetPageNodeName for abstract pages
+        final Node abstractPage = JcrUtils.copy(prototype.getSession(), prototype.getPath(), getPreviewWorkspaceAbstractPagesPath() + "/" + prototype.getName());
+        if (origReference != null) {
+            abstractPage.setProperty(COMPONENT_PROPERTY_REFERECENCECOMPONENT, origReference);
+        }
+        prototype.setProperty(COMPONENT_PROPERTY_REFERECENCECOMPONENT, NODENAME_HST_ABSTRACTPAGES + "/" + abstractPage.getName());
+
+        removeEmptyContainers(abstractPage);
+        removeNonEmptyContainers(prototype);
+        return abstractPage;
+    }
+
+    private void removeEmptyContainers(final Node abstractPage) throws RepositoryException {
+        remove(abstractPage, new EmptyContainerConstraint());
+    }
+    private void removeNonEmptyContainers(final Node prototype) throws RepositoryException {
+        remove(prototype, new NonEmptyContainerConstraint());
+    }
+
+
+    private void remove(final Node node, final Predicate<Node> predicate) throws RepositoryException {
+        if (predicate.test(node)) {
+            node.remove();
+            return;
+        }
+        for (Node child : new NodeIterable(node.getNodes())) {
+            remove(child, predicate);
+        }
+    }
+
+    private static class EmptyContainerConstraint implements Predicate<Node> {
+        @Override
+        public boolean test(final Node node) {
+            try {
+                if (node.isNodeType(HstNodeTypes.NODETYPE_HST_CONTAINERCOMPONENT) && node.getNodes().getSize() == 0) {
+                    return true;
+                }
+            } catch (RepositoryException e) {
+                log.error("Removing containers exception", e);
+            }
+            return false;
+        }
+    }
+
+    private static class NonEmptyContainerConstraint extends EmptyContainerConstraint {
+        @Override
+        public boolean test(final Node node) {
+            try {
+                if (node.isNodeType(HstNodeTypes.NODETYPE_HST_CONTAINERCOMPONENT) && node.getNodes().getSize() > 0) {
+                    return true;
+                }
+            } catch (RepositoryException e) {
+                log.error("Removing containers exception", e);
+            }
+            return false;
+        }
+    }
+
     private String getValidTargetPageNodeName(final String previewWorkspacePagesPath, final String targetPageNodeName, final Session session) throws RepositoryException {
         String testTargetNodeName = targetPageNodeName;
         for (int counter = 1; !isValidTarget(session, testTargetNodeName, previewWorkspacePagesPath, getLivePagesPath()); counter++) {
@@ -567,6 +697,13 @@ public class PagesHelper extends AbstractHelper {
 
     private String getPreviewWorkspacePagesPath() {
         return getPreviewWorkspacePath() + "/" + NODENAME_HST_PAGES;
+    }
+
+    private String getPreviewWorkspaceAbstractPagesPath() {
+        return getPreviewWorkspacePath() + "/" + NODENAME_HST_ABSTRACTPAGES;
+    }
+    private String getPreviewWorkspacePrototypePagesPath() {
+        return getPreviewWorkspacePath() + "/" + NODENAME_HST_PROTOTYPEPAGES;
     }
 
     private String getLivePagesPath() {

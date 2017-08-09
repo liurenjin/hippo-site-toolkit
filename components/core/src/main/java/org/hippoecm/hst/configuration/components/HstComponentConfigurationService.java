@@ -338,11 +338,10 @@ public class HstComponentConfigurationService implements HstComponentConfigurati
             this.suppressWasteMessage = node.getValueProvider().getBoolean(COMPONENT_PROPERTY_SUPPRESS_WASTE_MESSAGE);
         }
 
-        if (type == Type.CONTAINER_COMPONENT) {
-            lockedBy = node.getValueProvider().getString(HstNodeTypes.GENERAL_PROPERTY_LOCKED_BY);
-            lockedOn = node.getValueProvider().getDate(HstNodeTypes.GENERAL_PROPERTY_LOCKED_ON);
-            lastModified = node.getValueProvider().getDate(HstNodeTypes.GENERAL_PROPERTY_LAST_MODIFIED);
-        }
+        lockedBy = node.getValueProvider().getString(HstNodeTypes.GENERAL_PROPERTY_LOCKED_BY);
+        lockedOn = node.getValueProvider().getDate(HstNodeTypes.GENERAL_PROPERTY_LOCKED_ON);
+        lastModified = node.getValueProvider().getDate(HstNodeTypes.GENERAL_PROPERTY_LAST_MODIFIED);
+
         // regardless merging/referencing of components, we directly inherit lock props: They are normally
         // only stored on hst container items and those don't support merging any way
         if (parent != null) {

@@ -347,6 +347,44 @@ public class SiteMapResource extends AbstractConfigResource {
         }, preValidator);
     }
 
+
+
+    public static class ToDoGetRidOfThisClass{
+        private String data;
+
+        public String getData() {
+            return data;
+        }
+
+        public void setData(final String data) {
+            this.data = data;
+        }
+    }
+
+
+    // TODO the final String prototypeName is not how we want it
+    @POST
+    @Path("/abstractify/{id}")
+    public Response abstractify(final @PathParam("id") String id, final ToDoGetRidOfThisClass prototypeName) {
+        final Validator preValidator = ValidatorBuilder.builder()
+                .add(validatorFactory.getHasPreviewConfigurationValidator(getPageComposerContextService()))
+                .add(validatorFactory.getConfigurationExistsValidator(id, siteMapHelper))
+                .add(validatorFactory.getNodePathPrefixValidator(getPreviewConfigurationWorkspacePath(),
+                        id, HstNodeTypes.NODETYPE_HST_SITEMAPITEM))
+                .add(validatorFactory.getNodePathPrefixValidator(getPreviewConfigurationPath(), getPageComposerContextService().getRequestConfigIdentifier(),
+                        HstNodeTypes.NODETYPE_HST_SITEMAP))
+                .add(validatorFactory.getNameValidator(prototypeName.getData()))
+                .build();
+
+        return tryExecute(new Callable<Response>() {
+            @Override
+            public Response call() throws Exception {
+                siteMapHelper.abstractify(id, prototypeName.getData());
+                return ok("Item abstractified successfully", id);
+            }
+        }, preValidator);
+    }
+
     private SiteMapPageRepresentation createSiteMapPageRepresentation(final String siteMapItemUUID, final String parentId) throws RepositoryException {
         return createSiteMapPageRepresentation(getPageComposerContextService().getEditingMount(), siteMapItemUUID, parentId);
     }

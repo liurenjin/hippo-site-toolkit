@@ -15,6 +15,8 @@
  */
 package org.hippoecm.hst.pagecomposer.jaxrs.services.helpers;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.IdentityHashMap;
@@ -36,7 +38,10 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.jackrabbit.util.ISO9075;
 import org.hippoecm.hst.configuration.HstNodeTypes;
 import org.hippoecm.hst.configuration.hosting.Mount;
+import org.hippoecm.hst.core.request.HstRequestContext;
 import org.hippoecm.hst.pagecomposer.jaxrs.services.PageComposerContextService;
+import org.hippoecm.hst.util.HstRequestUtils;
+import org.hippoecm.repository.api.NodeNameCodec;
 import org.hippoecm.repository.util.JcrUtils;
 import org.hippoecm.repository.util.NodeIterable;
 import org.slf4j.Logger;
@@ -375,6 +380,20 @@ public abstract class AbstractHelper {
 
     protected String getWorkspacePath(final Mount mount) {
         return mount.getHstSite().getConfigurationPath() + "/" + NODENAME_HST_WORKSPACE;
+    }
+
+    protected String getURLDecodedJcrEncodedName(final String name) {
+        final String encoding = getEncoding(pageComposerContextService.getRequestContext());
+        try {
+            final String urlDecodedName = URLDecoder.decode(name, encoding);
+            return NodeNameCodec.encode(urlDecodedName);
+        } catch (UnsupportedEncodingException e) {
+            throw new IllegalArgumentException(String.format("Could not ULR  decode '%s'", name), e);
+        }
+    }
+
+    protected String getEncoding(final HstRequestContext requestContext) {
+        return HstRequestUtils.getURIEncoding(requestContext.getServletRequest());
     }
 
 }

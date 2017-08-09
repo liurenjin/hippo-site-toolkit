@@ -427,12 +427,19 @@ public class SiteMapHelper extends AbstractHelper {
     }
 
     public void delete(final String id) throws RepositoryException {
-        HstRequestContext requestContext = pageComposerContextService.getRequestContext();
+        final HstRequestContext requestContext = pageComposerContextService.getRequestContext();
         final Session session = requestContext.getSession();
-        Node sitemapItemNodeToDelete = session.getNodeByIdentifier(id);
+        final Node sitemapItemNodeToDelete = session.getNodeByIdentifier(id);
         lockHelper.acquireLock(sitemapItemNodeToDelete, 0);
         pagesHelper.delete(sitemapItemNodeToDelete);
         deleteOrMarkDeletedIfLiveExists(sitemapItemNodeToDelete);
+    }
+
+    public void abstractify(final String id, final String prototypeName) throws RepositoryException {
+        final HstRequestContext requestContext = pageComposerContextService.getRequestContext();
+        final Session session = requestContext.getSession();
+        final Node sitemapItemNodeToAbstractify = session.getNodeByIdentifier(id);
+        pagesHelper.abstractify(sitemapItemNodeToAbstractify, prototypeName);
     }
 
     /**
@@ -612,21 +619,6 @@ public class SiteMapHelper extends AbstractHelper {
             workspaceSiteMapId = configNode.getNode(relSiteMapPath).getIdentifier();
         }
         return workspaceSiteMapId;
-    }
-
-
-    private String getURLDecodedJcrEncodedName(final String name) {
-        final String encoding = getEncoding(pageComposerContextService.getRequestContext());
-        try {
-            final String urlDecodedName = URLDecoder.decode(name, encoding);
-            return NodeNameCodec.encode(urlDecodedName);
-        } catch (UnsupportedEncodingException e) {
-            throw new IllegalArgumentException(String.format("Could not ULR  decode '%s'", name), e);
-        }
-    }
-
-    private String getEncoding(final HstRequestContext requestContext) {
-        return HstRequestUtils.getURIEncoding(requestContext.getServletRequest());
     }
 
 }

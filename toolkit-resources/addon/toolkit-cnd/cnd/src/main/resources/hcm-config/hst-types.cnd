@@ -255,6 +255,7 @@
 + hst:templates (hst:templates) = hst:templates
 + hst:sitemap (hst:sitemap) = hst:sitemap
 + hst:channel (hst:channel) = hst:channel
++ hst:prototypepages (hst:pages) = hst:pages
 
 [hst:branch] mixin
 - hst:branchof (string) mandatory
