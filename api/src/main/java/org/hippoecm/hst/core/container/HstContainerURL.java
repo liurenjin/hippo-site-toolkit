@@ -40,7 +40,7 @@ public interface HstContainerURL {
      *
      * @return the current response's URI encoding.
      */
-    String getURIEncoding();
+    default String getURIEncoding() { return getCharacterEncoding(); }
 
     /**
      * Returns the host name of the request: note that with reverse proxies, this can be the original host informations requested 

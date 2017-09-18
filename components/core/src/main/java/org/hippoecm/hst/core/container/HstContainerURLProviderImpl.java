@@ -105,6 +105,12 @@ public class HstContainerURLProviderImpl implements HstContainerURLProvider {
     }
 
     public HstContainerURL parseURL(ResolvedMount mount, String contextPath, String requestPath,
+                                    Map<String, String []> queryParams, String requestCharacterEncoding) {
+        return parseURL(mount, contextPath, requestPath, queryParams, requestCharacterEncoding,
+                requestCharacterEncoding);
+    }
+
+    public HstContainerURL parseURL(ResolvedMount mount, String contextPath, String requestPath,
                                     Map<String, String []> queryParams, String requestCharacterEncoding,
                                     String requestURIEncoding) {
         HstContainerURLImpl url = new HstContainerURLImpl();
@@ -157,11 +163,11 @@ public class HstContainerURLProviderImpl implements HstContainerURLProvider {
         try {
             Map<String, String[]> paramMap = HstRequestUtils.parseQueryString(request);
             url.setParameters(paramMap);
-        } catch (UnsupportedEncodingException e) {
+        } catch (IllegalArgumentException e) {
             if (log.isDebugEnabled()) {
-                log.warn("Unsupported encoding in request, using empty query parameters:", e);
+                log.warn("IllegalArgumentException while decoding the request, using empty query parameters:", e);
             } else {
-                log.warn("Unsupported encoding in request, using empty query parameters: " + e.toString());
+                log.warn("IllegalArgumentException while decoding the request, using empty query parameters: " + e.toString());
             }
         }
 
