@@ -93,20 +93,6 @@ public class TestHstRequestUtils {
     }
 
     @Test
-    public void testParseQueryStringFromRequestContainingChinese() throws Exception {
-        String queryString = "key-%E4%BA%BA=value-%E4%BA%BA"; // %E4%BA%BA == 人
-        HttpServletRequest request = createNiceMock(HttpServletRequest.class);
-        expect(request.getQueryString()).andReturn(queryString).anyTimes();
-        replay(request);
-
-        Map<String, String[]> parsedQueryStringMap = HstRequestUtils.parseQueryString(request);
-
-        assertTrue("parsedQueryStringMap must contain 'key-人'.", parsedQueryStringMap.containsKey("key-人"));
-        assertTrue("parsedQueryStringMap must have 1 value for 'key-人'.", parsedQueryStringMap.get("key-人").length == 1);
-        assertEquals("value-人", parsedQueryStringMap.get("key-人")[0]);
-    }
-
-    @Test
     public void testParseQueryStringFromURI() throws Exception {
         URI uri = URI.create("http://www.example.com/?foo=bar&lux=bar&foo=foo+bar");
         Map<String, String[]> parsedQueryStringMap =  HstRequestUtils.parseQueryString(uri, "UTF-8");

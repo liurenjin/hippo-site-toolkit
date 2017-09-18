@@ -265,9 +265,10 @@ public class ESIPageRenderer implements ComponentManagerAware {
                     requestPathFromURL = StringUtils.substringAfter(uri.getPath(), curContextPath);
                 }
 
-                Map<String, String[]> queryParams = HstRequestUtils.parseQueryString(uri, curBaseURL.getURIEncoding());
+                String uriEncoding = HstRequestUtils.getURIEncoding(curBaseURL, "UTF-8");
+                Map<String, String[]> queryParams = HstRequestUtils.parseQueryString(uri, uriEncoding);
                 localContainerURL = requestContext.getContainerURLProvider().parseURL(curResolvedMount, curContextPath,
-                        requestPathFromURL, queryParams, curBaseURL.getCharacterEncoding(), curBaseURL.getURIEncoding());
+                        requestPathFromURL, queryParams, curBaseURL.getCharacterEncoding(), uriEncoding);
             } catch (MatchException e) {
                 log.debug("The host is not matched by local HST virtual hosts configuration. It might be a remote URL: '{}'.", uri);
             } catch (Exception e) {

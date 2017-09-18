@@ -82,6 +82,20 @@ public interface HstContainerURLProvider {
     HstContainerURL parseURL(HttpServletRequest request, ResolvedMount mount, String requestPath, Map<String, String []> queryParams);
 
     /**
+     * Parses a request for a specific {@link ResolvedMount}, contextPath, requestPath and request character encoding
+     * and creates an {@link HstContainerURL} instance. This operation doesn't depend on HttpServletRequest.
+     *
+     * @param mount
+     * @param contextPath
+     * @param requestPath
+     * @param queryParams
+     * @param requestCharacterEncoding
+     * @deprecated Use {@link #parseURL(ResolvedMount, String, String, Map, String, String)}
+     */
+    @Deprecated
+    HstContainerURL parseURL(ResolvedMount mount, String contextPath, String requestPath, Map<String, String []> queryParams, String requestCharacterEncoding);
+
+    /**
      * Parses a request for a specific {@link ResolvedMount}, contextPath, requestPath and request character and uri
      * encoding and creates an {@link HstContainerURL} instance. This operation doesn't depend on HttpServletRequest.
      * 
@@ -92,8 +106,10 @@ public interface HstContainerURLProvider {
      * @param requestCharacterEncoding
      * @param requestURIEncoding
      */
-    HstContainerURL parseURL(ResolvedMount mount, String contextPath, String requestPath, Map<String,
-            String []> queryParams, String requestCharacterEncoding, String requestURIEncoding);
+    default HstContainerURL parseURL(ResolvedMount mount, String contextPath, String requestPath, Map<String,
+            String []> queryParams, String requestCharacterEncoding, String requestURIEncoding) {
+        return parseURL(mount, contextPath, requestPath, queryParams, requestCharacterEncoding);
+    }
 
     /**
      * Creates an {@link HstContainerURL} instance for a new pathInfo (without query parameters)
