@@ -56,8 +56,8 @@ public class HstRequestUtils {
     public static String URI_ENCODING_DEFAULT_CHARSET_VALUE = "ISO-8859-1";
     public static String URI_ENCODING_USE_BODY_CHARSET_KEY = "uriencoding.use.body.charset";
     public static boolean URI_ENCODING_USE_BODY_CHARSET_VALUE = true;
-    public static String URI_ENCODING_USE_CONTAINER_KEY = "uriencoding.use.container";
-    public static boolean URI_ENCODING_USE_CONTAINER_VALUE = true;
+    private static String URI_ENCODING_USE_CONTAINER_KEY = "uriencoding.use.container";
+    private static boolean URI_ENCODING_USE_CONTAINER_VALUE = true;
 
     // Small wrapper class to read configuration settings also when running within a unit test
     private static class URIEncodingConfiguration {
