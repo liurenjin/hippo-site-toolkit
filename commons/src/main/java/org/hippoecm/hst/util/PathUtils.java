@@ -1,12 +1,12 @@
 /*
  *  Copyright 2008-2013 Hippo B.V. (http://www.onehippo.com)
- * 
+ *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
- * 
+ *
  *       http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
  *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -34,9 +34,9 @@ public class PathUtils {
 
     private static final String HTML_SUFFIX = ".html";
     private static final String SLASH_ENCODED = "__slash__";
-    
+
     private PathUtils() {
-        
+
     }
 
     /**
@@ -44,20 +44,20 @@ public class PathUtils {
      * @param path
      * @return normalized path which is the original path with all leading and trailing slashes removed
      */
-    
+
     public static String normalizePath(String path) {
         if(path == null) {
             return null;
-        } 
+        }
         while(path.startsWith("/")) {
-           path = path.substring(1);
+            path = path.substring(1);
         }
         while(path.endsWith("/" )) {
             path = path.substring(0, path.length()-1);
         }
         return path;
     }
-    
+
     /**
      * Encode the url:
      * <ul>
@@ -88,7 +88,7 @@ public class PathUtils {
                 uriParts[last] = uriParts[last].replaceAll("\\/", SLASH_ENCODED);
             }
             /*
-             * When the link is to a hippo document, the name coincides with the handle. 
+             * When the link is to a hippo document, the name coincides with the handle.
              * If they do not contain a "." already, replace them by one part, and extend it by .html for nice urls
              */
             if (uriParts[last].equals(uriParts[last - 1]) && !uriParts[last].contains(".")) {
@@ -102,7 +102,7 @@ public class PathUtils {
     }
 
     /**
-     * 
+     *
      * Decode the url:
      * <ul>
      *   <li>split url in url parts on '/'</li>
@@ -119,7 +119,7 @@ public class PathUtils {
         if (path == null || "".equals(path) || "/".equals(path)) {
             return "/";
         }
-        
+
         int start = 0;
         if (path.startsWith("/")) {
             // skip first empty uriPart
